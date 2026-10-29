@@ -9,7 +9,7 @@ Simulation package of
 It holds the controller code in the exact version used, the experiment pipelines, every result file, and the
 scripts that produce all tables, numbers and figures of the paper.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) <!-- replace after the first Zenodo release -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23773120.svg)](https://doi.org/10.5281/zenodo.23773120)
 
 ## The study in short
 
@@ -114,7 +114,7 @@ company names); the raw company export is not included.
 
 ## Citation
 
-See `CITATION.cff`. After the first Zenodo release, cite the DOI of the version used.
+See `CITATION.cff`. Version 1.0.0 is archived at Zenodo: https://doi.org/10.5281/zenodo.23773120
 
 ## Licence
 

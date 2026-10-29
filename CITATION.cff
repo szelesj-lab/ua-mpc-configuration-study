@@ -19,6 +19,7 @@ authors:
     given-names: Tamás
     affiliation: "University of Pannonia, Hungary"
 version: "1.0.0"
+doi: "10.5281/zenodo.23773120"
 date-released: "2026-10-29"
 license: MIT
 repository-code: "https://github.com/szelesj-lab/ua-mpc-configuration-study"

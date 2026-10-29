@@ -1,0 +1,508 @@
+{
+  "controller": "det_bo",
+  "mode": "pareto",
+  "objectives": [
+    "net_cost_eur",
+    "protection_h",
+    "curtailed_pct"
+  ],
+  "scenario": {
+    "SoC": {
+      "E_capacity": 72
+    },
+    "degradation": {
+      "c_deg": 2e-05
+    },
+    "limits": {
+      "p_charge_max_w": 24
+    },
+    "mpc": {
+      "architecture": "self_consumption"
+    },
+    "replay": {
+      "demand_profile_csv": "industrial_load_profile.csv",
+      "demand_mean_w": 10.788,
+      "plant": "bms"
+    },
+    "tuning": {
+      "objectives": [
+        "net_cost_eur",
+        "protection_h",
+        "curtailed_pct"
+      ]
+    }
+  },
+  "episodes": [
+    [
+      "2026-07-06T22:00:00+00:00",
+      "2026-07-08T22:00:00+00:00"
+    ],
+    [
+      "2026-07-17T22:00:00+00:00",
+      "2026-07-19T22:00:00+00:00"
+    ],
+    [
+      "2026-07-28T22:00:00+00:00",
+      "2026-07-30T22:00:00+00:00"
+    ],
+    [
+      "2026-08-08T22:00:00+00:00",
+      "2026-08-10T22:00:00+00:00"
+    ]
+  ],
+  "trials": 30,
+  "baseline": {
+    "overrides": {
+      "weights": {
+        "w_x": 0.15,
+        "w_ff": 0.20000000000000015,
+        "w_delta_u": 0.0010000000000000002
+      },
+      "mpc": {
+        "soc_backoff": 0.0
+      }
+    },
+    "kpis": {
+      "net_cost_eur": 0.1057093342689938,
+      "violation_pp_h": 0.0,
+      "max_violation_pp": 0.0,
+      "curtailed_pct": 23.573699422840118,
+      "renewable_use_pct": 76.42630057715988,
+      "cycles_per_day": 0.5899192956821343,
+      "grid_kwh": 0.6759862939299894,
+      "peak_grid_w": 20.922756761234275,
+      "total_eur": 0.10700382698748376,
+      "objective": 0.1057093342689938,
+      "min_soc": 0.18354316526015285,
+      "protection_h": 8.25,
+      "extra_grid_eur": 0.0
+    }
+  },
+  "points": [
+    {
+      "trial": 0,
+      "overrides": {
+        "weights": {
+          "w_x": 0.15,
+          "w_ff": 0.20000000000000015,
+          "w_delta_u": 0.0010000000000000002
+        },
+        "mpc": {
+          "soc_backoff": 0.0
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.1057093342689938,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 23.573699422840118,
+        "renewable_use_pct": 76.42630057715988,
+        "cycles_per_day": 0.5899192956821343,
+        "grid_kwh": 0.6759862939299894,
+        "peak_grid_w": 20.922756761234275,
+        "total_eur": 0.10700382698748376,
+        "objective": 0.1057093342689938,
+        "min_soc": 0.18354316526015285,
+        "protection_h": 8.25,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 2,
+      "overrides": {
+        "weights": {
+          "w_x": 3.682469492185358e-05,
+          "w_ff": 0.07987757182510456,
+          "w_delta_u": 1.7332463647973433e-06
+        },
+        "mpc": {
+          "soc_backoff": 0.12052258855211423
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.09505950802050098,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 25.688496286502303,
+        "renewable_use_pct": 74.3115037134977,
+        "cycles_per_day": 0.5345904845479903,
+        "grid_kwh": 0.6994604713897763,
+        "peak_grid_w": 23.780972252298906,
+        "total_eur": 0.09566553669857174,
+        "objective": 0.09505950802050098,
+        "min_soc": 0.22257617921849332,
+        "protection_h": 4.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 7,
+      "overrides": {
+        "weights": {
+          "w_x": 5.80109949749947e-05,
+          "w_ff": 0.04529303820825925,
+          "w_delta_u": 3.4141216868677693e-08
+        },
+        "mpc": {
+          "soc_backoff": 0.2233573587829789
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.10359729849355269,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 29.449731617705293,
+        "renewable_use_pct": 70.5502683822947,
+        "cycles_per_day": 0.4115745476326145,
+        "grid_kwh": 0.7404546212774978,
+        "peak_grid_w": 28.609521293519727,
+        "total_eur": 0.10347590244856505,
+        "objective": 0.10359729849355269,
+        "min_soc": 0.31942475574368545,
+        "protection_h": 2.75,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 9,
+      "overrides": {
+        "weights": {
+          "w_x": 1.210316654699632e-05,
+          "w_ff": 0.8664853760285147,
+          "w_delta_u": 4.754563730355787e-05
+        },
+        "mpc": {
+          "soc_backoff": 0.03807299265555394
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.0945331246601888,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 23.930339854950677,
+        "renewable_use_pct": 76.06966014504933,
+        "cycles_per_day": 0.5874074311901176,
+        "grid_kwh": 0.687527985416656,
+        "peak_grid_w": 18.159521293519724,
+        "total_eur": 0.0965839304947306,
+        "objective": 0.0945331246601888,
+        "min_soc": 0.15437015799986464,
+        "protection_h": 5.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 10,
+      "overrides": {
+        "weights": {
+          "w_x": 4.38292546999086e-05,
+          "w_ff": 0.05455400933198728,
+          "w_delta_u": 6.050947042787939e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.07511056120669514
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.09027612894499172,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 25.025514850100333,
+        "renewable_use_pct": 74.97448514989966,
+        "cycles_per_day": 0.614550934570706,
+        "grid_kwh": 0.6990397040414751,
+        "peak_grid_w": 38.2330046328744,
+        "total_eur": 0.09144879341572519,
+        "objective": 0.09027612894499172,
+        "min_soc": 0.1711791417085978,
+        "protection_h": 4.5,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 12,
+      "overrides": {
+        "weights": {
+          "w_x": 2.5991914215547262e-05,
+          "w_ff": 0.811017915196668,
+          "w_delta_u": 1.379583401778821e-06
+        },
+        "mpc": {
+          "soc_backoff": 0.19170085232897136
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.10214704099727036,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 28.402041504811212,
+        "renewable_use_pct": 71.59795849518879,
+        "cycles_per_day": 0.4190438975250278,
+        "grid_kwh": 0.7239345289588005,
+        "peak_grid_w": 21.566816444562654,
+        "total_eur": 0.1018247345613752,
+        "objective": 0.10214704099727036,
+        "min_soc": 0.2923681312681491,
+        "protection_h": 3.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 13,
+      "overrides": {
+        "weights": {
+          "w_x": 0.00019312588532935276,
+          "w_ff": 1.0,
+          "w_delta_u": 5.881108791563011e-07
+        },
+        "mpc": {
+          "soc_backoff": 0.11700005240139409
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.09466484468488139,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 25.80749086168614,
+        "renewable_use_pct": 74.19250913831385,
+        "cycles_per_day": 0.5444928200869825,
+        "grid_kwh": 0.6983377159437202,
+        "peak_grid_w": 27.350972252298906,
+        "total_eur": 0.09494668942259903,
+        "objective": 0.09466484468488139,
+        "min_soc": 0.2196156529027038,
+        "protection_h": 4.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 16,
+      "overrides": {
+        "weights": {
+          "w_x": 4.049916341040997e-05,
+          "w_ff": 1.0,
+          "w_delta_u": 9.764689316426573e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.030298875705271892
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.0878541689208048,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 24.45073878781304,
+        "renewable_use_pct": 75.54926121218696,
+        "cycles_per_day": 0.6690898844276407,
+        "grid_kwh": 0.6995987306418485,
+        "peak_grid_w": 38.2330046328744,
+        "total_eur": 0.08971483080059314,
+        "objective": 0.0878541689208048,
+        "min_soc": 0.1263692001881299,
+        "protection_h": 5.5,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 18,
+      "overrides": {
+        "weights": {
+          "w_x": 1.2682141359596737e-05,
+          "w_ff": 0.01533109570490858,
+          "w_delta_u": 1.0000000000000007e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.03774887761736841
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.08769588518232514,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 24.49451234424254,
+        "renewable_use_pct": 75.50548765575746,
+        "cycles_per_day": 0.6622396941278094,
+        "grid_kwh": 0.7000606004629193,
+        "peak_grid_w": 38.2330046328744,
+        "total_eur": 0.0895531612445653,
+        "objective": 0.08769588518232514,
+        "min_soc": 0.1338253405390071,
+        "protection_h": 5.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 19,
+      "overrides": {
+        "weights": {
+          "w_x": 9.999999999999997e-06,
+          "w_ff": 0.9880590512824534,
+          "w_delta_u": 3.7265199852081526e-06
+        },
+        "mpc": {
+          "soc_backoff": 0.11070796782479668
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.09529968310890093,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 25.445956107078878,
+        "renewable_use_pct": 74.55404389292113,
+        "cycles_per_day": 0.5368066113215431,
+        "grid_kwh": 0.6991803185900419,
+        "peak_grid_w": 22.420983569539878,
+        "total_eur": 0.09629212520140744,
+        "objective": 0.09529968310890093,
+        "min_soc": 0.21895777485454923,
+        "protection_h": 4.0,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 20,
+      "overrides": {
+        "weights": {
+          "w_x": 1.0348210305319261e-05,
+          "w_ff": 1.0,
+          "w_delta_u": 4.518071705555438e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.25024873897175265
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.10639031808643035,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 30.587393146164224,
+        "renewable_use_pct": 69.41260685383577,
+        "cycles_per_day": 0.35280401221297103,
+        "grid_kwh": 0.7528773357170024,
+        "peak_grid_w": 30.583726418013445,
+        "total_eur": 0.10619889067898854,
+        "objective": 0.10639031808643035,
+        "min_soc": 0.3495592994821719,
+        "protection_h": 2.5,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 21,
+      "overrides": {
+        "weights": {
+          "w_x": 7.248844843853491e-05,
+          "w_ff": 0.1465922473130895,
+          "w_delta_u": 1.5460227882219744e-07
+        },
+        "mpc": {
+          "soc_backoff": 0.0924399746226755
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.0920040959523841,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 25.298709291135967,
+        "renewable_use_pct": 74.70129070886404,
+        "cycles_per_day": 0.5857794308290124,
+        "grid_kwh": 0.6961280518006835,
+        "peak_grid_w": 37.593726418013446,
+        "total_eur": 0.09258971664838317,
+        "objective": 0.0920040959523841,
+        "min_soc": 0.19419524702971644,
+        "protection_h": 4.25,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 23,
+      "overrides": {
+        "weights": {
+          "w_x": 0.3518494204099525,
+          "w_ff": 0.9942832506193298,
+          "w_delta_u": 0.0020779358818052746
+        },
+        "mpc": {
+          "soc_backoff": 0.22147069686464396
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.1137053267729548,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 29.415440520116118,
+        "renewable_use_pct": 70.58455947988388,
+        "cycles_per_day": 0.47339124548976286,
+        "grid_kwh": 0.7528635085556468,
+        "peak_grid_w": 21.062756761234276,
+        "total_eur": 0.11482123901868155,
+        "objective": 0.1137053267729548,
+        "min_soc": 0.32233889150206724,
+        "protection_h": 2.75,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 24,
+      "overrides": {
+        "weights": {
+          "w_x": 1.1823003193196592e-05,
+          "w_ff": 0.08360438743977835,
+          "w_delta_u": 1.1110328911118159e-07
+        },
+        "mpc": {
+          "soc_backoff": 0.0633813359384352
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.08977647643034178,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 24.748990862638987,
+        "renewable_use_pct": 75.25100913736101,
+        "cycles_per_day": 0.6185194211047711,
+        "grid_kwh": 0.7000639587019174,
+        "peak_grid_w": 37.96633155658708,
+        "total_eur": 0.09148379125266101,
+        "objective": 0.08977647643034178,
+        "min_soc": 0.15982569657366036,
+        "protection_h": 4.75,
+        "extra_grid_eur": 0.0
+      }
+    },
+    {
+      "trial": 29,
+      "overrides": {
+        "weights": {
+          "w_x": 1.0835057722889203e-05,
+          "w_ff": 0.00031281405691175517,
+          "w_delta_u": 2.536513199063842e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.0002846293655585641
+        }
+      },
+      "kpis": {
+        "net_cost_eur": 0.08599124952561504,
+        "violation_pp_h": 0.0,
+        "max_violation_pp": 0.0,
+        "curtailed_pct": 24.540442036472204,
+        "renewable_use_pct": 75.4595579635278,
+        "cycles_per_day": 0.6926778003279728,
+        "grid_kwh": 0.7006571235228689,
+        "peak_grid_w": 38.2330046328744,
+        "total_eur": 0.08763778298333724,
+        "objective": 0.08599124952561504,
+        "min_soc": 0.1,
+        "protection_h": 13.5,
+        "extra_grid_eur": 3.1054533624884126e-05
+      }
+    }
+  ],
+  "presets": {
+    "cheapest": 14,
+    "greenest": 0,
+    "balanced": 4
+  }
+}

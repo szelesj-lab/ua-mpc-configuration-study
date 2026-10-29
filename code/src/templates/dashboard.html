@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kairos · Energy control</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232f8a5b'/%3E%3Cstop offset='1' stop-color='%232c6cb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='40' height='40' rx='10' fill='url(%23g)'/%3E%3Cpath d='M9 24.5a11 11 0 0 1 22 0' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3Crect x='9' y='28' width='13.5' height='4.6' rx='2.3' fill='%23f0b14a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <defs><linearGradient id="kairos-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f8a5b"/><stop offset="1" stop-color="#2c6cb0"/></linearGradient></defs>
+        <rect width="40" height="40" rx="10" fill="url(#kairos-g)"/>
+        <path d="M9 24.5a11 11 0 0 1 22 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M20 8.5v3.2M10.6 12.4l2.2 2.2M29.4 12.4l-2.2 2.2" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <rect x="9" y="28" width="22" height="4.6" rx="2.3" fill="#fff" opacity=".35"/>
+        <rect x="9" y="28" width="13.5" height="4.6" rx="2.3" fill="#f0b14a"/>
+      </svg>
+      <div>
+        <h1>Kairos</h1>
+        <p class="subtitle">Uncertainty-aware energy control for the production cell</p>
+      </div>
+    </div>
+    <div class="pills" id="status-pills"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="overview" role="tab">Overview <span class="tab-dot" id="live-tab-dot"></span></button>
+    <button class="tab" data-tab="schedule" role="tab">Production schedule</button>
+    <button class="tab" data-tab="config" role="tab">Configuration</button>
+    <button class="tab" data-tab="models" role="tab">Models &amp; data</button>
+  </nav>
+
+  <div class="jobbar" id="jobbar" hidden>
+    <div class="jobbar-line">
+      <span class="job-dot" id="job-dot"></span>
+      <span id="job-text"></span>
+      <button class="link" id="toggle-log">Show log</button>
+      <button class="btn ghost danger small" id="stop-job" hidden>Stop</button>
+      <button class="link" id="hide-job" title="Hide">✕</button>
+    </div>
+    <pre class="log" id="job-log" hidden></pre>
+  </div>
+
+  <main>
+    <!-- OVERVIEW -->
+    <section class="panel active" id="tab-overview">
+      <div class="alert" id="run-alert" hidden></div>
+
+      <div class="empty card" id="overview-empty" hidden>
+        <h2>No plan yet</h2>
+        <p>Train the models on the <b>Models &amp; data</b> tab, then run the MPC. The decision in force, the costs and the plan will appear here.</p>
+        <button class="btn primary" data-job="run_mpc">Run MPC now</button>
+      </div>
+
+      <div id="overview" hidden>
+        <div class="live-block" id="live-block" hidden>
+          <div class="live-banner" id="live-banner"></div>
+          <div class="tiles" id="live-tiles"></div>
+        </div>
+
+        <div class="hero">
+          <div class="card now-card">
+            <div class="now-head">
+              <span class="eyebrow">Decision in force</span>
+              <span class="now-slot" id="now-slot"></span>
+              <span class="hint" id="now-src"></span>
+            </div>
+            <div id="now-body"></div>
+            <div class="mpc-strip">
+              <div class="mpc-info" id="mpc-info"></div>
+              <button class="btn primary small" data-job="run_mpc">Run MPC now</button>
+            </div>
+          </div>
+          <div class="card cost-card" id="cost-card"></div>
+        </div>
+
+        <div class="card timeline-card">
+          <div class="tl-head">
+            <div>
+              <h3 id="tl-title">Where the energy comes from</h3>
+              <p class="hint" id="tl-caption"></p>
+            </div>
+            <div class="seg" id="tl-views" role="tablist" aria-label="Timeline view">
+              <button data-view="sources" class="active">Sources</button><button data-view="battery">Battery</button><button data-view="renewables">Renewables</button><button data-view="price">Price</button>
+            </div>
+          </div>
+          <div class="legend" id="timeline-legend"></div>
+          <div id="timeline"></div>
+        </div>
+
+        <div class="card results-card" id="results-card">
+          <div class="tl-head">
+            <div>
+              <h3>Results of the live operation</h3>
+              <p class="hint" id="res-caption">From the log of every MPC run and the live measurements.</p>
+            </div>
+            <div class="seg" id="res-period" role="tablist" aria-label="Results period">
+              <button data-period="today">Today</button><button data-period="7d">7 days</button><button data-period="30d">30 days</button><button data-period="all" class="active">All</button>
+            </div>
+          </div>
+          <div id="res-body"><p class="hint">No MPC runs logged yet.</p></div>
+          <details class="res-days" id="res-days-wrap" hidden>
+            <summary>Day by day</summary>
+            <div class="table-scroll"><table class="grid-table compare-table" id="res-days"></table></div>
+          </details>
+          <div class="downloads">
+            <a class="btn small" id="res-csv" href="/api/live-results.csv?period=all">Results (CSV)</a>
+            <a class="btn small" href="/api/run-log.csv">MPC run log (CSV)</a>
+            <a class="btn small" href="/api/run-log.csv?what=decisions">Decision log (CSV)</a>
+          </div>
+        </div>
+
+        <details class="card details">
+          <summary>Connecting the real system (live measurements)</summary>
+          <p class="hint">The system sends measurements as JSON to <code id="live-endpoint">POST /api/live</code>. Every field except the time is optional. Times without a UTC offset are read as site local time.</p>
+          <pre class="code" id="live-example"></pre>
+          <p class="hint">Enable live data under Configuration → Live measurements. To test without the real system, run <code>python src/live_simulator.py --backfill 6</code>. To accept data from other computers, start the dashboard with <code>--host 0.0.0.0</code> and set an API token.</p>
+        </details>
+
+        <div class="downloads">
+          <a class="btn small" href="/api/results.csv">Download the current plan (CSV)</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section class="panel" id="tab-schedule">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Production schedule</h2>
+            <p class="hint">Each row sets the production mode from its time until the next row. The demand model turns this into power demand over the MPC horizon.</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn" id="add-row">Add row</button>
+            <button class="btn primary" id="save-schedule">Save schedule</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="grid-table" id="schedule-table">
+            <thead><tr><th>Time</th><th>Mode</th><th>Target output (units/h)</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="alert" id="schedule-alert" hidden></div>
+      </div>
+    </section>
+
+    <!-- CONFIG -->
+    <section class="panel" id="tab-config">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Configuration</h2>
+            <p class="hint">Saved to <code>config/dataConfig.json</code>. The next MPC run uses the new values.</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn" id="reload-config">Discard changes</button>
+            <button class="btn primary" id="save-config">Save configuration</button>
+          </div>
+        </div>
+        <form id="config-form" class="config-grid"></form>
+        <div class="alert" id="config-alert" hidden></div>
+      </div>
+    </section>
+
+    <!-- MODELS -->
+    <section class="panel" id="tab-models">
+      <div class="card" id="data-card">
+        <div class="card-head">
+          <div>
+            <h2>Training data</h2>
+            <p class="hint">Download the newest ENTSO-E prices and Open-Meteo weather since the last stored row, then retrain the models.</p>
+          </div>
+          <div class="card-actions"><button class="btn primary" data-job="update_data">Update data</button></div>
+        </div>
+        <table class="grid-table" id="data-table"></table>
+      </div>
+      <div class="model-cards" id="model-cards"></div>
+      <div class="card" id="svr-plot-card" hidden>
+        <h3>SVR test prediction</h3>
+        <img id="svr-plot" alt="SVR grid price prediction compared to the real price on the test period">
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span><b>Kairos</b> · uncertainty-aware MPC for battery scheduling</span>
+    <span>Developed by József Szeles and Laura Deszát · Department of System Engineering, University of Pannonia</span>
+  </footer>
+
+  <div class="tooltip" id="tooltip" hidden></div>
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

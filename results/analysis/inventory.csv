@@ -1,0 +1,12 @@
+source,origin,start,end,resolution,records,gaps,used
+Main meter (plant),"Company export, 4 quarterly xlsx",2025-10-01 06:00:00,2026-09-30 05:00:00,"1 h, kWh",8712,"41 zero, 1 empty, 24 absent, DST hours; 67 h filled (0.77 %)","Load profile of all replays (per unit, scaled to the cell)"
+Sub-meters: Csomagoló,"9 xlsx, 3 meters",2025-02 / 2025-08 / 2025-10,(one month each),"1 h, kWh",,partial months; outliers in Feb (company note),Not used (only three months)
+Sub-meters: Daraboló,"8 xlsx, 3 meters",2025-02 / 2025-08 / 2025-10,(one month each),"1 h, kWh",,partial months; outliers in Feb (company note),Not used (only three months)
+Sub-meters: Hűtés,"3 xlsx, 1 meters",2025-02 / 2025-08 / 2025-10,(one month each),"1 h, kWh",,partial months; outliers in Feb (company note),Not used (only three months)
+Sub-meters: Vago,"11 xlsx, 4 meters",2025-02 / 2025-08 / 2025-10,(one month each),"1 h, kWh",,partial months; outliers in Feb (company note),Not used (only three months)
+Production (daily counts),"Company, 1 xlsx, 10 product lines",2025-06-01 00:00:00,2026-08-25 00:00:00,1 day,451,units not documented,Not used (perfect load forecast assumed)
+Gas,"Company, 3 xlsx",2025-02,2025-10,"1 month, m3",3,three months,Not used (no CO2 KPI in this study)
+"Plant state, outdoor temperature","Company, 5 csv",2025-02,2025-10,irregular,,duplicate stamps,Not used
+Day-ahead price HU (ENTSO-E),"ENTSO-E Transparency, bidding zone HU",2025-09-30 22:00:00+00:00,2026-10-22 21:45:00+00:00,"15 min, EUR/MWh",37152,"0 missing steps, 0 empty","Energy price of every replay (import only, no export)"
+Weather forecast as issued (Open-Meteo historical forecast),"Open-Meteo, 48.09 N 19.91 E, tilt 35 deg, south",2025-05-31 22:00:00+00:00,2026-10-21 21:00:00+00:00,1 h,12192,0 missing hours,"GPR input; forecasts mu, sigma"
+Weather as it was (Open-Meteo reanalysis),"Open-Meteo, 48.09 N 19.91 E, tilt 35 deg, south",2025-05-31 22:00:00+00:00,2026-10-16 21:00:00+00:00,1 h,12072,0 missing hours,GPR target; 'real' PV and wind of the cell

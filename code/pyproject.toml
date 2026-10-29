@@ -1,0 +1,18 @@
+[project]
+name = "uncertainty-aware-mpc"
+version = "0.1.0"
+description = "Uncertainty-aware MPC for battery scheduling with GPR renewable forecasts and SVR grid price prediction"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+
+[tool.ruff.lint]
+# Syntax errors and pyflakes checks (unused imports/variables, undefined names)
+select = ["E9", "F"]

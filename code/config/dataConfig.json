@@ -1,0 +1,195 @@
+{
+    "degradation": {
+        "c_deg": 6.87e-05
+    },
+    "SoC": {
+        "soc_min": 0.1,
+        "soc_max": 0.9,
+        "eta_batt": 0.95,
+        "E_capacity": 288.0,
+        "initial_soc": 0.5,
+        "x_ref": 0.5
+    },
+    "limits": {
+        "p_charge_max_w": 24.0,
+        "p_discharge_max_w": 24.0,
+        "p_grid_max_w": 10000.0
+    },
+    "pv": {
+        "rated_power_w": 30.0,
+        "efficiency": 0.92
+    },
+    "wind": {
+        "air_density": 1.225,
+        "rotor_area_m2": 0.32,
+        "power_coefficient": 0.2,
+        "cut_in_speed_ms": 1.0,
+        "rated_speed_ms": 8.0,
+        "cut_out_speed_ms": 12.0
+    },
+    "production": {
+        "cat_time_s": 30,
+        "cat_power_w": 24
+    },
+    "general": {
+        "horizon": 96,
+        "deltaT": 900,
+        "timezone": "Europe/Budapest"
+    },
+    "openmeteo": {
+        "latitude": 48.088037,
+        "longitude": 19.909665,
+        "tilt": 35,
+        "azimuth": 180,
+        "forecast_days": 2,
+        "gti_variable": "instant"
+    },
+    "weights": {
+        "w_x": 0.15,
+        "w_u": 1.0,
+        "w_delta_u": 0.001,
+        "w_T": 0.001,
+        "w_ff": 0.2,
+        "lambda": 1000.0
+    },
+    "mpc": {
+        "charge_is_decision": true,
+        "smoothness": "inputs",
+        "soc_chance_z": 1.0,
+        "uncertainty_scaling": "relative",
+        "sigma_ref_w": 0.0,
+        "sigma_scale": 1.345,
+        "error_autocorr": 0.857,
+        "margin_window": "replan"
+    },
+    "live": {
+        "enabled": false,
+        "api_token": "",
+        "stale_after_s": 120,
+        "use_measured_soc": true,
+        "measured_soc_max_age_s": 900,
+        "auto_mpc": true,
+        "mpc_interval_min": 15,
+        "deviation_abs_w": 2.0,
+        "deviation_rel": 0.25,
+        "deviation_soc": 0.05
+    },
+    "entsoe": {
+        "country_code": "HU",
+        "history_days": 10,
+        "cache_minutes": 60
+    },
+    "gpr": {
+        "max_train_samples": 5000,
+        "train_months": 0,
+        "random_state": 42
+    },
+    "optimizer": {
+        "maxiter": 500,
+        "ftol": 1e-12
+    },
+    "replay": {
+        "schedule_csv": "production_weekly.csv",
+        "replan_steps": 4,
+        "validation_days": 21,
+        "test_days": 0,
+        "workers": 0,
+        "violation_penalty_eur_per_pp_h": 0.05,
+        "solver_ftol": 1e-07,
+        "heldout_start": "2026-06-16",
+        "calibration_days": 21,
+        "tuning_days": 35,
+        "development_days": 22
+    },
+    "tuning": {
+        "mode": "pareto",
+        "objectives": [
+            "net_cost_eur",
+            "violation_pp_h",
+            "curtailed_pct"
+        ],
+        "trials": 24,
+        "initial_points": 8,
+        "episodes": 4,
+        "episode_days": 3,
+        "random_state": 42,
+        "params_ua": {
+            "weights.w_x": [
+                1e-05,
+                1.0,
+                "log"
+            ],
+            "weights.w_ff": [
+                1e-09,
+                1.0,
+                "log"
+            ],
+            "weights.w_delta_u": [
+                1e-09,
+                0.1,
+                "log"
+            ],
+            "weights.lambda": [
+                1.0,
+                100000.0,
+                "log"
+            ],
+            "mpc.soc_chance_z": [
+                0.0,
+                2.5,
+                "lin"
+            ]
+        },
+        "params_det": {
+            "weights.w_x": [
+                1e-05,
+                1.0,
+                "log"
+            ],
+            "weights.w_ff": [
+                1e-09,
+                1.0,
+                "log"
+            ],
+            "weights.w_delta_u": [
+                1e-09,
+                0.1,
+                "log"
+            ]
+        },
+        "params_det_base": {
+            "weights.w_x": [
+                1e-05,
+                1.0,
+                "log"
+            ],
+            "weights.w_ff": [
+                1e-09,
+                1.0,
+                "log"
+            ],
+            "weights.w_delta_u": [
+                1e-09,
+                0.1,
+                "log"
+            ]
+        },
+        "params_oracle": {
+            "weights.w_x": [
+                1e-05,
+                1.0,
+                "log"
+            ],
+            "weights.w_ff": [
+                1e-09,
+                1.0,
+                "log"
+            ],
+            "weights.w_delta_u": [
+                1e-09,
+                0.1,
+                "log"
+            ]
+        }
+    }
+}

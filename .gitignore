@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+work/
+out/
+models_summer/
+code/models/*.joblib
+code/models/*.pkl
+code/results/*
+!code/results/.gitkeep
+results/winter/*/*_all.csv
+.cache.sqlite

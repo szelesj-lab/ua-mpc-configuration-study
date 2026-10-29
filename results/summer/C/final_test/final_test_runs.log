@@ -1,0 +1,2 @@
+2026-10-28T23:02:46.821430+00:00 night pipeline: ['physical_grid_only', 'physical_rule', 'physical_det', 'physical_ua', 'physical_ua_rho_only', 'physical_ua_margin_only', 'physical_oracle', 'bms_grid_only', 'bms_rule', 'bms_det', 'bms_ua', 'bms_ua_rho_only', 'bms_ua_margin_only', 'bms_oracle']
+2026-10-28T23:24:56.428409+00:00 night pipeline: ['physical_ua', 'physical_ua_rho_only', 'physical_ua_margin_only', 'physical_oracle', 'bms_grid_only', 'bms_rule', 'bms_det', 'bms_ua', 'bms_ua_rho_only', 'bms_ua_margin_only', 'bms_oracle']

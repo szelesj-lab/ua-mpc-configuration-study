@@ -1,0 +1,14 @@
+Calibration days 2026-06-16 – 2026-07-07 (504 hours)
+  forecast error RMSE 1.67 W, predicted std (RMS) 1.24 W
+  coverage ±1σ 66.5 % (ideal 68.3), ±2σ 88.9 % (ideal 95.4)
+  constant model: sigma_scale 1.345
+  weather model:  factor = exp(-0.735 + 0.173 x gust excess [m/s] + 0.356 x irradiance variability [W/m2] / 100)
+  error autocorrelation: 1 h 0.54 -> per MPC step 0.857
+  solar/wind error correlation (daytime): -0.047
+Development period 2026-08-11 – 2026-09-02 (not used for fitting): coverage ±1σ / ±2σ (ideal 68.3 / 95.4 %), RMSE/σ (ideal 1)
+  all days              constant  80.1 /  96.6 %   RMSE/σ 1.04
+  all days              weather   77.3 /  96.4 %   RMSE/σ 0.62
+  hardest 25 % of days  constant  64.6 /  91.7 %   RMSE/σ 1.36
+  hardest 25 % of days  weather   63.2 /  92.4 %   RMSE/σ 1.16
+  other days            constant  85.9 /  98.4 %   RMSE/σ 0.82
+  other days            weather   82.6 /  97.9 %   RMSE/σ 0.43

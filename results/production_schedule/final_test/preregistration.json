@@ -1,0 +1,50 @@
+{
+  "written_utc": "2026-10-23T22:20:34.278654+00:00",
+  "primary_threshold_pp_h": 0.5,
+  "secondary_threshold_pp_h": 1.0,
+  "rule": "per controller, among its tuning-period Pareto points replayed on the development period (physical plant): the cheapest development net cost with development violation <= threshold; if none, the point with the lowest development violation",
+  "selected": {
+    "primary_threshold_pp_h": {
+      "det": {
+        "trial": 5,
+        "dev_cost": 0.5112595414293529,
+        "dev_viol": 7.0234705621642055,
+        "met_threshold": false
+      },
+      "det_bo": {
+        "trial": 13,
+        "dev_cost": 0.5125081715758704,
+        "dev_viol": 0.447979894155371,
+        "met_threshold": true
+      },
+      "ua": {
+        "trial": 17,
+        "dev_cost": 0.5124057677699279,
+        "dev_viol": 0.1117863711316873,
+        "met_threshold": true
+      }
+    },
+    "secondary_threshold_pp_h": {
+      "det": {
+        "trial": 5,
+        "dev_cost": 0.5112595414293529,
+        "dev_viol": 7.0234705621642055,
+        "met_threshold": false
+      },
+      "det_bo": {
+        "trial": 13,
+        "dev_cost": 0.5125081715758704,
+        "dev_viol": 0.447979894155371,
+        "met_threshold": true
+      },
+      "ua": {
+        "trial": 24,
+        "dev_cost": 0.5114568676153264,
+        "dev_viol": 0.5425844191393303,
+        "met_threshold": true
+      }
+    }
+  },
+  "final_test_set": "grid_only, rule, det, det_bo, ua, ua_rho_only, ua_margin_only, oracle (det weights); physical and bms plant; primary selection; ua also with the secondary selection if it differs",
+  "primary_endpoints": "net cost (EUR) and band violation (pp*h) on the physical plant; protection steps and extra grid cost on the bms plant; paired circular block bootstrap, 5-day blocks"
+}

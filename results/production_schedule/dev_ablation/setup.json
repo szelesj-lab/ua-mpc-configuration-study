@@ -1,0 +1,118 @@
+{
+  "period": [
+    "2026-08-10T22:00:00+00:00",
+    "2026-09-01T22:00:00+00:00"
+  ],
+  "scenario": {
+    "SoC": {
+      "E_capacity": 72
+    },
+    "degradation": {
+      "c_deg": 2e-05
+    }
+  },
+  "variants": {
+    "grid_only": {
+      "controller": "grid_only",
+      "overrides": {}
+    },
+    "rule": {
+      "controller": "rule",
+      "overrides": {}
+    },
+    "det": {
+      "controller": "det",
+      "overrides": {
+        "weights": {
+          "w_x": 1.172333209336469e-05,
+          "w_ff": 0.5751440385134114,
+          "w_delta_u": 4.0545346982346267e-07
+        }
+      }
+    },
+    "det_bo": {
+      "controller": "det_bo",
+      "overrides": {
+        "weights": {
+          "w_x": 1.906025717529855e-05,
+          "w_ff": 0.08047131647090909,
+          "w_delta_u": 1.4000002370811252e-09
+        },
+        "mpc": {
+          "soc_backoff": 0.0191647101975199
+        }
+      }
+    },
+    "ua_rho_only": {
+      "controller": "ua",
+      "overrides": {
+        "weights": {
+          "w_x": 1.3844506184916702e-05,
+          "w_ff": 1.0145226683199086e-05,
+          "w_delta_u": 1.3848479105474009e-09,
+          "lambda": 488.8155148668823
+        },
+        "mpc": {
+          "soc_chance_z": 0.0
+        }
+      }
+    },
+    "ua_margin_only": {
+      "controller": "ua",
+      "overrides": {
+        "weights": {
+          "w_x": 1.3844506184916702e-05,
+          "w_ff": 1.0145226683199086e-05,
+          "w_delta_u": 1.3848479105474009e-09,
+          "lambda": 0.0
+        },
+        "mpc": {
+          "soc_chance_z": 0.2830695787851095
+        }
+      }
+    },
+    "ua": {
+      "controller": "ua",
+      "overrides": {
+        "weights": {
+          "w_x": 1.3844506184916702e-05,
+          "w_ff": 1.0145226683199086e-05,
+          "w_delta_u": 1.3848479105474009e-09,
+          "lambda": 488.8155148668823
+        },
+        "mpc": {
+          "soc_chance_z": 0.2830695787851095
+        }
+      }
+    },
+    "oracle": {
+      "controller": "oracle",
+      "overrides": {
+        "weights": {
+          "w_x": 1.172333209336469e-05,
+          "w_ff": 0.5751440385134114,
+          "w_delta_u": 4.0545346982346267e-07
+        }
+      }
+    }
+  },
+  "replan_steps": 4,
+  "mpc": {
+    "charge_is_decision": true,
+    "smoothness": "inputs",
+    "soc_chance_z": 1.0,
+    "uncertainty_scaling": "relative",
+    "sigma_ref_w": 0.0,
+    "sigma_scale": 1.345,
+    "error_autocorr": 0.857,
+    "margin_window": "replan",
+    "sigma_model": "constant",
+    "sigma_weather_coef": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "margin_steps": 0,
+    "soc_backoff": 0.0
+  }
+}

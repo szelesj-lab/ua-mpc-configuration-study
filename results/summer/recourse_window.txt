@@ -1,0 +1,6 @@
+B (self_consumption), industrial load, 72 Wh: upward forecast error (more renewable than forecast) accumulated
+  - over the 1-h re-planning window (what the margin assumes), and
+  - until the first possible correction (end of the forecast-surplus run, when the battery can discharge again).
+Share of usable capacity (0.8 x 72 Wh):
+  tuning:      Q95 1-h window 0.053 | Q95 until recourse 0.269 | max 0.784 | longest surplus run 15.5 h | top-20: 100 % weekend
+  development: Q95 1-h window 0.041 | Q95 until recourse 0.100 | max 0.251 | longest surplus run 15.75 h | top-20: 60 % weekend

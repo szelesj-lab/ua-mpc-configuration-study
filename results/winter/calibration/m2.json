@@ -1,0 +1,30 @@
+{
+ "cutoff": "2025-10-31T23:00:00+00:00",
+ "test_end": "2025-11-30T23:00:00+00:00",
+ "calibration_window": [
+  "2025-10-02T08:24:00+00:00",
+  "2025-10-31T23:00:00+00:00"
+ ],
+ "sigma_scale": 0.989513068302801,
+ "error_autocorr_step": 0.9279332580228676,
+ "calibration": {
+  "hours": 710,
+  "rmse_w": 2.0552151199470563,
+  "rms_sigma_w": 2.076996439745998,
+  "coverage_1sigma_pct": 79.29577464788733,
+  "coverage_2sigma_pct": 91.12676056338029,
+  "coverage_1sigma_calibrated_pct": 78.73239436619718,
+  "coverage_2sigma_calibrated_pct": 91.12676056338029,
+  "sigma_scale": 0.989513068302801,
+  "error_autocorr_1h": 0.7414245497917548,
+  "error_autocorr_step": 0.9279332580228676,
+  "solar_wind_error_corr_daytime": -0.0681601535176505
+ },
+ "test_month_forecast": {
+  "rmse_w": 1.4621999165786572,
+  "coverage_1sigma_calibrated_pct": 86.11111111111111,
+  "coverage_2sigma_calibrated_pct": 97.5,
+  "hours": 720
+ },
+ "test_start": "2025-10-31 23:00:00+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "controller": "det",
+  "mode": "pareto",
+  "preset": "balanced",
+  "overrides": {
+    "weights": {
+      "w_x": 1.172333209336469e-05,
+      "w_ff": 0.5751440385134114,
+      "w_delta_u": 4.0545346982346267e-07
+    }
+  },
+  "kpis": {
+    "net_cost_eur": 0.10356251677435477,
+    "violation_pp_h": 0.007571566584397074,
+    "max_violation_pp": 0.004563489657362363,
+    "curtailed_pct": 38.341383858303075,
+    "renewable_use_pct": 61.658616141696925,
+    "cycles_per_day": 1.5233774968995197,
+    "grid_kwh": 0.7827499999999998,
+    "peak_grid_w": 24.0,
+    "total_eur": 0.09863435452856491,
+    "objective": 0.10394109510357462,
+    "min_soc": 0.09995436510342638
+  },
+  "scenario": {
+    "SoC": {
+      "E_capacity": 72
+    },
+    "degradation": {
+      "c_deg": 2e-05
+    }
+  }
+}

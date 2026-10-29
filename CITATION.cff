@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this package, please cite it as below."
+title: "Simulation package: Configuration-dependent value of uncertainty-aware MPC for behind-the-meter batteries in food processing"
+type: software
+authors:
+  - family-names: Szeles
+    given-names: József
+    affiliation: "Department of System Engineering, University of Pannonia, Hungary"
+  - family-names: Deszát
+    given-names: Laura
+    affiliation: "Department of System Engineering, University of Pannonia, Hungary"
+  - family-names: Kummer
+    given-names: Alex
+    affiliation: "University of Pannonia, Hungary"
+  - family-names: Fodor
+    given-names: Attila
+    affiliation: "University of Pannonia, Hungary"
+  - family-names: Ruppert
+    given-names: Tamás
+    affiliation: "University of Pannonia, Hungary"
+version: "1.0.0"
+date-released: "2026-10-29"
+license: MIT
+repository-code: "https://github.com/szelesj-lab/ua-mpc-configuration-study"
+keywords:
+  - model predictive control
+  - forecast uncertainty
+  - chance constraint
+  - battery storage
+  - battery configuration
+  - industrial load
+  - Gaussian process regression
+  - walk-forward evaluation
+abstract: >
+  Code, data and results of a closed-loop simulation study comparing deterministic MPC, MPC with a tuned
+  constant SoC back-off and an uncertainty-aware MPC for a behind-the-meter battery in three configurations
+  (renewable buffer, self-consumption, set-point), driven by one year of anonymised load of a Hungarian
+  meat-processing plant, Hungarian day-ahead prices and Gaussian-process renewable forecasts. Contains the
+  controller code, the experiment pipelines (equal-budget tuning, pre-registered one-shot final test, decision
+  map, monthly walk-forward winter test), all result files, and the scripts that produce the tables and figures.

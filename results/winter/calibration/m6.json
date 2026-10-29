@@ -1,0 +1,30 @@
+{
+ "cutoff": "2026-02-28T23:00:00+00:00",
+ "test_end": "2026-03-31T22:00:00+00:00",
+ "calibration_window": [
+  "2026-01-29T23:00:00+00:00",
+  "2026-02-28T23:00:00+00:00"
+ ],
+ "sigma_scale": 0.884302944836844,
+ "error_autocorr_step": 0.8719841501669746,
+ "calibration": {
+  "hours": 720,
+  "rmse_w": 1.8257151315143814,
+  "rms_sigma_w": 2.064581082958205,
+  "coverage_1sigma_pct": 80.41666666666667,
+  "coverage_2sigma_pct": 94.44444444444444,
+  "coverage_1sigma_calibrated_pct": 75.97222222222221,
+  "coverage_2sigma_calibrated_pct": 92.91666666666667,
+  "sigma_scale": 0.884302944836844,
+  "error_autocorr_1h": 0.5781417913676056,
+  "error_autocorr_step": 0.8719841501669746,
+  "solar_wind_error_corr_daytime": -0.04339798389241792
+ },
+ "test_month_forecast": {
+  "rmse_w": 2.544566901774132,
+  "coverage_1sigma_calibrated_pct": 73.21668909825033,
+  "coverage_2sigma_calibrated_pct": 88.15612382234185,
+  "hours": 743
+ },
+ "test_start": "2026-02-28 23:00:00+00:00"
+}

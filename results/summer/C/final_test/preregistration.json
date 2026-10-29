@@ -1,0 +1,42 @@
+{
+  "written_utc": "2026-10-28T20:40:38.021180+00:00",
+  "primary_threshold_h": 5.0,
+  "secondary_threshold_h": 10.0,
+  "rule": "industrial-load study, plant 'bms' (the battery management system keeps the SoC band; surplus is curtailed, shortfall comes from the grid): per controller, among its tuning-period Pareto points replayed on the development period, the cheapest development net cost with battery protection <= threshold hours; if none, the point with the fewest protection hours",
+  "selected": {
+    "primary_threshold_pp_h": {
+      "det": {
+        "trial": 20,
+        "dev_cost": 0.4042061959887307,
+        "dev_prot_h": 2.75,
+        "dev_viol": 0.0,
+        "met_threshold": true
+      },
+      "ua": {
+        "trial": 12,
+        "dev_cost": 0.4041850025517148,
+        "dev_prot_h": 3.5,
+        "dev_viol": 0.0,
+        "met_threshold": true
+      }
+    },
+    "secondary_threshold_pp_h": {
+      "det": {
+        "trial": 20,
+        "dev_cost": 0.4042061959887307,
+        "dev_prot_h": 2.75,
+        "dev_viol": 0.0,
+        "met_threshold": true
+      },
+      "ua": {
+        "trial": 12,
+        "dev_cost": 0.4041850025517148,
+        "dev_prot_h": 3.5,
+        "dev_viol": 0.0,
+        "met_threshold": true
+      }
+    }
+  },
+  "final_test_set": "grid_only, rule, det, det_bo, ua, ua_rho_only, ua_margin_only, oracle (det weights); physical and bms plant; primary selection; ua also with the secondary selection if it differs",
+  "primary_endpoints": "net cost (EUR), battery protection (h) and its extra grid cost on the bms plant; band violation (pp*h) on the physical plant as the unmanaged reference; paired circular block bootstrap, 5-day blocks"
+}

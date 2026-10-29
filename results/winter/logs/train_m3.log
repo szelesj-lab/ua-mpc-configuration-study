@@ -1,0 +1,23 @@
+Past values loading...
+Past_Forecast_Values.csv: 4393 rows before 2025-12-01
+Past_Real_Values.csv: 4393 rows before 2025-12-01
+Solar GPR: training on 1972 of 1972 samples
+
+--- SOLAR model evaluation ---
+Base MAE:  1.3097  |  Model MAE:  0.8316  (Improvement: 36.50%)
+Base RMSE: 2.0632  |  Model RMSE: 1.1323  (Improvement: 45.12%)
+Base R2:   -1.5942  |  Model R2:   0.2187
+Wind GPR: training on 3514 of 3514 samples
+
+--- WIND TURBINE model evaluation ---
+Base MAE:  0.7670  |  Model MAE:  0.6910  (Improvement: 9.90%)
+Base RMSE: 1.7630  |  Model RMSE: 1.5229  (Improvement: 13.62%)
+Base R2:   0.2998  |  Model R2:   0.4775
+
+--- TOTAL ENERGY PRODUCTION model evaluation ---
+Base MAE:  1.5622  |  Model MAE:  1.3039  (Improvement: 16.53%)
+Base RMSE: 2.3512  |  Model RMSE: 2.0128  (Improvement: 14.39%)
+Base R2:   0.3249  |  Model R2:   0.5052
+
+Model and scaler objects saving...
+Saved successfully!

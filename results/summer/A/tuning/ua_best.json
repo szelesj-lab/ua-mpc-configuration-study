@@ -1,0 +1,57 @@
+{
+  "controller": "ua",
+  "mode": "pareto",
+  "preset": "balanced",
+  "overrides": {
+    "weights": {
+      "w_x": 0.0004910422958075845,
+      "w_ff": 4.314668328120997e-05,
+      "w_delta_u": 1.0448121969747404e-08,
+      "lambda": 88.92134703595103
+    },
+    "mpc": {
+      "soc_chance_z": 2.4329798581687356
+    }
+  },
+  "kpis": {
+    "net_cost_eur": 0.12401658597683299,
+    "violation_pp_h": 0.0,
+    "max_violation_pp": 0.0,
+    "curtailed_pct": 29.843240969007336,
+    "renewable_use_pct": 70.15675903099266,
+    "cycles_per_day": 1.6994339060003858,
+    "grid_kwh": 0.8248728410457098,
+    "peak_grid_w": 29.50064904,
+    "total_eur": 0.12431724413634046,
+    "objective": 0.12401658597683299,
+    "min_soc": 0.13257127192982454,
+    "protection_h": 4.5,
+    "extra_grid_eur": 0.00036125475421686017
+  },
+  "scenario": {
+    "SoC": {
+      "E_capacity": 72
+    },
+    "degradation": {
+      "c_deg": 2e-05
+    },
+    "limits": {
+      "p_charge_max_w": 24
+    },
+    "mpc": {
+      "architecture": "renewable_buffer"
+    },
+    "replay": {
+      "demand_profile_csv": "industrial_load_profile.csv",
+      "demand_mean_w": 10.788,
+      "plant": "bms"
+    },
+    "tuning": {
+      "objectives": [
+        "net_cost_eur",
+        "protection_h",
+        "curtailed_pct"
+      ]
+    }
+  }
+}

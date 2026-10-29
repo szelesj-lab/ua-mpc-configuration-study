@@ -1,0 +1,57 @@
+{
+ "tag": "bms_ua_margin_only",
+ "controller": "ua",
+ "overrides": {
+  "weights": {
+   "w_x": 0.002198113467212977,
+   "w_ff": 7.584459200345673e-06,
+   "w_delta_u": 2.660306520038546e-08,
+   "lambda": 0.0
+  },
+  "mpc": {
+   "soc_chance_z": 2.5
+  }
+ },
+ "plant": "bms",
+ "period": "final_test",
+ "start": "2026-09-01T22:00:00+00:00",
+ "end": "2026-09-29T03:45:00+00:00",
+ "metrics": {
+  "days": 27.239583333333332,
+  "total_eur": 0.9480502673468506,
+  "grid_eur": 0.8793947066562595,
+  "wear_eur": 0.06865556069059106,
+  "stored_value_eur": -0.00037789387055388595,
+  "objective": 0.9484281612174045,
+  "grid_kwh": 5.18917436681,
+  "demand_kwh": 6.818702925899999,
+  "renewable_kwh": 2.110869130439131,
+  "curtailed_kwh": 0.30761965499957844,
+  "throughput_kwh": 3.4327780345295533,
+  "h_below_soc_min": 0.0,
+  "h_above_soc_max": 0.0,
+  "violation_pp_h": 0.0,
+  "max_violation_pp": 0.0,
+  "min_soc": 0.17838813514083213,
+  "max_soc": 0.8115996073182172,
+  "end_soc": 0.4693580774005324,
+  "net_cost_eur": 0.9484281612174045,
+  "curtailed_pct": 14.573127749306908,
+  "renewable_use_pct": 85.4268722506931,
+  "equivalent_full_cycles": 23.838736350899676,
+  "cycles_per_day": 0.8751505505492807,
+  "peak_grid_w": 31.44119448,
+  "steps_below_soc_min_pct": 0.0,
+  "chance_target_below_pct": 0.6209665325776159,
+  "plant": "bms",
+  "protection_steps": 0,
+  "protection_h": 0.0,
+  "undelivered_discharge_kwh": 0.0,
+  "undelivered_charge_kwh": 0.0,
+  "extra_grid_eur": 0.0,
+  "solves": 654,
+  "solve_median_s": 0.3983702634999986,
+  "solve_p95_s": 0.6410747650500243,
+  "solver_success_pct": 100.0
+ }
+}

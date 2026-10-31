@@ -1,0 +1,1 @@
+det (t17) and det_bo (t16): November re-selection = summer selection, so test/ files are copies of rw/results/B chain (identical trial, SoC chain).

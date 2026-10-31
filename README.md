@@ -13,7 +13,7 @@ scripts that produce all tables, numbers and figures of the paper.
 
 ## The study in short
 
-A laboratory-scale production cell (30 W PV, 20 W wind turbine, 72 Wh battery) is driven by one year of measured
+A simulated laboratory-scale production cell (30 W PV, 20 W wind turbine, 72 Wh battery) is driven by one year of measured
 load of a Hungarian meat-processing plant, scaled to the cell (per unit of the annual mean × 10.788 W), Hungarian
 day-ahead prices (ENTSO-E) and Gaussian-process (GP) renewable forecasts built from Open-Meteo weather data.
 Three controllers are compared in closed-loop replay:
@@ -57,6 +57,7 @@ A second load case (a synthetic production schedule, configuration A) is in `res
 | `results/winter/` | per configuration, controller and month: step CSVs and metrics; `summary.csv`, `paired_bootstrap.csv`; `calibration/m<i>.json` (cut-off, σ scale, AR(1), out-of-sample coverage) |
 | `results/analysis/` | data inventory, period and monthly energies, protection hours by SoC edge, decision-map table; `revision/`: solver convergence, quantile sensitivity of r_E, calibration per channel, stricter-solver re-run of B UA-MPC (`experiments/analysis/solver_sensitivity.py`) |
 | `results/production_schedule/` | second load case |
+| `experiments/revision/`, `results/revision/` | analyses of the revision (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/revision/README.md` |
 | `docs/` | protocol and data description |
 
 ## Reproducing
@@ -114,7 +115,7 @@ company names); the raw company export is not included.
 
 ## Citation
 
-See `CITATION.cff`. Version 1.0.0 is archived at Zenodo: https://doi.org/10.5281/zenodo.23773120
+See `CITATION.cff`. Version 1.0.0 is archived at Zenodo: https://doi.org/10.5281/zenodo.23773120; version 1.1.0 adds the revision analyses (`CHANGELOG.md`).
 
 ## Licence
 

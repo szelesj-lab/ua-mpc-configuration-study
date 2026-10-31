@@ -1,0 +1,8 @@
+[13:07] B: 3 runs, limit 32.46 W
+[13:17] B done glim_det net 0.8099 prot_h 11.00 solver 100.0% 623s
+[13:18] B done glim_det_bo net 0.7870 prot_h 9.75 solver 99.4% 695s
+[13:44] B done glim_ua net 0.7855 prot_h 9.50 solver 97.1% 1605s
+[13:44] C: 2 runs, limit 32.46 W
+[13:51] C done glim_det net 0.7812 prot_h 5.25 solver 100.0% 448s
+[13:53] C done glim_ua net 0.7812 prot_h 5.75 solver 100.0% 570s
+GLIM DONE

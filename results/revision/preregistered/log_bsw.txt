@@ -1,0 +1,26 @@
+[12:09] b_sweep: 24 runs
+[12:13] done bsw_det_bo_cap36_err1.0_rp4_G0.75            net 0.4472 prot_h 9.75 solver 99.8% 243s
+[12:16] done bsw_det_bo_cap36_err1.0_rp4_G0.5             net 0.4507 prot_h 5.75 solver 99.2% 385s
+[12:18] done bsw_det_bo_cap36_err1.0_rp4_G1.0             net 0.4451 prot_h 14.25 solver 99.4% 260s
+[12:20] done bsw_det_bo_cap36_err1.0_rp4_G1.25            net 0.4436 prot_h 16.75 solver 99.6% 278s
+[12:22] done bsw_det_bo_cap36_err1.0_rp4_G1.5             net 0.4431 prot_h 19.75 solver 99.1% 273s
+[12:25] done bsw_det_bo_cap36_err1.0_rp4_G2.0             net 0.4422 prot_h 23.50 solver 99.6% 275s
+[12:28] done bsw_det_bo_cap72_err2.0_rp4_G0.5             net 0.4159 prot_h 3.50 solver 99.2% 383s
+[12:32] done bsw_det_bo_cap72_err2.0_rp4_G0.75            net 0.4118 prot_h 6.25 solver 99.4% 413s
+[12:35] done bsw_det_bo_cap72_err2.0_rp4_G1.0             net 0.4103 prot_h 9.00 solver 99.1% 405s
+[12:39] done bsw_det_bo_cap72_err2.0_rp4_G1.25            net 0.4083 prot_h 10.75 solver 99.4% 423s
+[12:42] done bsw_det_bo_cap72_err2.0_rp4_G1.5             net 0.4080 prot_h 12.25 solver 99.1% 401s
+[12:45] done bsw_det_bo_cap36_err2.0_rp4_G0.5             net 0.4724 prot_h 11.50 solver 99.6% 202s
+[12:46] done bsw_det_bo_cap72_err2.0_rp4_G2.0             net 0.4071 prot_h 15.25 solver 99.8% 428s
+[12:50] done bsw_det_bo_cap36_err2.0_rp4_G0.75            net 0.4642 prot_h 17.75 solver 99.2% 269s
+[12:51] done bsw_det_bo_cap36_err2.0_rp4_G1.0             net 0.4608 prot_h 22.50 solver 99.1% 319s
+[12:55] done bsw_det_bo_cap36_err2.0_rp4_G1.25            net 0.4574 prot_h 28.00 solver 99.4% 319s
+[12:57] done bsw_det_bo_cap36_err2.0_rp4_G1.5             net 0.4560 prot_h 31.25 solver 99.2% 370s
+[13:00] done bsw_det_bo_cap72_err1.0_rp16_G0.5            net 0.4155 prot_h 0.50 solver 100.0% 135s
+[13:00] done bsw_det_bo_cap36_err2.0_rp4_G2.0             net 0.4543 prot_h 34.25 solver 99.4% 309s
+[13:02] done bsw_det_bo_cap72_err1.0_rp16_G0.75           net 0.4095 prot_h 2.25 solver 100.0% 125s
+[13:02] done bsw_det_bo_cap72_err1.0_rp16_G1.0            net 0.4061 prot_h 3.00 solver 100.0% 130s
+[13:04] done bsw_det_bo_cap72_err1.0_rp16_G1.25           net 0.4044 prot_h 5.00 solver 100.0% 139s
+[13:05] done bsw_det_bo_cap72_err1.0_rp16_G1.5            net 0.4033 prot_h 6.50 solver 100.0% 132s
+[13:06] done bsw_det_bo_cap72_err1.0_rp16_G2.0            net 0.4020 prot_h 8.25 solver 99.2% 142s
+CHAIN DONE

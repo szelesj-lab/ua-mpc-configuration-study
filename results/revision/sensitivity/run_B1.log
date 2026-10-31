@@ -1,0 +1,6 @@
+B channel scales {'solar': 1.5090283806584854, 'wind': 1.2487262598516014}
+[21:14] B: 3 runs
+[21:31] B done solver_det       net 0.8087 prot_h 11.25 solver 100.0% 1020s
+[21:33] B done solver_det_bo    net 0.7833 prot_h 10.00 solver 99.2% 1115s
+[21:59] B done chan_ua          net 0.7832 prot_h 9.25 solver 97.1% 1653s
+ALL DONE

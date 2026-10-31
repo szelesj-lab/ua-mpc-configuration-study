@@ -1,0 +1,7 @@
+[00:29] winter m2 b=0.0663 net 0.9120 prot 0.00 1843s
+summer final net 0.7831 prot 10.0 1847
+[00:44] winter m3 b=0.0526 net 0.9773 prot 3.00 904s
+[01:00] winter m4 b=0.0715 net 1.3714 prot 0.00 958s
+[01:13] winter m5 b=0.0574 net 0.9304 prot 2.25 807s
+[01:39] winter m6 b=0.0680 net 0.6237 prot 2.25 949s
+T1 DONE

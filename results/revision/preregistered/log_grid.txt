@@ -1,0 +1,16 @@
+[09:42] grid: 16 runs
+[09:58] done grid_ua_cap60_err1.0                         net 0.4143 prot_h 3.25 solver 97.5% 985s
+[10:00] done grid_ua_cap48_err1.0                         net 0.4288 prot_h 4.00 solver 96.6% 1122s
+[10:20] done grid_ua_cap90_err2.0                         net 0.3978 prot_h 3.75 solver 96.6% 1161s
+[10:21] done grid_ua_cap72_err1.5                         net 0.4082 prot_h 3.50 solver 96.6% 1338s
+[10:44] done grid_ua_cap72_err1.75                        net 0.4111 prot_h 3.75 solver 95.6% 1426s
+[10:46] done grid_ua_cap60_err1.5                         net 0.4204 prot_h 4.75 solver 95.3% 1524s
+[11:12] done grid_ua_cap48_err1.25                        net 0.4325 prot_h 6.00 solver 94.5% 1727s
+[11:18] done grid_ua_cap48_err1.5                         net 0.4362 prot_h 8.00 solver 93.8% 1923s
+[11:19] done grid_det_bo_cap60_err1.0                     net 0.4129 prot_h 4.00 solver 99.8% 418s
+[11:23] done grid_det_bo_cap48_err1.0                     net 0.4261 prot_h 7.25 solver 99.4% 319s
+[11:26] done grid_det_bo_cap72_err1.5                     net 0.4053 prot_h 6.00 solver 99.8% 395s
+[11:30] done grid_det_bo_cap90_err2.0                     net 0.3939 prot_h 8.00 solver 99.8% 427s
+[11:33] done grid_det_bo_cap72_err1.75                    net 0.4071 prot_h 8.75 solver 99.8% 402s
+[11:37] done grid_det_bo_cap60_err1.5                     net 0.4169 prot_h 10.25 solver 99.4% 426s
+[11:39] done grid_det_bo_cap48_err1.25                    net 0.4282 prot_h 12.75 solver 99.4% 357s

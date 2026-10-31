@@ -1,0 +1,399 @@
+{
+ "written_utc": "2026-10-30T08:41:56.913208+00:00",
+ "configuration": "B (self-consumption), BMS plant, development period",
+ "controllers": "DET-BO and UA-MPC with the points selected in the summer protocol; b-sweep: DET-BO with b changed, UA-MPC run of the decision map as reference",
+ "b_tuned": 0.030298875705271892,
+ "label_rule": "difference if back-off protection >= UA protection + 4 h and >= 2 x UA protection (22 days), else tie (same rule as the revision of 30 Oct 2026)",
+ "gamma": "Gamma = r_E (x_max - x_min) / b with r_E the generalised deficit ratio (95 % quantile, window = re-planning interval)",
+ "predictions": {
+  "P1 (Gamma rule)": "every grid and correlation cell: tie if Gamma < 1, difference if Gamma > 1, with b = b_tuned",
+  "P2 (empirical bounds)": "r_E <= 0.035: tie; r_E >= 0.047: difference; between: no prediction",
+  "P3 (b-sweep)": "DET-BO with b such that Gamma <= 1 ties UA-MPC; with Gamma >= 1.5 differs from it; at Gamma = 1.25 no firm prediction",
+  "P4 (b-sweep cost)": "the net cost of DET-BO rises as b rises (Gamma falls) in each b-sweep cell",
+  "P5 (correlation)": "at the same error variance, a higher error autocorrelation raises r_E and can turn a tie into a difference; the mean sigma is identical in all correlation cells"
+ },
+ "cells": [
+  {
+   "experiment": "grid",
+   "cap": 60,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.02808436143811659,
+   "Gamma": 0.7415288068455957,
+   "pred_gamma": "tie",
+   "pred_bounds": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.03510545179764574,
+   "Gamma": 0.9269110085569946,
+   "pred_gamma": "tie",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 72,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.03510545179764574,
+   "Gamma": 0.9269110085569946,
+   "pred_gamma": "tie",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 90,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.03744581525082211,
+   "Gamma": 0.9887050757941274,
+   "pred_gamma": "tie",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 72,
+   "err": 1.75,
+   "rp": 4,
+   "r_E": 0.040956360430586675,
+   "Gamma": 1.0813961766498266,
+   "pred_gamma": "difference",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 60,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.04212654215717488,
+   "Gamma": 1.1122932102683933,
+   "pred_gamma": "difference",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.25,
+   "rp": 4,
+   "r_E": 0.04388181474705718,
+   "Gamma": 1.1586387606962434,
+   "pred_gamma": "difference",
+   "pred_bounds": "none"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.0526581776964686,
+   "Gamma": 1.3903665128354916,
+   "pred_gamma": "difference",
+   "pred_bounds": "difference"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.5,
+   "seed": 7,
+   "r_E": 0.0293161102913693,
+   "Gamma": 0.7740514354799879,
+   "pred_gamma": "tie",
+   "pred_bounds": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.857,
+   "seed": 7,
+   "r_E": 0.05022628837545024,
+   "Gamma": 1.326155831365348,
+   "pred_gamma": "difference",
+   "pred_bounds": "difference"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.98,
+   "seed": 7,
+   "r_E": 0.061977171232532206,
+   "Gamma": 1.636421676775245,
+   "pred_gamma": "difference",
+   "pred_bounds": "difference"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 144,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.5,
+   "seed": 7,
+   "r_E": 0.021987082718526976,
+   "Gamma": 0.580538576609991,
+   "pred_gamma": "tie",
+   "pred_bounds": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 144,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.98,
+   "seed": 7,
+   "r_E": 0.04648287842439916,
+   "Gamma": 1.227316257581434,
+   "pred_gamma": "difference",
+   "pred_bounds": "none"
+  }
+ ],
+ "b_sweep": [
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 0.5,
+   "b": 0.07489163050164416,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 0.75,
+   "b": 0.049927753667762774,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.0,
+   "b": 0.03744581525082208,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.25,
+   "b": 0.029956652200657664,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.5,
+   "b": 0.024963876833881387,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 2.0,
+   "b": 0.01872290762541104,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 0.5,
+   "b": 0.07489163050164416,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 0.75,
+   "b": 0.049927753667762774,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.0,
+   "b": 0.03744581525082208,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.25,
+   "b": 0.029956652200657664,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 1.5,
+   "b": 0.024963876833881387,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0468072690635276,
+   "Gamma": 2.0,
+   "b": 0.01872290762541104,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 0.5,
+   "b": 0.14978326100328848,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 0.75,
+   "b": 0.09985550733552566,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 1.0,
+   "b": 0.07489163050164424,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 1.25,
+   "b": 0.05991330440131539,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 1.5,
+   "b": 0.04992775366776283,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.0936145381270553,
+   "Gamma": 2.0,
+   "b": 0.03744581525082212,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 0.5,
+   "b": 0.1089332606666693,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 0.75,
+   "b": 0.07262217377777953,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 1.0,
+   "b": 0.05446663033333465,
+   "pred_gamma": "tie"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 1.25,
+   "b": 0.043573304266667716,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 1.5,
+   "b": 0.03631108688888977,
+   "pred_gamma": "difference"
+  },
+  {
+   "experiment": "b_sweep",
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.0680832879166683,
+   "Gamma": 2.0,
+   "b": 0.027233315166667323,
+   "pred_gamma": "difference"
+  }
+ ]
+}

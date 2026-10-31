@@ -1,0 +1,13 @@
+[13:57] select det: 11 runs
+[14:16] done det_t22 net 0.9051 prot_h 79.75 1152s
+[14:17] done det_t05 net 0.9057 prot_h 48.50 1223s
+[14:31] done det_t23 net 0.9056 prot_h 93.75 896s
+[14:32] done det_t08 net 0.9086 prot_h 84.50 901s
+[14:46] done det_t29 net 0.9078 prot_h 111.75 903s
+[14:51] done det_t13 net 0.9130 prot_h 27.75 1119s
+[15:06] done det_t21 net 0.9298 prot_h 11.75 1212s
+[15:11] done det_t17 net 0.9304 prot_h 2.00 1233s
+[15:31] done det_t11 net 0.9773 prot_h 0.00 1498s
+[15:55] done det_t00 net 0.9993 prot_h 0.00 2627s
+[15:57] select det: 1 runs
+[16:47] done det_t01 net 1.0076 prot_h 11.25 3026s

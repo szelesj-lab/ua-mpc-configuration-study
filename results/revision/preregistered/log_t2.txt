@@ -1,0 +1,23 @@
+[01:18] T2: 20 runs
+[01:23] T2: 20 runs
+[01:29] done bsw2_det_bo_cap36_err1.0_rp4_G0.5 net 0.5739 viol 0.146 321s
+[01:29] done bsw2_det_bo_cap36_err1.0_rp4_G0.75 net 0.5716 viol 0.506 327s
+[01:34] done bsw2_det_bo_cap36_err1.0_rp4_G1.0 net 0.5706 viol 1.019 325s
+[01:34] done bsw2_det_bo_cap36_err1.0_rp4_G1.5 net 0.5695 viol 2.531 320s
+[01:39] done bsw2_det_bo_cap72_err2.0_rp4_G0.5 net 0.5399 viol 0.020 290s
+[01:39] done bsw2_det_bo_cap36_err1.0_rp4_G2.0 net 0.5689 viol 4.063 308s
+[01:41] done bsw2_det_bo_cap72_err2.0_rp4_G0.75 net 0.5372 viol 0.037 155s
+[01:42] done bsw2_det_bo_cap72_err2.0_rp4_G1.0 net 0.5357 viol 0.292 153s
+[01:44] done bsw2_det_bo_cap72_err2.0_rp4_G1.5 net 0.5344 viol 1.561 147s
+[01:44] done bsw2_det_bo_cap72_err2.0_rp4_G2.0 net 0.5338 viol 3.113 150s
+[01:46] done bsw2_det_bo_cap36_err2.0_rp4_G0.5 net 0.6015 viol 0.353 144s
+[01:47] done bsw2_det_bo_cap36_err2.0_rp4_G0.75 net 0.5972 viol 0.936 145s
+[01:49] done bsw2_det_bo_cap36_err2.0_rp4_G1.0 net 0.5951 viol 2.373 145s
+[01:49] done bsw2_det_bo_cap36_err2.0_rp4_G1.5 net 0.5929 viol 4.629 141s
+[01:50] done bsw2_det_bo_cap72_err1.0_rp16_G0.5 net 0.5243 viol 0.050 61s
+[01:51] done bsw2_det_bo_cap72_err1.0_rp16_G0.75 net 0.5198 viol 0.116 60s
+[01:51] done bsw2_det_bo_cap36_err2.0_rp4_G2.0 net 0.5920 viol 7.021 139s
+[01:52] done bsw2_det_bo_cap72_err1.0_rp16_G1.0 net 0.5176 viol 0.026 61s
+[01:52] done bsw2_det_bo_cap72_err1.0_rp16_G1.5 net 0.5156 viol 0.346 60s
+[01:53] done bsw2_det_bo_cap72_err1.0_rp16_G2.0 net 0.5144 viol 0.866 63s
+T2 DONE

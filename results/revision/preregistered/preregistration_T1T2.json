@@ -1,0 +1,259 @@
+{
+ "written_utc": "2026-10-30T13:11:15.398251+00:00",
+ "T1": {
+  "design": "configuration B, BMS plant, walk-forward winter months Nov 2025 - Mar 2026: DET-BO with the summer-selected weights and a back-off re-sized at the start of each month from the r_E of the previous month (72 Wh, measured error, 1-h re-planning), b = r_E_past (x_max - x_min) / 0.75; SoC carried over, starting from the DET-BO chain at the end of October. Summer: the same rule on the final test with r_E of the tuning period.",
+  "months": [
+   {
+    "month": 2,
+    "r_E_past (month m-1)": 0.06219209964734705,
+    "b": 0.06633823962383685,
+    "r_E_month (for reference)": 0.049313008052921964,
+    "Gamma_realised": 0.5946857599182077
+   },
+   {
+    "month": 3,
+    "r_E_past (month m-1)": 0.049313008052921964,
+    "b": 0.05260054192311677,
+    "r_E_month (for reference)": 0.06700489011432048,
+    "Gamma_realised": 1.019075281958239
+   },
+   {
+    "month": 4,
+    "r_E_past (month m-1)": 0.06700489011432048,
+    "b": 0.07147188278860851,
+    "r_E_month (for reference)": 0.053813205631051096,
+    "Gamma_realised": 0.6023426671460579
+   },
+   {
+    "month": 5,
+    "r_E_past (month m-1)": 0.053813205631051096,
+    "b": 0.05740075267312117,
+    "r_E_month (for reference)": 0.06371123070467663,
+    "Gamma_realised": 0.8879497600666194
+   },
+   {
+    "month": 6,
+    "r_E_past (month m-1)": 0.06371123070467663,
+    "b": 0.0679586460849884,
+    "r_E_month (for reference)": 0.08735730923053676,
+    "Gamma_realised": 1.0283584416474525
+   }
+  ],
+  "summer_final_test": {
+   "r_E_tuning": 0.02647,
+   "b": 0.02823466666666667,
+   "reference_UA_prot_h": 9.5,
+   "reference_DETBO_tuned_prot_h": 9.75
+  },
+  "reference_Nov_Mar": {
+   "det": {
+    "prot_h": 23.25,
+    "cost": 4.913453737707135
+   },
+   "det_bo": {
+    "prot_h": 32.25,
+    "cost": 4.786062794152837
+   },
+   "ua": {
+    "prot_h": 39.5,
+    "cost": 4.782136746560155
+   }
+  },
+  "predictions": {
+   "P6": "total protection hours Nov-Mar of the re-sized DET-BO <= those of the summer-tuned DET-BO",
+   "P7": "total protection hours Nov-Mar of the re-sized DET-BO <= those of UA-MPC",
+   "P8": "net cost Nov-Mar of the re-sized DET-BO <= 1.02 x that of UA-MPC",
+   "P9": "summer final test: the re-sized DET-BO ties UA-MPC by the label rule (protection)"
+  }
+ },
+ "T2": {
+  "design": "second load case (configuration A, production schedule, physical plant, development period): DET-BO of the selected point with b set to Gamma in {0.5,0.75,1,1.5,2} in the four difference cells of its decision map, against the UA-MPC run of the same cell; b_tuned = 0.0192",
+  "label_rule": "difference if DET-BO violation >= UA violation + 1 pp h and >= 2 x UA violation, else tie",
+  "cells": [
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 0.5,
+    "b": 0.07489163050164416,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 0.75,
+    "b": 0.049927753667762774,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 1.0,
+    "b": 0.03744581525082208,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 1.5,
+    "b": 0.024963876833881387,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 2.0,
+    "b": 0.01872290762541104,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 0.5,
+    "b": 0.07489163050164416,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 0.75,
+    "b": 0.049927753667762774,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 1.0,
+    "b": 0.03744581525082208,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 1.5,
+    "b": 0.024963876833881387,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0468072690635276,
+    "Gamma": 2.0,
+    "b": 0.01872290762541104,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0936145381270553,
+    "Gamma": 0.5,
+    "b": 0.14978326100328848,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0936145381270553,
+    "Gamma": 0.75,
+    "b": 0.09985550733552566,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0936145381270553,
+    "Gamma": 1.0,
+    "b": 0.07489163050164424,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0936145381270553,
+    "Gamma": 1.5,
+    "b": 0.04992775366776283,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.0936145381270553,
+    "Gamma": 2.0,
+    "b": 0.03744581525082212,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.0680832879166683,
+    "Gamma": 0.5,
+    "b": 0.1089332606666693,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.0680832879166683,
+    "Gamma": 0.75,
+    "b": 0.07262217377777953,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.0680832879166683,
+    "Gamma": 1.0,
+    "b": 0.05446663033333465,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.0680832879166683,
+    "Gamma": 1.5,
+    "b": 0.03631108688888977,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.0680832879166683,
+    "Gamma": 2.0,
+    "b": 0.027233315166667323,
+    "pred": "difference"
+   }
+  ],
+  "predictions": {
+   "P10": "tie for Gamma <= 1, difference for Gamma >= 1.5",
+   "P11": "the net cost of DET-BO rises as b rises in each cell"
+  }
+ }
+}

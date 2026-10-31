@@ -1,0 +1,18 @@
+[15:57] select det_bo: 15 runs
+[16:47] select det_bo: 15 runs
+[17:04] done det_bo_t16 net 0.9095 prot_h 3.25 991s
+[17:06] done det_bo_t29 net 0.9047 prot_h 87.00 1117s
+[17:21] done det_bo_t24 net 0.9154 prot_h 0.00 884s
+[17:23] done det_bo_t18 net 0.9100 prot_h 1.50 1161s
+[17:38] done det_bo_t10 net 0.9137 prot_h 0.00 1008s
+[17:38] done det_bo_t21 net 0.9189 prot_h 0.00 906s
+[17:56] done det_bo_t19 net 0.9333 prot_h 0.00 1074s
+[17:56] done det_bo_t13 net 0.9275 prot_h 0.00 1128s
+[17:57] select det_bo: 7 runs
+[18:14] done det_bo_t02 net 0.9302 prot_h 0.00 1039s
+[18:27] done det_bo_t09 net 0.9623 prot_h 1.00 1795s
+[18:31] done det_bo_t12 net 0.9383 prot_h 0.00 972s
+[18:42] done det_bo_t07 net 0.9340 prot_h 0.00 897s
+[18:56] done det_bo_t20 net 0.9385 prot_h 0.00 833s
+[19:13] done det_bo_t00 net 0.9993 prot_h 0.00 2560s
+[19:42] done det_bo_t23 net 0.9998 prot_h 0.00 2787s

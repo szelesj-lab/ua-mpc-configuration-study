@@ -1,0 +1,46 @@
+{
+ "det": {
+  "trial": 17,
+  "nov_cost": 0.9304071333663668,
+  "nov_prot_h": 2.0,
+  "met": true
+ },
+ "det_bo": {
+  "trial": 16,
+  "nov_cost": 0.909496823337522,
+  "nov_prot_h": 3.25,
+  "met": true
+ },
+ "ua": {
+  "trial": 13,
+  "nov_cost": 0.9076033025511235,
+  "nov_prot_h": 3.75,
+  "met": true
+ }
+}
+{
+ "det": {
+  "trial": 17,
+  "nov_cost": 0.9304071333663668,
+  "nov_prot_h": 2.0,
+  "met": true
+ },
+ "det_bo": {
+  "trial": 16,
+  "nov_cost": 0.909496823337522,
+  "nov_prot_h": 3.25,
+  "met": true
+ },
+ "ua": {
+  "trial": 13,
+  "nov_cost": 0.9076033025511235,
+  "nov_prot_h": 3.75,
+  "met": true
+ }
+}
+
+
+ua m3 net 0.9722 prot 18.50 1184s
+ua m4 net 1.3594 prot 6.75 1236s
+ua m5 net 0.9276 prot 6.25 1091s
+ua m6 net 0.6147 prot 6.25 1236s

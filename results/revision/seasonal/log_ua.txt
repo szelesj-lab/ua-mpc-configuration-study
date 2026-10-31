@@ -1,0 +1,17 @@
+[19:42] select ua: 14 runs
+[19:57] select ua: 14 runs
+[20:16] done ua_t01 net 0.9049 prot_h 47.00 1138s
+[20:18] done ua_t16 net 0.9053 prot_h 23.75 1258s
+[20:36] done ua_t20 net 0.9082 prot_h 6.00 1153s
+[20:40] done ua_t13 net 0.9076 prot_h 3.75 1314s
+[21:00] done ua_t08 net 0.9237 prot_h 0.25 1474s
+[21:06] done ua_t05 net 0.9574 prot_h 0.00 1546s
+[21:29] done ua_t29 net 0.9658 prot_h 0.00 1720s
+[21:40] done ua_t27 net 0.9688 prot_h 0.00 2033s
+[21:44] done ua_t03 net 0.9781 prot_h 0.00 906s
+[21:58] select ua: 5 runs
+[22:18] done ua_t17 net 0.9489 prot_h 0.00 1228s
+[22:39] done ua_t00 net 0.9993 prot_h 0.00 2467s
+[23:09] done ua_t25 net 1.0089 prot_h 2.00 3084s
+[23:32] done ua_t23 net 1.0195 prot_h 41.00 3218s
+[23:54] done ua_t21 net 1.0076 prot_h 0.00 2679s

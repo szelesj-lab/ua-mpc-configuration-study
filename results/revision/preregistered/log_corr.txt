@@ -1,0 +1,14 @@
+[11:42] grid: 1 runs
+[11:47] done grid_det_bo_cap48_err1.5                     net 0.4308 prot_h 18.25 solver 99.6% 322s
+[11:47] correlation: 10 runs
+[11:51] done corr_ua_cap108_rp16_phi0.5                   net 0.3835 prot_h 0.00 solver 100.0% 243s
+[11:52] done corr_ua_cap108_rp16_phi0.857                 net 0.3852 prot_h 1.00 solver 99.2% 293s
+[11:56] done corr_ua_cap144_rp16_phi0.5                   net 0.3623 prot_h 0.00 solver 100.0% 228s
+[11:59] done corr_ua_cap108_rp16_phi0.98                  net 0.3706 prot_h 11.25 solver 96.2% 450s
+[12:02] done corr_det_bo_cap108_rp16_phi0.5               net 0.3836 prot_h 0.75 solver 100.0% 188s
+[12:03] done corr_ua_cap144_rp16_phi0.98                  net 0.3487 prot_h 6.75 solver 97.0% 406s
+[12:05] done corr_det_bo_cap108_rp16_phi0.857             net 0.3820 prot_h 6.25 solver 100.0% 200s
+[12:06] done corr_det_bo_cap108_rp16_phi0.98              net 0.3648 prot_h 17.75 solver 99.2% 191s
+[12:08] done corr_det_bo_cap144_rp16_phi0.5               net 0.3639 prot_h 0.00 solver 100.0% 173s
+[12:09] done corr_det_bo_cap144_rp16_phi0.98              net 0.3450 prot_h 12.00 solver 100.0% 188s
+CHAIN DONE

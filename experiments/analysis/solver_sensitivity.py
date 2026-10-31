@@ -8,7 +8,7 @@ import pandas as pd
 PKG = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 RES = os.environ.get("RESULTS", os.path.join(PKG, "results"))
 ROOT = os.environ.get("KAIROS_ROOT", os.path.join(PKG, "work", "B"))
-OUT = os.path.join(os.environ.get("OUT", os.path.join(PKG, "out")), "revision"); os.makedirs(OUT, exist_ok=True)
+OUT = os.path.join(os.environ.get("OUT", os.path.join(PKG, "out")), "extended"); os.makedirs(OUT, exist_ok=True)
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from replay import build_data, metrics, named_periods, simulate, load_config, with_overrides  # noqa: E402
 R = f"{RES}/summer/B"

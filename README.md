@@ -9,8 +9,6 @@ Simulation package of
 It holds the controller code in the exact version used, the experiment pipelines, every result file, and the
 scripts that produce all tables, numbers and figures of the paper.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23773120.svg)](https://doi.org/10.5281/zenodo.23773120)
-
 ## The study in short
 
 A simulated laboratory-scale production cell (30 W PV, 20 W wind turbine, 72 Wh battery) is driven by one year of measured
@@ -55,9 +53,9 @@ A second load case (a synthetic production schedule, configuration A) is in `res
 | `experiments/analysis/` | `run_analysis.sh`: tables, numbers (`make_numbers.py`) and figures (`figures.py`) of the paper from the results |
 | `results/summer/<A,B,C>/` | tuning trials and Pareto fronts, development fronts, selection-rule record, final test (summary, paired bootstrap, every step), decision map, run logs |
 | `results/winter/` | per configuration, controller and month: step CSVs and metrics; `summary.csv`, `paired_bootstrap.csv`; `calibration/m<i>.json` (cut-off, σ scale, AR(1), out-of-sample coverage) |
-| `results/analysis/` | data inventory, period and monthly energies, protection hours by SoC edge, decision-map table; `revision/`: solver convergence, quantile sensitivity of r_E, calibration per channel, stricter-solver re-run of B UA-MPC (`experiments/analysis/solver_sensitivity.py`) |
+| `results/analysis/` | data inventory, period and monthly energies, protection hours by SoC edge, decision-map table; `extended/`: solver convergence, quantile sensitivity of r_E, calibration per channel, stricter-solver re-run of B UA-MPC (`experiments/analysis/solver_sensitivity.py`) |
 | `results/production_schedule/` | second load case |
-| `experiments/revision/`, `results/revision/` | analyses of the revision (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/revision/README.md` |
+| `experiments/extended/`, `results/extended/` | additional analyses (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/extended/README.md` |
 | `docs/` | protocol and data description |
 
 ## Reproducing
@@ -97,8 +95,8 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are archived with the Zenodo record of
-this package (`models_summer.zip`); unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.1.0 of
+this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
 ### Notes
@@ -115,7 +113,7 @@ company names); the raw company export is not included.
 
 ## Citation
 
-See `CITATION.cff`. Version 1.0.0 is archived at Zenodo: https://doi.org/10.5281/zenodo.23773120; version 1.1.0 adds the revision analyses (`CHANGELOG.md`).
+See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`.
 
 ## Licence
 

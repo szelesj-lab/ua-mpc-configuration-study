@@ -95,7 +95,7 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.1.0 of
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub releases (v1.1.0 and later) of
 this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
@@ -110,6 +110,23 @@ random restarts, so models re-trained from scratch give slightly different forec
 
 See `docs/data.md` and `LICENSE-DATA.md`. The plant load is anonymised (per unit, no absolute values, no meter or
 company names); the raw company export is not included.
+
+## Reproducing the paper
+
+The numbers, tables and figures of the paper are regenerated from the shipped result files in about 20 seconds;
+no controller is re-run. Each value printed in the paper is shown next to the recomputed value (69 values,
+rounded to the decimals printed in the paper), and every run is logged in `out/run_log.jsonl`.
+
+```bash
+docker build -t ua-mpc-repro .
+docker run --rm -p 8501:8501 ua-mpc-repro             # web interface: http://localhost:8501
+docker run --rm ua-mpc-repro python -m app.reproduce   # command line: report on stdout, exit code 0 if all match
+```
+
+Without Docker (Python 3.13, `pip install -r requirements-frozen.txt`): `python -m app.server` or
+`python -m app.reproduce` from the package root. Outputs go to `out/` (`report.md`, `report.json`,
+`figures/`, `manuscript/`). The catalogue of checked values, with the file each one is computed from, is
+`app/catalogue.py`.
 
 ## Citation
 

@@ -1,0 +1,6 @@
+.git
+out/
+work/
+models_summer/
+**/__pycache__
+**/.ruff_cache

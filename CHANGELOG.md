@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.1 (2026-10-31)
+
+Reproduction tooling; the code and results of 1.1.0 are unchanged.
+
+- `app/`, `Dockerfile`, `.dockerignore`: regenerates the paper's numbers, tables and figures from the result files and
+  compares 69 printed values with the recomputed ones, as a web interface (`python -m app.server`) and a
+  command-line report (`python -m app.reproduce`).
+- `README.md`: section "Reproducing the paper"; `CITATION.cff`: version 1.1.1 and the authors' departments.
+
 ## 1.1.0 (2026-10-31)
 
 Additional analyses for the manuscript; the code and results of 1.0.0 are unchanged.

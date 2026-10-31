@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UA-MPC reproduction</title>
+<style>
+:root{--bg:#f7f6f2;--panel:#fff;--ink:#16161a;--ink2:#5a5955;--line:#e2e0d9;--ok:#1a7f55;--okbg:#e6f4ec;--bad:#b42318;--badbg:#fdecea;--acc:#2a5bd7;--accbg:#e8eefb}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--ink2:#a3a29c;--line:#33322f;--ok:#4cc38a;--okbg:#16301f;--bad:#ff7b72;--badbg:#3a1a17;--acc:#7aa2ff;--accbg:#1c2640}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font-size:18px;margin:0 0 2px}
+.sub{color:var(--ink2);font-size:13px}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer}
+button[disabled]{opacity:.5;cursor:default}
+.chip{border-radius:999px;padding:3px 10px;font-weight:600;font-size:13px}
+.chip.ok{background:var(--okbg);color:var(--ok)}.chip.bad{background:var(--badbg);color:var(--bad)}.chip.idle{background:var(--accbg);color:var(--acc)}
+.status{color:var(--ink2);font-size:13px}
+progress{width:180px;height:8px}
+nav{display:flex;gap:4px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+nav a{padding:10px 12px;color:var(--ink2);text-decoration:none;border-bottom:2px solid transparent;cursor:pointer}
+nav a.on{color:var(--ink);border-color:var(--acc)}
+main{padding:20px 24px;max-width:1200px}
+table{border-collapse:collapse;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--ink2);font-weight:600;background:var(--bg)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.sec td{background:var(--bg);font-weight:600;font-size:12px;color:var(--ink2)}
+.mark{font-weight:700}.mark.ok{color:var(--ok)}.mark.bad{color:var(--bad)}
+.err{color:var(--bad);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.card img{width:100%;height:170px;object-fit:contain;background:#fff;border-radius:4px;cursor:zoom-in}
+.card .t{font-weight:600;margin-top:6px}.card .s{color:var(--ink2);font-size:12px}
+.missing{height:170px;display:flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--bg);border-radius:4px}
+.scroll{overflow-x:auto}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:12px}
+details{margin-bottom:10px}summary{cursor:pointer;font-weight:600}
+.opts{margin-bottom:12px;color:var(--ink2);font-size:13px}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:24px}
+#zoom img{max-width:100%;max-height:100%;background:#fff}
+.note{color:var(--ink2);font-size:13px;margin:0 0 14px}
+@media (max-width:640px){header,nav,main{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Configuration-dependent value of uncertainty-aware MPC — reproduction</h1>
+  <div class="sub">Numbers, tables and figures of the paper, regenerated from the result files in <code>results/</code>. No controller is re-run.</div>
+  <div class="bar">
+    <button id="run">Regenerate everything</button>
+    <span id="summary" class="chip idle">not generated yet</span>
+    <progress id="prog" value="0" max="1" hidden></progress>
+    <span id="status" class="status"></span>
+  </div>
+</header>
+<nav>
+  <a data-tab="values" class="on">Values</a><a data-tab="figures">Figures</a><a data-tab="tables">Tables</a><a data-tab="log">Run log</a>
+</nav>
+<main>
+  <section id="values">
+    <p class="note">Each value as printed in the paper next to the value recomputed from the result files, rounded to the decimals printed in the paper.</p>
+    <div class="opts"><label><input type="checkbox" id="onlybad"> only values that differ</label></div>
+    <div id="vt"></div>
+  </section>
+  <section id="figures" hidden><div class="grid" id="fg"></div></section>
+  <section id="tables" hidden><p class="note">LaTeX tables as written by <code>experiments/analysis</code>; the paper's tables were set from these.</p><div id="tt"></div></section>
+  <section id="log" hidden><div id="lg"></div></section>
+</main>
+<div id="zoom"><img alt=""></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('nav a').forEach(x=>x.classList.toggle('on',x===a));
+  document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==a.dataset.tab);
+  if(a.dataset.tab==='log')loadLog();
+});
+let values=[];
+async function loadValues(){
+  const r=await (await fetch('/api/values')).json();
+  values=r.values;
+  const s=$('#summary');
+  if(!r.generated){s.className='chip idle';s.textContent='not generated yet';$('#vt').innerHTML='<p class="note">Press “Regenerate everything”.</p>';return;}
+  const ok=values.filter(v=>v.ok).length;
+  s.className='chip '+(ok===values.length?'ok':'bad');s.textContent=`${ok} of ${values.length} values reproduced`;
+  renderValues();
+}
+function renderValues(){
+  const only=$('#onlybad').checked;let sec='',h='<table><tr><th>Statement</th><th>Paper</th><th>Reproduced</th><th></th></tr>';
+  for(const v of values){ if(only&&v.ok)continue;
+    if(v.section!==sec){sec=v.section;h+=`<tr class="sec"><td colspan="4">${esc(sec)}</td></tr>`;}
+    h+=`<tr><td>${esc(v.statement)}${v.error?`<div class="err">${esc(v.error)}</div>`:''}</td><td class="num">${esc(v.paper)}</td><td class="num">${esc(v.reproduced)}</td><td class="mark ${v.ok?'ok':'bad'}">${v.ok?'✓':'✗'}</td></tr>`;}
+  $('#vt').innerHTML='<div class="scroll">'+h+'</table></div>';
+}
+$('#onlybad').onchange=renderValues;
+async function loadFigures(){
+  const f=await (await fetch('/api/figures')).json(),t=Date.now();
+  $('#fg').innerHTML=f.map(x=>`<div class="card">${x.png?`<img src="/files/${x.file}.png?${t}" alt="${esc(x.title)}">`:'<div class="missing">not generated</div>'}
+   <div class="t">${esc(x.no)} · ${esc(x.title)}</div><div class="s">${x.pdf?`<a href="/files/${x.file}.pdf" target="_blank">${esc(x.file)}.pdf</a>`:esc(x.file)}</div></div>`).join('');
+  document.querySelectorAll('.card img').forEach(i=>i.onclick=()=>{$('#zoom img').src=i.src;$('#zoom').style.display='flex';});
+}
+$('#zoom').onclick=()=>$('#zoom').style.display='none';
+async function loadTables(){
+  const t=await (await fetch('/api/tables')).json();
+  $('#tt').innerHTML=t.map(x=>`<details><summary>${esc(x.no)} · ${esc(x.title)}</summary>${x.text?`<pre>${esc(x.text)}</pre>`:'<p class="note">not generated</p>'}</details>`).join('');
+}
+async function loadLog(){
+  const l=await (await fetch('/api/log')).json();
+  $('#lg').innerHTML=l.length?'<div class="scroll"><table><tr><th>Time</th><th>Step</th><th>Result</th><th>Seconds</th></tr>'+l.map(x=>`<tr><td class="num">${esc(x.time)}</td><td>${esc(x.title)}<details><summary class="s">output</summary><pre>${esc(x.tail)}</pre></details></td><td class="mark ${x.ok?'ok':'bad'}">${x.ok?'ok':'failed'}</td><td class="num">${esc(x.seconds)}</td></tr>`).join('')+'</table></div>':'<p class="note">No runs yet.</p>';
+}
+async function poll(){
+  const s=await (await fetch('/api/status')).json();
+  $('#run').disabled=s.running;$('#prog').hidden=!s.running;
+  if(s.running){$('#prog').max=Math.max(s.steps,1);$('#prog').value=s.step;$('#status').textContent=`${s.step}/${s.steps} · ${s.title}`;setTimeout(poll,700);}
+  else{ if(s.finished){const bad=s.records.filter(r=>!r.ok).length;$('#status').textContent=`last run ${s.finished}`+(bad?` · ${bad} step(s) failed, see Run log`:'');}
+        await Promise.all([loadValues(),loadFigures(),loadTables()]);}
+}
+$('#run').onclick=async()=>{await fetch('/api/run',{method:'POST'});setTimeout(poll,200);};
+poll();
+</script>
+</body>
+</html>

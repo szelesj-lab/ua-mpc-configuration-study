@@ -5,20 +5,20 @@ type: software
 authors:
   - family-names: Szeles
     given-names: József
-    affiliation: "Department of System Engineering, University of Pannonia, Hungary"
+    affiliation: "Department of System Engineering, University of Pannonia, Veszprém, Hungary; Department of Electrical Engineering and Information Systems, University of Pannonia, Veszprém, Hungary"
   - family-names: Deszát
     given-names: Laura
-    affiliation: "Department of System Engineering, University of Pannonia, Hungary"
+    affiliation: "Department of System Engineering, University of Pannonia, Veszprém, Hungary"
   - family-names: Kummer
     given-names: Alex
-    affiliation: "University of Pannonia, Hungary"
+    affiliation: "Department of Process Engineering, University of Pannonia, Veszprém, Hungary"
   - family-names: Fodor
     given-names: Attila
-    affiliation: "University of Pannonia, Hungary"
+    affiliation: "Department of Electrical Engineering and Information Systems, University of Pannonia, Veszprém, Hungary"
   - family-names: Ruppert
     given-names: Tamás
-    affiliation: "University of Pannonia, Hungary"
-version: "1.1.0"
+    affiliation: "Department of System Engineering, University of Pannonia, Veszprém, Hungary"
+version: "1.1.1"
 date-released: "2026-10-31"
 license: MIT
 repository-code: "https://github.com/szelesj-lab/ua-mpc-configuration-study"

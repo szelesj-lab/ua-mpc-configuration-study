@@ -1,6 +1,6 @@
 # Felhasználói útmutató
 
-Ez az útmutató a csomag webes felületét és parancssorát írja le (1.2.2-es verzió). English version:
+Ez az útmutató a csomag webes felületét és parancssorát írja le (1.2.3-es verzió). English version:
 [`user_guide_en.md`](user_guide_en.md). A felület feliratai angolok; az útmutató a gombokat és mezőket a
 felületen látható angol nevükön említi.
 
@@ -33,7 +33,7 @@ Böngészőben: http://localhost:8501. A `-v "$PWD/out:/pkg/out"` rész megőrzi
 előrejelzéseket két indítás között; nélküle a konténer leállásakor elvesznek.
 
 A tárolt kísérletek újrafuttatásához és a 2026. szeptemberi tesztidőszakhoz a nyári előrejelző modellek is kellenek
-(`models_summer.zip`, a v1.2.2 GitHub-release melléklete):
+(`models_summer.zip`, a v1.2.3 GitHub-release melléklete):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -204,8 +204,28 @@ a nettó költség és a védelmi idő havonta.
 **Reference check** (csak a referencia-adatkészlettel, 5. fejezet): minden futás a tárolt eredménnyel összevetve,
 ✓ ha a tűréseken belül van.
 
-**Letöltések**: `report.md` (a teljes riport), `monthly.csv` (bekötésenként, szabályozónként és havonta egy sor,
-minden mérőszámmal), `report.json` (minden adat, géppel olvasható formában).
+**Ábrák** (minden futás után automatikusan, PNG, kattintásra nagyít):
+
+| Ábra | Mit mutat |
+|---|---|
+| `cost.png` | nettó költség szabályozónként és bekötésenként |
+| `protection.png` | BMS-védelmi órák szabályozónként és bekötésenként |
+| `energy.png` | hálózati vételezés és levágott megújuló energia |
+| `monthly_cost.png` | nettó költség havonta, szabályozónként (több hónapos futásnál) |
+| `re_gamma.png` | r_E és Γ havonta, bekötésenként |
+| `soc_<bekötés>.png` | a töltöttség (SoC) alakulása a teljes futás alatt, szabályozónként |
+
+**Letöltések** (a te mértékegységeidben: kW, kWh, €; a SoC a kapacitás hányada):
+
+| Fájl | Tartalom |
+|---|---|
+| `results.zip` | az alábbiak mind egyben, az ábrákkal |
+| `report.md`, `report.json` | a teljes riport, olvasható és géppel feldolgozható formában |
+| `totals.csv` | az összesítő táblázat (bekötés × szabályozó) |
+| `monthly.csv` | ugyanez havonta |
+| `gamma.csv` | r_E, Γ és a tartalékok havonta |
+| `steps.csv` | **minden 15 perces lépés** minden szabályozónál: SoC, terhelés, hálózat, töltés, kisütés, megújuló, levágott, ár, költség, a BMS által levágott töltés/kisütés |
+| `mpc_solves.csv` | **minden MPC-futás (újratervezés)**, óránként egy sor szabályozónként: kezdő SoC, a látott előrejelzés és szórás, terhelés, ár, a hatékony SoC-határok, a terv első lépése (hálózat, töltés, kisütés, levágás), a tervezett SoC az újratervezés végén és a horizont végén, a megbízhatósági súly, a solver ideje, iterációi, sikere és a célfüggvény tagjai (ez utóbbiak a solver saját egységeiben) |
 
 ## 5. A referencia-eredmények reprodukálása
 
@@ -265,7 +285,7 @@ python -m pytest -q app/tests  # a feltöltés, a leképezés és a referencia-e
 | `out/figures/`, `out/manuscript/` | újragenerált ábrák és számok |
 | `out/rerun/<id>/` | tárolt kísérletek újrafuttatásai |
 | `out/own/uploads/<id>/` | ellenőrzött feltöltések |
-| `out/own/jobs/<id>/` | a futások (a sor állapota a `state.json`-ban): `params.json`, `report.md`, `report.json`, `monthly.csv`, `runs/` (minden lépés CSV-ben) |
+| `out/own/jobs/<id>/` | a futások (a sor állapota a `state.json`-ban): `params.json`, `report.md`, `report.json`, `export/` (a letölthető fájlok és ábrák), `runs/` (lépések és MPC-napló cella-egységekben) |
 | `out/own/bundles/<hónap>/` | betanított havi előrejelzések (a későbbi futások újrahasználják; törlés után újratanítja) |
 
 ## 9. Hibaelhárítás

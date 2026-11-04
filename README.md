@@ -96,7 +96,7 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.2.2 of
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.2.3 of
 this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
@@ -208,7 +208,7 @@ of the queue run at the same time (default 1).
 
 ## Citation
 
-See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.2 the reproduction of the paper and the simulation of any
+See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.3 the reproduction of the paper and the simulation of any
 load profile.
 
 ## Licence

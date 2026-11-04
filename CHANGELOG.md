@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.2.2 (2026-11-04)
+## 1.2.3 (2026-11-04)
 
 Simulation of any load profile and reproduction of the paper, released together; the code and results of 1.1.0
-are unchanged. `CITATION.cff`: version 1.2.2 and the authors' departments.
+are unchanged. `CITATION.cff`: version 1.2.3 and the authors' departments.
 
 **Simulation of any load profile** (`app/own/`)
 
@@ -12,7 +12,10 @@ are unchanged. `CITATION.cff`: version 1.2.2 and the authors' departments.
   simulation of the controllers on chosen months (October 2025 – September 2026) or the September 2026 test period.
 - The forecast is retrained before every month (walk-forward, `prep_bundle.py`, cached per month); quick mode runs
   DET, DET-BO, DET-BO re-sized monthly from r_E and UA-MPC with the reference weights, screening mode gives r_E and
-  Γ. Report with costs and energies in the site's units, protection, r_E and Γ; downloads.
+  Γ. Report with costs and energies in the site's units, protection, r_E and Γ.
+- After every run: figures (cost, protection, energy, monthly cost, r_E and Γ, SoC) and downloads: the tables as
+  CSV, every 15-min step (`steps.csv`) and every MPC solve with its forecast, limits, first planned step, planned SoC
+  and solver result (`mpc_solves.csv`), all in one `results.zip` (`app/own/exports.py`, `app/own/figures.py`).
 - Runs wait in a queue and run one after another (`OWN_PARALLEL`, default 1); a queued run can be removed, a running
   one stopped and resumed, finished ones deleted; "Use these settings" fills the form from an earlier run.
 - Reference check (`app/own/reference.py`): with the reference data set and settings, every run is compared with

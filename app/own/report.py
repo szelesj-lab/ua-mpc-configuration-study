@@ -129,8 +129,14 @@ def write(d: Path) -> dict:
     from app.own.reference import check
     rep["reference"] = check(d)
     rep = _clean(json.loads(json.dumps(rep, default=float)))
-    (d / "report.json").write_text(json.dumps(rep, indent=1, allow_nan=False))
     (d / "report.md").write_text(markdown(rep))
+    (d / "report.json").write_text(json.dumps(rep, indent=1, allow_nan=False))
+    try:   # tables, every step and every MPC solve as CSV, figures, one zip (app/own/exports.py)
+        from app.own.exports import write as export
+        rep["files"] = export(d, rep)
+    except Exception as e:  # the report stays usable
+        rep["files"] = []; rep["export_error"] = f"{type(e).__name__}: {e}"
+    (d / "report.json").write_text(json.dumps(rep, indent=1, allow_nan=False))
     return rep
 
 

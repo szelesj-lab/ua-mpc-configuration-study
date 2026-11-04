@@ -1,6 +1,6 @@
 # User guide
 
-This guide covers the web interface and command line of the package (version 1.2.2). Magyar változat:
+This guide covers the web interface and command line of the package (version 1.2.3). Magyar változat:
 [`user_guide.md`](user_guide.md).
 
 The main job of the tool is **simulation**: it runs the controllers (DET, DET-BO, UA-MPC) on any load profile you
@@ -31,7 +31,7 @@ Open http://localhost:8501. The `-v "$PWD/out:/pkg/out"` part keeps your runs an
 starts; without it they are lost when the container stops.
 
 For re-running stored experiments and for the September 2026 test period, also mount the summer forecast models
-(`models_summer.zip`, attached to the GitHub release v1.2.2):
+(`models_summer.zip`, attached to the GitHub release v1.2.3):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -200,8 +200,28 @@ protection hours of each controller per month.
 **Reference check** (only with the reference data set; section 5): each run against the stored result, ✓ when
 within the tolerances.
 
-**Downloads**: `report.md` (the full report), `monthly.csv` (one row per configuration, controller and month,
-with all metrics), `report.json` (everything, machine-readable).
+**Figures** (after every run, PNG, click to enlarge):
+
+| Figure | What it shows |
+|---|---|
+| `cost.png` | net cost per controller and configuration |
+| `protection.png` | BMS protection hours per controller and configuration |
+| `energy.png` | grid import and curtailed renewable energy |
+| `monthly_cost.png` | net cost per month and controller (runs over several months) |
+| `re_gamma.png` | r_E and Γ per month and configuration |
+| `soc_<config>.png` | the state of charge over the whole run, per controller |
+
+**Downloads** (in your units: kW, kWh, €; SoC as a fraction of the capacity):
+
+| File | Content |
+|---|---|
+| `results.zip` | everything below in one file, with the figures |
+| `report.md`, `report.json` | the full report, readable and machine-readable |
+| `totals.csv` | the summary table (configuration × controller) |
+| `monthly.csv` | the same per month |
+| `gamma.csv` | r_E, Γ and the back-offs per month |
+| `steps.csv` | **every 15-min step** of every controller: SoC, load, grid, charge, discharge, renewable, curtailed, price, cost, charge/discharge cut by the BMS |
+| `mpc_solves.csv` | **every MPC solve (re-plan)**, one row per hour and controller: start SoC, the forecast and its spread it saw, load, price, the effective SoC limits, the first planned step (grid, charge, discharge, curtailment), the planned SoC at the end of the re-planning interval and of the horizon, the confidence weight, solver time, iterations, success and the terms of the objective (the latter in the solver's own units) |
 
 ## 5. Reproducing the reference results
 
@@ -260,7 +280,7 @@ python -m pytest -q app/tests  # unit tests of the upload, mapping and reference
 | `out/figures/`, `out/manuscript/` | regenerated figures and numbers |
 | `out/rerun/<id>/` | re-runs of stored experiments |
 | `out/own/uploads/<id>/` | checked uploads |
-| `out/own/jobs/<id>/` | the runs (queue state in `state.json`): `params.json`, `report.md`, `report.json`, `monthly.csv`, `runs/` (every step as CSV) |
+| `out/own/jobs/<id>/` | the runs (queue state in `state.json`): `params.json`, `report.md`, `report.json`, `export/` (the downloads and figures), `runs/` (steps and MPC log in cell units) |
 | `out/own/bundles/<month>/` | trained monthly forecasts (reused by later runs; delete to retrain) |
 
 ## 9. Troubleshooting

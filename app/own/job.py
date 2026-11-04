@@ -197,15 +197,50 @@ class Job:
         self.status("done")
 
 
+MPC_LOG: list[dict] = []   # one row per MPC solve of the current controller and month (cell units)
+REPLAN_LOG = REPLAN
+
+
+def _plan_row(h, x_0, res, cost, plan, seconds) -> dict:
+    """What one MPC solve saw and decided: the forecast and limits at its first step, the first planned step,
+    the SoC it plans for the re-planning interval and the horizon end, and the solver result."""
+    r0 = plan.iloc[0]
+    k = min(REPLAN_LOG, len(plan)) - 1
+    row = {"t": pd.Timestamp(h["Date"].iloc[0]), "soc_start": float(x_0) if x_0 is not None else None,
+           "solver_s": round(seconds, 4), "success": bool(res.success), "iterations": int(res.nit),
+           "status": str(getattr(res, "message", ""))[:60], "objective": float(cost),
+           "horizon_steps": len(plan),
+           "renewable_forecast_w": float(r0["Total_power (W)"]), "forecast_sd_w": float(r0["Aggregated_deviation (W)"]),
+           "demand_w": float(r0["Demand_power (W)"]), "price_eur_mwh": float(r0["Grid Price (€/Wh)"]) * 1e6,
+           "plan_grid_w": float(r0["P_grid_opt (W)"]), "plan_discharge_w": float(r0["P_bat_dis_opt (W)"]),
+           "plan_charge_w": float(r0["P_bat_ch (W)"]), "plan_curtailed_w": float(r0["P_curtailed (W)"]),
+           "plan_soc_after_replan": float(plan["SoC_opt"].iloc[k]), "plan_soc_horizon_end": float(plan["SoC_opt"].iloc[-1]),
+           "soc_min_eff": float(r0["SoC_min_eff (%)"]) / 100, "soc_max_eff": float(r0["SoC_max_eff (%)"]) / 100,
+           "forecast_confidence": float(r0["Forecast_confidence"]), "sigma_eff_w": float(r0["Sigma_eff (W)"]),
+           "min_soc_margin": float(getattr(res, "min_soc_margin", float("nan"))),
+           "recovery_steps": int(getattr(res, "recovery_steps", 0))}
+    for kk, v in (getattr(res, "cost_terms", None) or {}).items():
+        row[f"cost_{kk}"] = v
+    return row
+
+
 def _hook(path: Path, month: str):
+    """Wrap the MPC solver: progress line per solve (for the interface) and a log row per solve (MPC_LOG)."""
     import MPC_costfunction
     orig = getattr(MPC_costfunction, "_orig_optimize", MPC_costfunction.optimize)
     MPC_costfunction._orig_optimize = orig
     f = open(path, "a", buffering=1)
+    MPC_LOG.clear()
 
     def optimize(h, cfg, x_0=None, init=None):
         f.write(json.dumps({"m": month, "soc": None if x_0 is None else round(float(x_0), 4), "wall": round(time.time(), 1)}) + "\n")
-        return orig(h, cfg, x_0=x_0, init=init)
+        t = time.perf_counter()
+        out = orig(h, cfg, x_0=x_0, init=init)
+        try:
+            MPC_LOG.append(_plan_row(h, x_0, out[0], out[1], out[2], time.perf_counter() - t))
+        except Exception:   # logging never changes the run
+            pass
+        return out
     MPC_costfunction.optimize = optimize
     import replay  # simulate imports optimize at call time from MPC_costfunction
     return replay
@@ -250,6 +285,8 @@ def run_chain(a):
             mt = metrics(df, st, cfg)
             soc = float(df["soc"].iloc[-1])
             df.to_csv(tag.with_suffix(".csv"))
+            if MPC_LOG:
+                pd.DataFrame(MPC_LOG).to_csv(tag.parent / f"{tag.name}_mpc.csv", index=False)
             json.dump({"config": X, "controller": ctrl, "month": m, "start": rec["test_start"], "end": rec["test_end"],
                        "b": b, "soc0": float(df.attrs["soc0"]), "soc_end": soc, "seconds": time.perf_counter() - t,
                        "metrics": mt}, open(tag.with_suffix(".json"), "w"), default=float, indent=1)

@@ -301,10 +301,25 @@ def jobs() -> list[dict]:
     return out
 
 
+EXPORTS = ("totals.csv", "monthly.csv", "gamma.csv", "steps.csv", "mpc_solves.csv", "results.zip")
+
+
 def file(jid: str, name: str) -> Path | None:
-    if name not in ("report.md", "report.json", "monthly.csv"):
+    """A file of a finished run: the report, an export, or a figure (figures/<name>.png)."""
+    import re
+    d = JOBS / jid
+    if d.parent != JOBS or not re.fullmatch(r"[\w.-]+", jid):
         return None
-    f = JOBS / jid / name
+    if name in ("report.md", "report.json"):
+        f = d / name
+    elif name in EXPORTS:
+        f = d / "export" / name
+        if not f.exists() and name == "monthly.csv":
+            f = d / name
+    elif re.fullmatch(r"figures/[\w-]+\.png", name):
+        f = d / "export" / name
+    else:
+        return None
     return f if f.exists() else None
 
 

@@ -117,8 +117,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/own/file":
             f = own.file(q.get("id", [""])[0], q.get("name", [""])[0])
             if f:
-                return self._send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "text/plain",
-                                  {"Content-Disposition": f'attachment; filename="{q["id"][0]}_{f.name}"'})
+                head = {} if f.suffix == ".png" and q.get("dl", [""])[0] != "1" else \
+                    {"Content-Disposition": f'attachment; filename="{q["id"][0]}_{f.name}"'}
+                return self._send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "text/plain", head)
         if path == "/files/own/sample.csv":
             g = lambda k, d: q.get(k, [d])[0]  # noqa: E731
             try:

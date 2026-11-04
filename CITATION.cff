@@ -18,7 +18,7 @@ authors:
   - family-names: Ruppert
     given-names: Tamás
     affiliation: "Department of System Engineering, University of Pannonia, Veszprém, Hungary"
-version: "1.2.2"
+version: "1.2.3"
 date-released: "2026-11-04"
 license: MIT
 repository-code: "https://github.com/szelesj-lab/ua-mpc-configuration-study"

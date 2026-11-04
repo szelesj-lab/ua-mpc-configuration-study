@@ -35,6 +35,12 @@ def upload(text: str, unit: str, tz: str, name: str = "") -> dict:
     rep["name"] = name
     if series is None or rep["errors"]:
         return {"ok": False, "report": rep}
+    from app.own import reference
+    c = reference.match(series)
+    if c is not None:   # the reference load profile at scale c: same cell, same results as the stored runs
+        # load_kw = c x load_pu: the cell (10.788 W x load_pu) is reached with f = 10.788 W / (c kW), and the
+        # reference sizes scale with c / 0.010788 (the reference upload has c = 0.010788 kW, i.e. the cell in kW)
+        rep.update(reference=True, scale_mean_kw=c, ref_scale=c / reference.REF_MEAN_KW)
     d = UPLOADS / uid
     d.mkdir(parents=True, exist_ok=True)
     series.to_pickle(d / "load.pkl")
@@ -47,8 +53,9 @@ def upload(text: str, unit: str, tz: str, name: str = "") -> dict:
     prev = {"daily": [[str(t.date()), round(float(v), 3)] for t, v in day.items()],
             "week": [round(float(v), 3) for v in week.reindex(range(672)).to_numpy()]}
     (d / "preview.json").write_text(json.dumps(prev))
-    return {"ok": True, "id": uid, "report": rep, "preview": prev, "defaults": default_sizes(rep["mean_kw"]),
-            "ratios": reference_ratios()}
+    ref = bool(rep.get("reference"))
+    return {"ok": True, "id": uid, "report": rep, "preview": prev, "reference": ref, "ratios": reference_ratios(),
+            "defaults": reference.sizes(rep["ref_scale"]) if ref else default_sizes(rep["mean_kw"])}
 
 
 def reference_upload() -> dict:
@@ -58,7 +65,7 @@ def reference_upload() -> dict:
     if r["ok"]:
         f = UPLOADS / r["id"] / "upload.json"
         rep = json.loads(f.read_text())
-        rep.update(reference=True, scale_mean_kw=reference.REF_MEAN_KW)
+        rep.update(reference=True, scale_mean_kw=reference.REF_MEAN_KW, ref_scale=1.0)
         f.write_text(json.dumps(rep, indent=1, default=float))
         r["report"] = rep
         r["defaults"] = dict(reference.REF_SIZES)
@@ -199,7 +206,7 @@ def upload_info(uid: str) -> dict:
     prev = json.loads((d / "preview.json").read_text()) if (d / "preview.json").exists() else {"daily": [], "week": []}
     if rep.get("reference"):
         from app.own import reference
-        defaults = dict(reference.REF_SIZES)
+        defaults = reference.sizes(float(rep.get("ref_scale", 1.0)))
     else:
         defaults = default_sizes(rep["mean_kw"])
     return {"ok": True, "id": uid, "report": rep, "preview": prev, "defaults": defaults, "ratios": reference_ratios(),

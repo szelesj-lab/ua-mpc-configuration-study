@@ -227,8 +227,9 @@ within the tolerances.
 
 The simulation reproduces the stored results when it gets the same inputs:
 
-1. **Use the reference data set** (sizes 0.072 kWh, 0.024 kW, PV 0.03 kWp, wind 0.0200704 kW are set; these are
-   the reference cell's 72 Wh, 24 W, 30 W and 20.07 W).
+1. **Use the reference data set**, or upload the `reference_load_profile_2025-26.csv` file linked on the tab (unchanged, at any scale); it is recognised as the reference data set. This sets the reference cell's sizes (72 Wh battery, 24 W power,
+   30 W PV, 20.07 W wind) in the units of the file: with the button 0.072 kWh / 0.024 kW / 0.03 kWp / 0.0200704 kW, with
+   the file (mean 1 kW) 6.674 kWh / 2.225 kW / 2.781 kWp / 1.860 kW.
 2. Keep **leave out** for days outside the data and initial SoC **0.5**.
 3. Choose the configurations and either months starting in **2025-10** (stored: October 2025 – March 2026 for B and
    C) or the **test period Sep 2026** (A, B and C).

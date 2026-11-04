@@ -188,7 +188,7 @@ def cell_factor(mean_kw: float) -> float:
 def sizes_to_cell(sizes: dict, mean_kw: float) -> dict:
     """Site sizes (battery kWh, power kW, PV kWp, wind kW rated) -> cell values and renewable scale factors."""
     f = cell_factor(mean_kw)
-    r = lambda x: float(f"{x:.12g}")  # noqa: E731  (12 significant digits: no float noise from unit conversions)
+    r = lambda x: float(f"{x:.9g}")  # noqa: E731  (9 significant digits: no float noise from unit conversions)
     return {"E_capacity": r(sizes["battery_kwh"] * 1000 * f), "p_max_w": r(sizes["power_kw"] * 1000 * f),
             "pv_scale": r(sizes["pv_kwp"] * 1000 * f / CELL["pv_w"]), "wind_scale": r(sizes["wind_kw"] * 1000 * f / CELL["wind_w"]),
             "factor": f}

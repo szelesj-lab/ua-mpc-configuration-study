@@ -109,7 +109,8 @@ svg.ld{width:100%;height:120px;background:var(--bg);border-radius:6px}
           <input type="file" id="of" accept=".csv,.txt">
           <div class="row"><div><label>Values are</label><select id="ou"><option value="kw">average power, kW</option><option value="w">average power, W</option><option value="kwh">energy per interval, kWh</option></select></div>
           <div><label>Timestamps (without offset) in</label><select id="otz"><option>Europe/Budapest</option><option>UTC</option><option>Europe/Vienna</option><option>Europe/Berlin</option><option>Europe/London</option></select></div></div>
-          <p><button id="oup" class="ghost">Check file</button> <button id="oref" class="ghost" type="button">Use the reference data set</button></p><div id="ochk"></div>
+          <p><button id="oup" class="ghost">Check file</button> <button id="oref" class="ghost" type="button">Use the reference data set</button></p>
+          <p class="hint" style="margin-top:-4px">The reference data set as a file: <a href="/files/own/reference.csv">reference_load_profile_2025-26.csv</a> (uploaded unchanged, it is recognised as the reference).</p><div id="ochk"></div>
         </fieldset>
         <fieldset id="opar" disabled><legend>2 · System</legend>
           <div class="row"><div><label>Battery capacity (kWh)</label><input type="number" id="s_battery_kwh" min="0" step="any"></div>

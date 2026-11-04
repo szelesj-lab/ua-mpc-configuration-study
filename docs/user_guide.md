@@ -231,8 +231,9 @@ a nettó költség és a védelmi idő havonta.
 
 A szimuláció ugyanazokkal a bemenetekkel visszaadja a tárolt eredményeket:
 
-1. Nyomd meg a **Use the reference data set** gombot. Ez beállítja a méreteket: 0,072 kWh, 0,024 kW, napelem
-   0,03 kWp, szél 0,0200704 kW. Ezek a referencia-cella 72 Wh-ja, 24 W-ja, 30 W-ja és 20,07 W-ja.
+1. Nyomd meg a **Use the reference data set** gombot, vagy töltsd fel a felületről letölthető `reference_load_profile_2025-26.csv` fájlt (változatlanul, bármilyen szorzóval); a rendszer felismeri, hogy ez a referencia-adatkészlet. Ez beállítja a referencia-cella méreteit (72 Wh akku,
+   24 W teljesítmény, 30 W napelem, 20,07 W szél) a fájl mértékegységében: a gombbal 0,072 kWh / 0,024 kW / 0,03 kWp /
+   0,0200704 kW, a fájllal (átlag 1 kW) 6,674 kWh / 2,225 kW / 2,781 kWp / 1,860 kW.
 2. A lefedetlen napoknál maradjon a **leave out**, a kezdő SoC pedig **0,5**.
 3. Válaszd ki a bekötéseket, és vagy **2025-10**-től induló hónapokat (tárolt eredmény: 2025. október – 2026. március,
    B és C), vagy a **test period Sep 2026** időszakot (A, B és C).

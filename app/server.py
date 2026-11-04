@@ -120,6 +120,10 @@ class Handler(BaseHTTPRequestHandler):
                 head = {} if f.suffix == ".png" and q.get("dl", [""])[0] != "1" else \
                     {"Content-Disposition": f'attachment; filename="{q["id"][0]}_{f.name}"'}
                 return self._send(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "text/plain", head)
+        if path == "/files/own/reference.csv":
+            from app.own.reference import sample_csv as ref_csv
+            return self._send(200, ref_csv().encode(), "text/csv; charset=utf-8",
+                              {"Content-Disposition": 'attachment; filename="reference_load_profile_2025-26.csv"'})
         if path == "/files/own/sample.csv":
             g = lambda k, d: q.get(k, [d])[0]  # noqa: E731
             try:

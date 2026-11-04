@@ -18,8 +18,8 @@ are unchanged. `CITATION.cff`: version 1.2.3 and the authors' departments.
   and solver result (`mpc_solves.csv`), all in one `results.zip` (`app/own/exports.py`, `app/own/figures.py`).
 - Runs wait in a queue and run one after another (`OWN_PARALLEL`, default 1); a queued run can be removed, a running
   one stopped and resumed, finished ones deleted; "Use these settings" fills the form from an earlier run.
-- Reference check (`app/own/reference.py`): with the reference data set and settings, every run is compared with
-  the stored result of the same set-up.
+- Reference check (`app/own/reference.py`): with the reference data set (the button, or its CSV uploaded unchanged at any
+  scale) and the reference settings, every run is compared with the stored result of the same set-up.
 
 **Reproduction of the paper**
 

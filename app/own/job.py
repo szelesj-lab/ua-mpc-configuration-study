@@ -266,3 +266,9 @@ if __name__ == "__main__":
     except Exception as e:
         j.status("failed", error=str(e), trace=traceback.format_exc()[-3000:])
         raise
+    finally:   # the next queued run starts as soon as this one ends
+        try:
+            from app.own.runner import dispatch
+            dispatch()
+        except Exception:
+            pass

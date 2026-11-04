@@ -1,11 +1,11 @@
-"""Web interface for the reproduction (standard library only).
+"""Web interface (standard library only).
 
     python -m app.server                 # http://localhost:8501
     python -m app.server --port 9000 --host 0.0.0.0
 
-Regenerates the paper's numbers, tables and figures from the result files and checks them against the paper
-(values of the text, every table cell, every figure); re-runs single experiments when the forecast models are
-available; keeps every run in out/run_log.jsonl and every report in out/reports/.
+Simulation: runs the controllers on any load profile, one queued run after another (app/own/). Paper check, on
+request: regenerates the paper's numbers, tables and figures from the result files and checks them against the
+paper; re-runs single stored experiments when the forecast models are available; keeps every report in out/reports/.
 """
 from __future__ import annotations
 
@@ -105,6 +105,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(rerun.status(q.get("id", [""])[0]))
         if path == "/api/own/options":
             return self._json(own.options())
+        if path == "/api/own/upload_info":
+            try:
+                return self._json(own.upload_info(q.get("id", [""])[0]))
+            except ValueError as e:
+                return self._json({"error": str(e)}, 404)
         if path == "/api/own/jobs":
             return self._json(own.jobs())
         if path == "/api/own/job":
@@ -162,6 +167,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(own.upload(text, g("unit", "kw"), g("tz", "Europe/Budapest"), g("name", "")))
         if path == "/api/own/reference":
             return self._json(own.reference_upload())
+        if path in ("/api/own/stop", "/api/own/delete"):
+            try:
+                fn = own.stop if path.endswith("stop") else own.delete
+                return self._json(fn(q.get("id", [""])[0]))
+            except ValueError as e:
+                return self._json({"error": str(e)}, 400)
         if path == "/api/own/resume":
             try:
                 return self._json(own.resume(q.get("id", [""])[0]))
@@ -182,7 +193,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--host", default="127.0.0.1"); ap.add_argument("--port", type=int, default=8501)
     a = ap.parse_args()
-    print(f"Reproduction interface on http://{'localhost' if a.host in ('0.0.0.0', '127.0.0.1') else a.host}:{a.port}", flush=True)
+    print(f"UA-MPC simulation interface on http://{'localhost' if a.host in ('0.0.0.0', '127.0.0.1') else a.host}:{a.port}", flush=True)
+
+    def queue_keeper():   # starts queued runs also when nobody has the page open
+        while True:
+            try:
+                own.dispatch()
+            except Exception:
+                pass
+            time.sleep(15)
+    threading.Thread(target=queue_keeper, daemon=True).start()
     ThreadingHTTPServer((a.host, a.port), Handler).serve_forever()
 
 

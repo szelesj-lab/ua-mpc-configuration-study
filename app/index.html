@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UA-MPC reproduction</title>
+<title>UA-MPC simulation</title>
 <style>
 :root{--bg:#f7f6f2;--panel:#fff;--ink:#16161a;--ink2:#5a5955;--line:#e2e0d9;--ok:#1a7f55;--okbg:#e6f4ec;--bad:#b42318;--badbg:#fdecea;--acc:#2a5bd7;--accbg:#e8eefb;--warn:#8a5a00;--warnbg:#fbf1dc}
 @media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--ink2:#a3a29c;--line:#33322f;--ok:#4cc38a;--okbg:#16301f;--bad:#ff7b72;--badbg:#3a1a17;--acc:#7aa2ff;--accbg:#1c2640;--warn:#f0c060;--warnbg:#3a2e12}}
@@ -52,7 +52,7 @@ details.tab[open] summary .tabhead span:first-child::before{content:'▾ '}
 .opts{margin-bottom:12px;color:var(--ink2);font-size:13px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 input[type=search],select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
 #zoom{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:24px;gap:12px}
-#zoom img{max-width:49%;max-height:100%;background:#fff}
+#zoom img{max-width:100%;max-height:100%;background:#fff}
 .exp{display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:16px}
 .list{background:var(--panel);border:1px solid var(--line);border-radius:8px;max-height:560px;overflow:auto}
 .list .g{padding:6px 10px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--bg);position:sticky;top:0}
@@ -61,6 +61,7 @@ input[type=search],select{font:inherit;padding:5px 8px;border:1px solid var(--li
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
 svg.soc{width:100%;height:180px;background:var(--bg);border-radius:6px}
 pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;font-size:12px;max-height:220px}
+.subnav{padding:0;background:transparent;display:flex;gap:2px;border-bottom:1px solid var(--line);margin:0 0 14px;overflow-x:auto}.acts button{margin:0 4px 4px 0}.subnav a{padding:8px 10px;color:var(--ink2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}.subnav a.on{color:var(--ink);border-color:var(--acc)}
 .own{display:grid;grid-template-columns:minmax(300px,1fr) 2fr;gap:16px}
 .own>*{min-width:0}.form input,.form select{max-width:100%}.form input[type=file]{width:100%}
 .form label{display:block;margin:6px 0 2px;font-size:13px;color:var(--ink2)}
@@ -82,34 +83,18 @@ svg.ld{width:100%;height:120px;background:var(--bg);border-radius:6px}
 </head>
 <body>
 <header>
-  <h1>Configuration-dependent value of uncertainty-aware MPC — reproduction</h1>
-  <div class="sub">Every value, table cell and figure of the paper, regenerated from the result files in <code>results/</code> and checked against the paper.</div>
+  <h1>UA-MPC battery simulation</h1>
+  <div class="sub">Runs deterministic and uncertainty-aware MPC of a behind-the-meter battery on any load profile. Runs wait in a queue and run one after another.</div>
   <div class="bar">
-    <button id="run">Regenerate and check</button>
-    <span id="chV" class="chip idle">values –</span><span id="chT" class="chip idle">table cells –</span><span id="chF" class="chip idle">figures –</span>
-    <progress id="prog" value="0" max="1" hidden></progress><span id="status" class="s"></span>
-    <a class="btn ghost" href="/report.md" id="dl" hidden>Download report</a>
     <a class="btn ghost" href="https://github.com/szelesj-lab/ua-mpc-configuration-study/blob/main/docs/user_guide.md" target="_blank" rel="noopener">User guide</a>
   </div>
 </header>
-<nav>
-  <a data-tab="values" class="on">Values</a><a data-tab="tables">Tables</a><a data-tab="figures">Figures</a><a data-tab="experiments">Re-run experiments</a><a data-tab="own">Your data</a><a data-tab="history">History</a>
+<nav id="mainnav">
+  <a data-tab="own" class="on">Simulation</a><a data-tab="paper">Paper check</a>
 </nav>
 <main>
-  <section id="values">
-    <p class="note">Each value as printed in the paper next to the value recomputed from the result files, rounded to the decimals printed in the paper. The source column names the file or script each value comes from. Values marked “needs models” are checked after the forecast calibration has been re-run (Re-run experiments). Numbers quoted from other studies (Section 5.7) are not checked.</p>
-    <div class="opts"><label><input type="checkbox" id="onlybad"> only values that differ</label><label><input type="checkbox" id="showsrc" checked> show sources</label><input type="search" id="q" placeholder="filter…"></div>
-    <div id="vt" class="scroll"></div>
-  </section>
-  <section id="tables" hidden><p class="note">Every numeric cell of the paper's tables, recomputed from the result files (app/tables.py). Cells that differ are highlighted with the paper's value and the recomputed one.</p><div id="tt"></div></section>
-  <section id="figures" hidden><p class="note">Left: the figure in the paper; right: the figure regenerated now. A figure counts as identical when at most 1 % of its pixels differ (different platforms may render fonts slightly differently).</p><div class="grid" id="fg"></div></section>
-  <section id="experiments" hidden>
-    <p class="note">Re-runs a stored experiment with the controller code and compares it with the stored result. Needs the trained summer forecast models: unpack <code>models_summer.zip</code> from the GitHub release into <code>models_summer/</code> (with Docker: mount it, see README). Runs take minutes to an hour.</p>
-    <div id="prep" class="opts"></div>
-    <div class="exp"><div class="list" id="el"></div><div class="panel" id="ep"><p class="note">Select an experiment.</p></div></div>
-  </section>
-  <section id="own" hidden>
-    <p class="note">Runs the controllers on any load profile. Upload a CSV with a timestamp and a load column (15, 30 or 60 min; kW, W or kWh per interval). Weather, prices and renewable forecasts come from the reference site; the forecast models are retrained before every simulated month (walk-forward). Run with the reference data set and the reference settings, the results are compared with the stored results of the same set-up.</p>
+  <section id="own" class="top-s">
+    <p class="note">Upload a CSV with a timestamp and a load column (15, 30 or 60 min; kW, W or kWh per interval). Weather, prices and renewable forecasts come from the reference site; the forecast models are retrained before every simulated month (walk-forward). Add as many runs as you like: they are queued and run one after another. With the reference data set and the reference settings the results are also compared with the stored results of the same set-up.</p>
     <div class="own">
       <div class="form panel">
         <fieldset><legend>Sample CSV</legend>
@@ -142,19 +127,42 @@ svg.ld{width:100%;height:120px;background:var(--bg);border-radius:6px}
           <div class="row" id="omon"><div><label>From</label><select id="ofrom"></select></div><div><label>To</label><select id="oto"></select></div></div>
           <div class="row"><div><label>Initial SoC</label><input type="number" id="osoc" value="0.5" min="0.1" max="0.9" step="0.05"></div><div><label>Name (optional)</label><input type="text" id="oname"></div></div>
           <p class="hint" id="oest"></p>
-          <p><button id="ogo">Run simulation</button></p>
+          <p><button id="ogo">Add to queue</button> <span class="hint" id="oqmsg"></span></p>
         </fieldset>
       </div>
       <div>
         <div class="panel" id="ojob"><p class="note">Upload a file to start, or open an earlier run below.</p></div>
-        <h2>Runs</h2><div id="ojobs" class="list" style="max-height:260px"></div>
+        <h2>Runs <span class="s" id="oqsum"></span></h2><div id="ojobs" class="list" style="max-height:340px"></div>
       </div>
     </div>
   </section>
-  <section id="history" hidden>
+  <section id="paper" class="top-s" hidden>
+    <p class="note">Checks the published article against the result files of the package: regenerates every value of the text, every table cell and every figure, and re-runs single stored experiments. It runs only when you start it here.</p>
+    <div class="bar" style="margin:0 0 12px">
+      <button id="run">Regenerate and check</button>
+      <span id="chV" class="chip idle">values –</span><span id="chT" class="chip idle">table cells –</span><span id="chF" class="chip idle">figures –</span>
+      <progress id="prog" value="0" max="1" hidden></progress><span id="status" class="s"></span>
+      <a class="btn ghost" href="/report.md" id="dl" hidden>Download report</a>
+    </div>
+    <nav id="subnav" class="subnav"><a data-sub="values" class="on">Values</a><a data-sub="tables">Tables</a><a data-sub="figures">Figures</a><a data-sub="experiments">Re-run experiments</a><a data-sub="history">History</a></nav>
+  <section id="values" class="sub-s">
+    <p class="note">Each value as printed in the paper next to the value recomputed from the result files, rounded to the decimals printed in the paper. The source column names the file or script each value comes from. Values marked “needs models” are checked after the forecast calibration has been re-run (Re-run experiments). Numbers quoted from other studies (Section 5.7) are not checked.</p>
+    <div class="opts"><label><input type="checkbox" id="onlybad"> only values that differ</label><label><input type="checkbox" id="showsrc" checked> show sources</label><input type="search" id="q" placeholder="filter…"></div>
+    <div id="vt" class="scroll"></div>
+  </section>
+  <section id="tables" class="sub-s" hidden><p class="note">Every numeric cell of the paper's tables, recomputed from the result files (app/tables.py). Cells that differ are highlighted with the paper's value and the recomputed one.</p><div id="tt"></div></section>
+  <section id="figures" class="sub-s" hidden><p class="note">Every figure as regenerated now from the result files. Click a figure to enlarge it; PNG and PDF open the files.</p><div class="grid" id="fg"></div></section>
+  <section id="experiments" class="sub-s" hidden>
+    <p class="note">Re-runs a stored experiment with the controller code and compares it with the stored result. Needs the trained summer forecast models: unpack <code>models_summer.zip</code> from the GitHub release into <code>models_summer/</code> (with Docker: mount it, see README). Runs take minutes to an hour.</p>
+    <div id="prep" class="opts"></div>
+    <div class="exp"><div class="list" id="el"></div><div class="panel" id="ep"><p class="note">Select an experiment.</p></div></div>
+  </section>
+  <section id="history" class="sub-s" hidden>
     <h2>Reports</h2><div id="hr" class="scroll"></div>
     <h2>Run log</h2><div id="lg" class="scroll"></div>
   </section>
+  </section>
+
 </main>
 <div id="zoom"></div>
 <script>
@@ -162,10 +170,17 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const J=async u=>(await fetch(u)).json();
 let REP=null, EXPS=[], CUR=null, timer=null;
-document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{
-  document.querySelectorAll('nav a').forEach(x=>x.classList.toggle('on',x===a));
-  document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==a.dataset.tab);
-  if(a.dataset.tab==='history')loadHistory(); if(a.dataset.tab==='experiments')loadExperiments(); if(a.dataset.tab==='own')ownInit();
+let PAPER_OPENED=false;
+document.querySelectorAll('#mainnav a').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('#mainnav a').forEach(x=>x.classList.toggle('on',x===a));
+  document.querySelectorAll('main section.top-s').forEach(s=>s.hidden=s.id!==a.dataset.tab);
+  if(a.dataset.tab==='own')ownInit();
+  if(a.dataset.tab==='paper'&&!PAPER_OPENED){PAPER_OPENED=true;poll();}
+});
+document.querySelectorAll('#subnav a').forEach(a=>a.onclick=()=>{
+  document.querySelectorAll('#subnav a').forEach(x=>x.classList.toggle('on',x===a));
+  document.querySelectorAll('#paper section.sub-s').forEach(s=>s.hidden=s.id!==a.dataset.sub);
+  if(a.dataset.sub==='history')loadHistory(); if(a.dataset.sub==='experiments')loadExperiments();
 });
 function chip(el,ok,n,label){el.className='chip '+(n===0?'idle':ok===n?'ok':'bad');el.textContent=`${label} ${ok} / ${n}`;}
 async function loadReport(){
@@ -194,13 +209,12 @@ function renderTables(){
 }
 function renderFigures(){
   const t=Date.now();
-  $('#fg').innerHTML=REP.figures.map(f=>`<div class="card"><div class="pair">
-     <figure>${f.reference?`<img src="/files/reference/${f.file}.png" alt="paper">`:'<div class="missing">no reference</div>'}<figcaption>paper</figcaption></figure>
-     <figure>${f.generated?`<img src="/files/figures/${f.file}.png?${t}" alt="regenerated">`:'<div class="missing">not generated</div>'}<figcaption>regenerated</figcaption></figure></div>
-     <div class="t"><span>${esc(f.no)} · ${esc(f.title)}</span><span class="mark ${f.ok?'ok':'bad'}">${f.ok?'✓':'✗'}</span></div>
-     <div class="s">${f.differing_pct!==null?`${f.differing_pct} % of pixels differ`:esc(f.note)}${f.generated?` · <a href="/files/figures/${f.file}.pdf" target="_blank">PDF</a>`:''}</div></div>`).join('');
-  document.querySelectorAll('#fg .card').forEach(c=>c.querySelectorAll('img').forEach(i=>i.onclick=()=>{
-    $('#zoom').innerHTML=[...c.querySelectorAll('img')].map(x=>`<img src="${x.src}">`).join('');$('#zoom').style.display='flex';}));
+  $('#fg').innerHTML=REP.figures.map(f=>`<div class="card">
+     ${f.generated?`<img src="/files/figures/${f.file}.png?${t}" alt="${esc(f.title)}">`:'<div class="missing">not generated</div>'}
+     <div class="t"><span>${esc(f.no)} · ${esc(f.title)}</span></div>
+     <div class="s">${f.generated?`<a href="/files/figures/${f.file}.png?${t}" target="_blank">PNG</a> · <a href="/files/figures/${f.file}.pdf" target="_blank">PDF</a>`:esc(f.note)}</div></div>`).join('');
+  document.querySelectorAll('#fg .card img').forEach(i=>i.onclick=()=>{
+    $('#zoom').innerHTML=`<img src="${i.src}">`;$('#zoom').style.display='flex';});
 }
 $('#zoom').onclick=()=>$('#zoom').style.display='none';
 async function loadHistory(){
@@ -308,19 +322,45 @@ $('#odef').onclick=()=>{ if(!OWN.up)return; for(const [k,v] of Object.entries(OW
 $('#ogo').onclick=async()=>{
   const r=await (await fetch('/api/own/start',{method:'POST',body:JSON.stringify({upload_id:OWN.up.id,params:ownParams()})})).json();
   if(r.error){$('#oest').innerHTML=`<span class="err">${esc(r.error)}</span>`;return;}
+  $('#oqmsg').textContent=r.state==='running'?'started':'queued — it starts when the runs before it have finished';
+  setTimeout(()=>{$('#oqmsg').textContent='';},6000);
   OWN.job=r.id; ownJobs(); ownShow();
 };
+async function ownUseSettings(p){
+  const u=await J('/api/own/upload_info?id='+encodeURIComponent(p.upload_id));
+  if(u.error){alert('The load data of this run are no longer available; upload the file again.');return;}
+  ownUploaded(u);
+  for(const [k,v] of Object.entries(p.sizes))$('#s_'+k).value=v;
+  document.querySelectorAll('#ocfg input').forEach(e=>e.checked=p.configs.includes(e.value));
+  document.querySelectorAll('#octl input').forEach(e=>e.checked=p.controllers.includes(e.value));
+  document.querySelector(`[name=omode][value=${p.mode}]`).checked=true;
+  document.querySelector(`[name=ofill][value=${p.fill||'profile'}]`).checked=true;
+  if(p.period==='final_test'){document.querySelector('[name=oprd][value=final_test]').checked=true;$('#omon').hidden=true;}
+  else{document.querySelector('[name=oprd][value=months]').checked=true;$('#omon').hidden=false;$('#ofrom').value=p.period[0];$('#oto').value=p.period[p.period.length-1];}
+  $('#osoc').value=typeof p.initial_soc==='number'?p.initial_soc:0.5; $('#oname').value=p.name?p.name+' (2)':'';
+  ownEst(); window.scrollTo({top:0,behavior:'smooth'});
+}
+const STATE_CLS={done:'ok',failed:'bad',stopped:'bad',cancelled:'s',running:'warn',queued:'warn'};
 async function ownJobs(){ const js=await J('/api/own/jobs');
-  $('#ojobs').innerHTML=js.length?js.map(j=>`<div class="i${OWN.job===j.id?' on':''}" data-id="${j.id}"><span>${esc(j.name||j.id)} · ${j.configs.join(',')} · ${j.period==='final_test'?'Sep 2026 test period':esc(j.period[0]+(j.period.length>1?'…'+j.period[j.period.length-1]:''))}${j.mode==='screen'?' · screening':''}</span><span class="${j.stage==='done'?'ok':j.stage==='failed'?'bad':'warn'}">${esc(j.stage)}</span></div>`).join(''):'<p class="note" style="padding:8px">No runs yet.</p>';
-  document.querySelectorAll('#ojobs .i').forEach(i=>i.onclick=()=>{OWN.job=i.dataset.id;ownJobs();ownShow();});}
+  const nr=js.filter(j=>j.state==='running').length, nq=js.filter(j=>j.state==='queued').length;
+  $('#oqsum').textContent=nr||nq?`· ${nr} running, ${nq} waiting`:'';
+  $('#ojobs').innerHTML=js.length?js.map(j=>{const st=j.state==='queued'?`queued #${j.position}`:j.state==='running'?(j.stage||'running'):j.state;
+    const ref=j.reference_ok===true?' · reference ✓':j.reference_ok===false?' · reference ✗':'';
+    return `<div class="i${OWN.job===j.id?' on':''}" data-id="${j.id}"><span>${esc(j.name||j.id)} · ${j.configs.join(',')} · ${j.period==='final_test'?'Sep 2026 test period':esc(j.period[0]+(j.period.length>1?'…'+j.period[j.period.length-1]:''))}${j.mode==='screen'?' · screening':''}${ref}</span><span class="${STATE_CLS[j.state]||''}">${esc(st)}</span></div>`;}).join(''):'<p class="note" style="padding:8px">No runs yet.</p>';
+  document.querySelectorAll('#ojobs .i').forEach(i=>i.onclick=()=>{OWN.job=i.dataset.id;ownJobs();ownShow();});
+  clearTimeout(OWN.ltimer); if(nr||nq)OWN.ltimer=setTimeout(ownJobs,8000);}
 function ownBars(rows){ const mx=Math.max(...rows.map(t=>Math.abs(t.net_cost_eur)))||1;
   return '<div class="bars">'+rows.map(t=>`<span>${esc(CTL[t.controller]||t.controller)}</span><div class="b" style="width:${(100*Math.abs(t.net_cost_eur)/mx).toFixed(1)}%;${t.controller==='grid_only'?'background:var(--ink2)':''}"></div><span class="num">€ ${eur(t.net_cost_eur)}</span>`).join('')+'</div>';}
 async function ownShow(){
   clearTimeout(OWN.timer); if(!OWN.job)return; const s=await J('/api/own/job?id='+encodeURIComponent(OWN.job)); const p=s.params;
-  let h=`<h2 style="margin-top:0">${esc(p.name||s.id)}</h2><p class="s">${p.mode==='screen'?'Screening':'Quick mode'} · ${p.period==='final_test'?'test period Sep 2026':esc(p.period.join(', '))} · configurations ${p.configs.join(', ')} · ${Math.round(s.elapsed_s/60)} min elapsed${p.estimate?` (estimated ${p.estimate.training_min+p.estimate.simulation_min} min)`:''}${s.eta_min!==null&&s.state==='running'?` · about ${s.eta_min} min left at the current speed`:''}</p>`;
-  h+=`<p><span class="chip ${s.state==='done'?'ok':s.state==='failed'?'bad':'idle'}">${esc(s.state)}</span> <span class="s">${esc(s.stage.stage)}${s.stage.month?' · '+esc(s.stage.month):''}${s.stage.detail?' · '+esc(s.stage.detail):''}</span></p>`;
-  if(s.state==='failed')h+=`<p><button id="ores">Resume (finished months are kept)</button></p>`;
-  if(s.state==='failed')h+=`<pre>${esc(s.stage.error||'')}\n${esc(s.stage.trace||s.log)}</pre>`;
+  let h=`<h2 style="margin-top:0">${esc(p.name||s.id)}</h2><p class="s">${p.mode==='screen'?'Screening':'Quick mode'} · ${p.period==='final_test'?'test period Sep 2026':esc(p.period.join(', '))} · configurations ${p.configs.join(', ')}${s.state==='queued'||s.state==='cancelled'?'':` · ${Math.round(s.elapsed_s/60)} min ${s.state==='running'?'elapsed':'run time'}`}${p.estimate?` (estimated ${p.estimate.training_min+p.estimate.simulation_min} min)`:''}${s.eta_min!==null&&s.state==='running'?` · about ${s.eta_min} min left at the current speed`:''}</p>`;
+  h+=`<p><span class="chip ${s.state==='done'?'ok':['failed','stopped'].includes(s.state)?'bad':'idle'}">${esc(s.state==='queued'?'queued #'+s.position:s.state)}</span> <span class="s">${s.state==='queued'?'waits for the runs before it':esc(s.stage.stage)}${s.stage.month?' · '+esc(s.stage.month):''}${s.stage.detail?' · '+esc(s.stage.detail):''}</span></p>`;
+  h+='<p class="acts">'+[
+    ['ouse','Use these settings',true],
+    ['ostop',s.state==='queued'?'Remove from queue':'Stop',['queued','running'].includes(s.state)],
+    ['ores','Resume (finished months are kept)',['failed','stopped'].includes(s.state)],
+    ['odel','Delete',['done','failed','stopped','cancelled'].includes(s.state)]].filter(x=>x[2]).map(x=>`<button class="ghost" id="${x[0]}">${x[1]}</button>`).join(' ')+'</p>';
+  if(s.state==='failed'&&(s.stage.error||s.stage.trace))h+=`<pre>${esc(s.stage.error||'')}\n${esc(s.stage.trace||s.log)}</pre>`;
   if(s.chains.length&&s.state!=='done'){
     h+='<table><tr><th>Run</th><th>Progress</th><th>SoC so far</th></tr>'+s.chains.filter(c=>c.controller!=='grid_only').map(c=>{const pc=c.expected?Math.min(100,100*c.solves/c.expected):0;
       return `<tr><td>${c.config} · ${esc(CTL[c.controller])}${c.error?'<div class="err">failed</div>':''}</td><td><progress value="${pc}" max="100"></progress> <span class="s">${c.solves}/${c.expected}</span></td><td style="width:40%">${lineSvg(c.soc.map(x=>x??0),'ld" style="height:40px')}</td></tr>`;}).join('')+'</table>';}
@@ -351,8 +391,12 @@ async function ownShow(){
   }
   if(s.log&&s.state!=='done')h+=`<details><summary class="s">log</summary><pre>${esc(s.log)}</pre></details>`;
   $('#ojob').innerHTML=h;
-  if($('#ores'))$('#ores').onclick=async()=>{const r=await (await fetch('/api/own/resume?id='+encodeURIComponent(s.id),{method:'POST'})).json(); if(r.error)alert(r.error); setTimeout(ownShow,800);};
-  if(s.state==='running')OWN.timer=setTimeout(()=>{ownShow();ownJobs();},4000);
+  const act=async(u,msg)=>{if(msg&&!confirm(msg))return;const r=await (await fetch(u+'?id='+encodeURIComponent(s.id),{method:'POST'})).json(); if(r.error)alert(r.error); if(u.endsWith('delete')){OWN.job=null;$('#ojob').innerHTML='<p class="note">Run deleted.</p>';} else setTimeout(ownShow,800); ownJobs();};
+  if($('#ores'))$('#ores').onclick=()=>act('/api/own/resume');
+  if($('#ostop'))$('#ostop').onclick=()=>act('/api/own/stop',s.state==='running'?'Stop this run? It can be resumed later; finished months are kept.':null);
+  if($('#odel'))$('#odel').onclick=()=>act('/api/own/delete','Delete this run and its results?');
+  if($('#ouse'))$('#ouse').onclick=()=>ownUseSettings(p);
+  if(['running','queued'].includes(s.state))OWN.timer=setTimeout(()=>{ownShow();ownJobs();},4000);
 }
 async function poll(){
   const s=await J('/api/status');
@@ -362,7 +406,7 @@ async function poll(){
         await loadReport();}
 }
 $('#run').onclick=async()=>{await fetch('/api/run',{method:'POST'});setTimeout(poll,200);};
-poll();
+ownInit();
 </script>
 </body>
 </html>

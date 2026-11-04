@@ -1,8 +1,8 @@
-# Reproduction of the paper's numbers, tables and figures from the shipped result files.
+# Simulation of any load profile (queued runs) and the check of the paper against the shipped result files.
 #   docker build -t ua-mpc-repro .
 #   docker run --rm -p 8501:8501 ua-mpc-repro             # web interface on http://localhost:8501
 #   docker run --rm ua-mpc-repro python -m app.reproduce   # command line, prints the report
-# Own-data simulations (tab "Your data"): mount out/ to keep runs and forecast bundles, -v "$PWD/out:/pkg/out"
+# Mount out/ to keep the runs and the trained monthly forecasts: -v "$PWD/out:/pkg/out"
 FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 MPLBACKEND=Agg
 WORKDIR /pkg

@@ -1,0 +1,5 @@
+# Text rendering of the figures, fixed so that every platform draws the same pixels as the figures of the paper.
+# Matplotlib installations differ in their default FreeType hinting (on the GitHub runners every figure came out
+# 3-5 % different, some 1-3 px taller or shorter); app/pipeline.py passes this file to every figure script.
+text.hinting: no_hinting
+text.antialiased: True

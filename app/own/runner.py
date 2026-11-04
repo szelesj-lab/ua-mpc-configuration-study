@@ -4,9 +4,11 @@ Uploads live in out/own/uploads/<id>/, jobs in out/own/jobs/<id>/ (app/own/job.p
 """
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -23,6 +25,8 @@ UPLOADS, JOBS = OWN / "uploads", OWN / "jobs"
 CONTROLLERS = ["det", "det_bo", "det_bo_sized", "ua"]
 # rough minutes per controller and month on one core (about 720 solves of 0.5-5 s; machine-dependent)
 MIN_PER_CHAIN_MONTH = 30
+# runs started from the interface wait in a queue and run one after another (OWN_PARALLEL at a time)
+PARALLEL = max(1, int(os.environ.get("OWN_PARALLEL", "1")))
 
 
 def upload(text: str, unit: str, tz: str, name: str = "") -> dict:
@@ -114,8 +118,92 @@ def start(upload_id: str, p: dict) -> dict:
         shutil.copy(src / f, d / f)
     p["estimate"] = estimate(p)
     (d / "params.json").write_text(json.dumps(p, indent=1))
-    _launch(d)
-    return {"id": jid, "estimate": p["estimate"]}
+    (d / "state.json").write_text(json.dumps({"pid": None, "queued": time.time()}))
+    dispatch()
+    return {"id": jid, "estimate": p["estimate"], "state": status(jid)["state"]}
+
+
+def _state(d: Path) -> dict:
+    try:
+        return json.loads((d / "state.json").read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def _running(d: Path) -> bool:
+    st = _state(d)
+    if not st.get("pid") or st.get("stopped"):
+        return False
+    s = json.loads((d / "status.json").read_text()) if (d / "status.json").exists() else {"stage": "starting"}
+    return s.get("stage") not in ("done", "failed") and _alive(st["pid"])
+
+
+def dispatch() -> None:
+    """Start queued runs, oldest first, while fewer than PARALLEL are running (safe to call from anywhere)."""
+    if not JOBS.exists():
+        return
+    JOBS.mkdir(parents=True, exist_ok=True)
+    with open(JOBS / ".queue.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        dirs = [d for d in JOBS.iterdir() if (d / "params.json").exists()]
+        free = PARALLEL - sum(_running(d) for d in dirs)
+        waiting = sorted((d for d in dirs if _state(d).get("queued") and not _state(d).get("pid")),
+                         key=lambda d: _state(d)["queued"])
+        for d in waiting[:max(free, 0)]:
+            _launch(d)
+
+
+def queue_position(jid: str) -> int | None:
+    dirs = [d for d in JOBS.iterdir() if (d / "params.json").exists() and _state(d).get("queued") and not _state(d).get("pid")]
+    order = [d.name for d in sorted(dirs, key=lambda d: _state(d)["queued"])]
+    return order.index(jid) + 1 if jid in order else None
+
+
+def stop(jid: str) -> dict:
+    """Take a queued run out of the queue, or stop a running one (it can be resumed later)."""
+    d = JOBS / jid
+    st = _state(d)
+    if not st:
+        raise ValueError("unknown run")
+    if not st.get("pid"):
+        st.update(queued=None, cancelled=time.time())
+        (d / "state.json").write_text(json.dumps(st))
+        return {"id": jid, "state": "cancelled"}
+    if _running(d):
+        try:
+            os.killpg(st["pid"], signal.SIGTERM)
+        except OSError:
+            pass
+        st["stopped"] = time.time()
+        (d / "state.json").write_text(json.dumps(st))
+    dispatch()
+    return {"id": jid, "state": "stopped"}
+
+
+def delete(jid: str) -> dict:
+    d = JOBS / jid
+    if not (d / "params.json").exists() or d.parent != JOBS:
+        raise ValueError("unknown run")
+    if _running(d):
+        raise ValueError("stop the run first")
+    shutil.rmtree(d)
+    return {"id": jid, "deleted": True}
+
+
+def upload_info(uid: str) -> dict:
+    """The check result and preview of an earlier upload (to run again with it)."""
+    d = UPLOADS / uid
+    if not (d / "upload.json").exists() or d.parent != UPLOADS:
+        raise ValueError("unknown upload")
+    rep = json.loads((d / "upload.json").read_text())
+    prev = json.loads((d / "preview.json").read_text()) if (d / "preview.json").exists() else {"daily": [], "week": []}
+    if rep.get("reference"):
+        from app.own import reference
+        defaults = dict(reference.REF_SIZES)
+    else:
+        defaults = default_sizes(rep["mean_kw"])
+    return {"ok": True, "id": uid, "report": rep, "preview": prev, "defaults": defaults, "ratios": reference_ratios(),
+            "reference": bool(rep.get("reference"))}
 
 
 def _launch(d: Path):
@@ -123,7 +211,8 @@ def _launch(d: Path):
     env = {**os.environ, "PYTHONPATH": str(PKG), "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"}
     pr = subprocess.Popen([sys.executable, "-m", "app.own.job", str(d)], cwd=PKG, env=env, stdout=log,
                           stderr=subprocess.STDOUT, start_new_session=True)
-    (d / "state.json").write_text(json.dumps({"pid": pr.pid, "started": time.time()}))
+    st = _state(d)
+    (d / "state.json").write_text(json.dumps({"pid": pr.pid, "started": time.time(), "queued_at": st.get("queued")}))
 
 
 def resume(jid: str) -> dict:
@@ -131,11 +220,14 @@ def resume(jid: str) -> dict:
     d = JOBS / jid
     if not (d / "params.json").exists():
         raise ValueError("unknown job")
-    if status(jid)["state"] == "running":
-        raise ValueError("the job is still running")
+    if status(jid)["state"] in ("running", "queued"):
+        raise ValueError("the run is still running or queued")
     for f in (d / "progress").glob("*.jsonl") if (d / "progress").exists() else []:
         f.unlink()
-    _launch(d)
+    if (d / "status.json").exists() and json.loads((d / "status.json").read_text()).get("stage") == "done":
+        raise ValueError("the run is finished")
+    (d / "state.json").write_text(json.dumps({"pid": None, "queued": time.time()}))
+    dispatch()
     return {"id": jid, "resumed": True}
 
 
@@ -154,9 +246,13 @@ def status(jid: str) -> dict:
     d = JOBS / jid
     if not (d / "params.json").exists():
         return {"id": jid, "state": "unknown"}
-    st = json.loads((d / "state.json").read_text())
+    st = _state(d)
     s = json.loads((d / "status.json").read_text()) if (d / "status.json").exists() else {"stage": "starting"}
     p = json.loads((d / "params.json").read_text())
+    if not st.get("pid"):
+        q = "cancelled" if st.get("cancelled") else "queued"
+        return {"id": jid, "state": q, "stage": {"stage": q}, "params": p, "started": None, "elapsed_s": 0, "chains": [],
+                "eta_min": None, "position": queue_position(jid) if q == "queued" else None, "log": ""}
     exp = json.loads((d / "expected.json").read_text()) if (d / "expected.json").exists() else {}
     chains = []
     for k, n in exp.items():
@@ -176,9 +272,10 @@ def status(jid: str) -> dict:
         left = sum(max(c["expected"] - c["solves"], 0) for c in chains)
         eta = round(left / (sum(rates) / len(rates)) / max(1, min(int(p.get("workers") or 1), len(chains))) / 60)
     alive = _alive(st["pid"])
-    state = "done" if s["stage"] == "done" else "failed" if s["stage"] == "failed" or not alive else "running"
+    state = ("done" if s["stage"] == "done" else "stopped" if st.get("stopped") else
+             "failed" if s["stage"] == "failed" or not alive else "running")
     out = {"id": jid, "state": state, "stage": s, "params": p, "started": st["started"],
-           "elapsed_s": round((s["time"] if state in ("done", "failed") and "time" in s else time.time()) - st["started"]), "chains": chains, "eta_min": eta,
+           "elapsed_s": round((s["time"] if state in ("done", "failed", "stopped") and "time" in s else time.time()) - st["started"]), "chains": chains, "eta_min": eta,
            "log": (d / "log.txt").read_text()[-1500:] if (d / "log.txt").exists() else ""}
     if (d / "report.json").exists():
         out["report"] = json.loads((d / "report.json").read_text())
@@ -188,13 +285,19 @@ def status(jid: str) -> dict:
 def jobs() -> list[dict]:
     if not JOBS.exists():
         return []
+    dispatch()
     out = []
     for d in sorted(JOBS.iterdir(), reverse=True):
         if (d / "params.json").exists():
             p = json.loads((d / "params.json").read_text())
-            s = json.loads((d / "status.json").read_text())["stage"] if (d / "status.json").exists() else "starting"
+            st = status(d.name)
+            ref = None
+            if (d / "report.json").exists():
+                r = json.loads((d / "report.json").read_text()).get("reference")
+                ref = None if not r or not r.get("applies") or not r.get("rows") else bool(r.get("ok"))
             out.append({"id": d.name, "name": p.get("name"), "mode": p["mode"], "period": p["period"],
-                        "configs": p["configs"], "stage": s, "report": (d / "report.json").exists()})
+                        "configs": p["configs"], "state": st["state"], "stage": st["stage"].get("stage"),
+                        "position": st.get("position"), "reference_ok": ref, "report": (d / "report.json").exists()})
     return out
 
 

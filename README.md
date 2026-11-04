@@ -56,8 +56,8 @@ A second load case (a synthetic production schedule, configuration A) is in `res
 | `results/analysis/` | data inventory, period and monthly energies, protection hours by SoC edge, decision-map table; `extended/`: solver convergence, quantile sensitivity of r_E, calibration per channel, stricter-solver re-run of B UA-MPC (`experiments/analysis/solver_sensitivity.py`) |
 | `results/production_schedule/` | second load case |
 | `experiments/extended/`, `results/extended/` | additional analyses (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/extended/README.md` |
-| `app/` | reproduction of the paper (web interface and command line); `app/own/`: simulation of any load profile |
-| `docs/` | protocol, data description and the user guide of the web interface (`user_guide.md`) |
+| `app/` | web interface and command line: simulation of any load profile (`app/own/`, queued runs) and the check of the paper |
+| `docs/` | protocol, data description and the user guide of the web interface (`user_guide.md` in Hungarian, `user_guide_en.md` in English) |
 
 ## Reproducing
 
@@ -96,7 +96,7 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.2.1 of
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.2.2 of
 this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
@@ -127,7 +127,7 @@ image; the badge above shows the result and each run keeps the report as an arti
 
 ```bash
 docker build -t ua-mpc-repro .
-docker run --rm -p 8501:8501 ua-mpc-repro             # web interface: http://localhost:8501
+docker run --rm -p 8501:8501 ua-mpc-repro             # web interface: http://localhost:8501 (tab Paper check)
 docker run --rm ua-mpc-repro python -m app.reproduce   # command line: report on stdout, exit code 0 if all match
 ```
 
@@ -136,7 +136,7 @@ or `python -m app.reproduce` from the package root. Outputs go to `out/`: `repor
 earlier report in `reports/`, the run log `run_log.jsonl`, `figures/` and `manuscript/`.
 
 **Re-running experiments.** With the trained summer forecast models (`models_summer.zip`, attached to the GitHub
-release) the web interface also re-runs single experiments: the forecast calibration (the 6 values of Sections 4.2
+release) the web interface (tab Paper check → Re-run experiments) also re-runs single experiments: the forecast calibration (the 6 values of Sections 4.2
 and 5.1 that need the models) and any stored replay of the final test or the decision map (122 runs, from a few
 minutes to about an hour each). It shows the progress and the SoC while the replay runs and compares the result
 with the stored one within stated tolerances (net cost 0.1 %, protection 0.5 h).
@@ -152,10 +152,12 @@ reference were taken from the manuscript with `app/tools/extract_reference.py` a
 
 ## Simulating any load profile
 
-Step-by-step instructions for the web interface, the file format and the results: **[`docs/user_guide.md`](docs/user_guide.md)**.
+Step-by-step instructions for the web interface, the file format and the results: **[`docs/user_guide.md`](docs/user_guide.md)**
+(Hungarian) and [`docs/user_guide_en.md`](docs/user_guide_en.md) (English).
 
-The web interface (tab **Your data**) runs the controllers on any load profile with a battery, PV and wind sized
-by the user. The same tool chain also reproduces the reference results: run with the reference data set shipped in
+The web interface opens on the **Simulation** tab: it runs the controllers on any load profile with a battery, PV
+and wind sized by the user. Any number of runs can be added; they wait in a queue and run one after another (each
+can be stopped, resumed, deleted, or used as the starting point of the next run). The same tool chain also reproduces the reference results: run with the reference data set shipped in
 the package and the reference settings, it compares every run with the stored result of the same set-up.
 
 1. **Load data.** Upload a CSV with a timestamp and a load column, at 15-, 30- or 60-minute resolution, as average
@@ -201,11 +203,12 @@ taxes. With Docker, mount `out/` so that runs and forecast bundles persist, and 
 docker run --rm -p 8501:8501 -v "$PWD/out:/pkg/out" -v "$PWD/models_summer:/pkg/models_summer" ua-mpc-repro
 ```
 
-An interrupted run can be resumed from the tab; finished months are kept.
+An interrupted or stopped run can be resumed from the tab; finished months are kept. `OWN_PARALLEL=2` lets two runs
+of the queue run at the same time (default 1).
 
 ## Citation
 
-See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.1 the reproduction of the paper and the simulation of any
+See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.2 the reproduction of the paper and the simulation of any
 load profile.
 
 ## Licence

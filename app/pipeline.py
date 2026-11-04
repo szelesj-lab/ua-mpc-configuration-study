@@ -22,7 +22,9 @@ LOG = OUT / "run_log.jsonl"
 
 def _run(cmd: list[str], env: dict | None = None, cwd: Path | None = None) -> tuple[bool, str, float]:
     t0 = time.time()
-    p = subprocess.run(cmd, cwd=cwd or PKG, env={**os.environ, **(env or {})}, capture_output=True, text=True)
+    # the same text rendering everywhere (app/matplotlibrc), whatever the local matplotlib configuration
+    env = {**os.environ, "MATPLOTLIBRC": str(Path(__file__).with_name("matplotlibrc")), **(env or {})}
+    p = subprocess.run(cmd, cwd=cwd or PKG, env=env, capture_output=True, text=True)
     return p.returncode == 0, (p.stdout + p.stderr)[-4000:], time.time() - t0
 
 

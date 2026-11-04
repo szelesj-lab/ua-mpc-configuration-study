@@ -2,8 +2,9 @@
 
 The reference images in app/reference_figures/ are the paper's figures, reduced to 900 px width
 (made by app/tools/make_reference_figures.py). A regenerated figure is reduced the same way and both are compared pixel by
-pixel in greyscale. Identical software gives identical images; another platform may render fonts slightly differently, so a
-figure counts as reproduced when at most 1 % of its pixels differ by more than 8 grey levels.
+pixel in greyscale. The figure scripts run with a fixed text rendering (app/matplotlibrc), so identical software gives
+identical images on every platform; a figure counts as reproduced when at most 1 % of its pixels differ by more than
+8 grey levels.
 """
 from __future__ import annotations
 

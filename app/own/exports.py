@@ -8,7 +8,8 @@ the cell with the run's factor); SoC as a fraction of the capacity.
                      step and the SoC it planned for, and the solver result; the objective and its terms are in the
                      solver's own units (cell)
     totals.csv, monthly.csv, gamma.csv   the tables of the report
-    figures/*.png    the figures of the report
+    figures/         the figures in the style of the article's figures, PNG and PDF (see app/own/figures.py),
+                     and summary_ua_minus_reference.csv (the numbers of the UA-MPC minus reference figures)
     results.zip      all of the above with report.md and report.json
 """
 from __future__ import annotations
@@ -90,6 +91,7 @@ def write(d: Path, rep: dict) -> list[str]:
                 z.write(d / name, name)
         for name in written:
             z.write(e / name, name)
-        for p in figs:
+        for p in sorted((e / "figures").iterdir()):
             z.write(p, f"figures/{p.name}")
-    return written + [f"figures/{p.name}" for p in figs] + ["results.zip"]
+    extra = ["figures/summary_ua_minus_reference.csv"] if (e / "figures" / "summary_ua_minus_reference.csv").exists() else []
+    return written + [f"figures/{p.name}" for p in figs] + extra + ["results.zip"]

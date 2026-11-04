@@ -62,7 +62,8 @@ A felület két fülből áll; a **User guide** gomb ezt az útmutatót nyitja m
 
 ## 3. Szimuláció
 
-A **Simulation** fülön. A bal oszlop az űrlap, a jobb oszlop a kiválasztott futás és a futások listája.
+A **Simulation** fülön. A bal oszlop az űrlap, a jobb oszlop a kiválasztott futás és a futások listája. Minden beállítás
+jelentése és hatása részletesen: [`settings.md`](settings.md).
 
 ![Az űrlap](img/guide/03_form_empty.png)
 
@@ -204,16 +205,28 @@ a nettó költség és a védelmi idő havonta.
 **Reference check** (csak a referencia-adatkészlettel, 5. fejezet): minden futás a tárolt eredménnyel összevetve,
 ✓ ha a tűréseken belül van.
 
-**Ábrák** (minden futás után automatikusan, PNG, kattintásra nagyít):
+**Ábrák** (minden futás után automatikusan, a cikk ábráinak stílusában és felépítésében, ebből a futásból számolva;
+PNG és PDF, kattintásra nagyít). A fájlnevek a cikk ábraszkriptjeinek nevei:
 
-| Ábra | Mit mutat |
-|---|---|
-| `cost.png` | nettó költség szabályozónként és bekötésenként |
-| `protection.png` | BMS-védelmi órák szabályozónként és bekötésenként |
-| `energy.png` | hálózati vételezés és levágott megújuló energia |
-| `monthly_cost.png` | nettó költség havonta, szabályozónként (több hónapos futásnál) |
-| `re_gamma.png` | r_E és Γ havonta, bekötésenként |
-| `soc_<bekötés>.png` | a töltöttség (SoC) alakulása a teljes futás alatt, szabályozónként |
+| Fájl | Cikkbeli ábra | Mit mutat | Mikor készül |
+|---|---|---|---|
+| `fig02_load_profile` | Fig. 2 | terhelés / átlag: hétköznapi és hétvégi medián óránként, 10–90 %-os sáv | mindig |
+| `fig03_monthly_energy` | Fig. 3 | terhelés, napelem és szél energiája havonta (kWh) | mindig |
+| `fig05_net_cost` | Fig. 6 | nettó költség bekötésenként és szabályozónként, a Grid only szaggatott vonal | quick |
+| `fig06_protection` | Fig. 7 | BMS-védelmi órák SoC-szél szerint: alsó szél teli, felső szél sraffozott | quick |
+| `fig16_gamma` | Fig. 10 | DET-BO mínusz UA-MPC védelmi idő havonta a Γ függvényében (A, B) | quick, ha fut DET-BO és UA-MPC |
+| `fig10_monthly_saving` | Fig. 11 | megtakarítás a Grid onlyhoz képest havonta (%), a hónap alatt a megújuló-arány | quick, több hónap |
+| `fig11_monthly_protection` | Fig. 12 | védelmi órák havonta, szabályozónként (A, B) | quick, több hónap |
+| `fig15a_summary_cost` | Fig. 13 | UA-MPC mínusz minden referencia: nettó költség (%), 95 %-os páros napi bootstrap-intervallum; teli pont: az intervallum nem metszi a nullát | quick |
+| `fig15b_summary_protection` | Fig. 14 | ugyanez a védelmi időre (h) | quick |
+| `rE_gamma` | (a cikkben táblázat) | r_E és Γ havonta, bekötésenként | mindig (screening is) |
+| `soc_<bekötés>` | – | a töltöttség (SoC) a teljes futás alatt, szabályozónként | quick |
+
+![A futás ábrái](img/guide/07_figures.png)
+
+A 13–14. ábra számai a `figures/summary_ua_minus_reference.csv`-ben vannak. A cikkhez képest két eltérés: a
+nettó költség tengelye nem nulláról indul (a különbségek így látszanak), és a napi bootstrap a futás napjain
+történik, nem a cikk teljes tesztidőszakán.
 
 **Letöltések** (a te mértékegységeidben: kW, kWh, €; a SoC a kapacitás hányada):
 

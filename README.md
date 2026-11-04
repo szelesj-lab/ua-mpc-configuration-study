@@ -3,7 +3,7 @@
 Simulation package of
 
 > J. Szeles, L. Deszát, A. Kummer, A. Fodor, T. Ruppert: *Configuration-dependent value of uncertainty-aware MPC
-> for behind-the-meter batteries in food processing* (manuscript submitted to Applied Energy).
+> for behind-the-meter batteries in food processing* (manuscript in preparation).
 > University of Pannonia, Hungary.
 
 It holds the controller code in the exact version used, the experiment pipelines, every result file, and the
@@ -57,7 +57,7 @@ A second load case (a synthetic production schedule, configuration A) is in `res
 | `results/production_schedule/` | second load case |
 | `experiments/extended/`, `results/extended/` | additional analyses (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/extended/README.md` |
 | `app/` | web interface and command line: simulation of any load profile (`app/own/`, queued runs) and the check of the paper |
-| `docs/` | protocol, data description and the user guide of the web interface (`user_guide.md` in Hungarian, `user_guide_en.md` in English) |
+| `docs/` | protocol, data description and the user guide of the web interface and the description of the simulation settings (`user_guide.md`, `settings.md` in Hungarian; `user_guide_en.md`, `settings_en.md` in English) |
 
 ## Reproducing
 
@@ -153,7 +153,8 @@ reference were taken from the manuscript with `app/tools/extract_reference.py` a
 ## Simulating any load profile
 
 Step-by-step instructions for the web interface, the file format and the results: **[`docs/user_guide.md`](docs/user_guide.md)**
-(Hungarian) and [`docs/user_guide_en.md`](docs/user_guide_en.md) (English).
+(Hungarian) and [`docs/user_guide_en.md`](docs/user_guide_en.md) (English); every setting explained in
+[`docs/settings.md`](docs/settings.md) / [`docs/settings_en.md`](docs/settings_en.md).
 
 The web interface opens on the **Simulation** tab: it runs the controllers on any load profile with a battery, PV
 and wind sized by the user. Any number of runs can be added; they wait in a queue and run one after another (each

@@ -312,7 +312,7 @@ EXPORTS = ("totals.csv", "monthly.csv", "gamma.csv", "steps.csv", "mpc_solves.cs
 
 
 def file(jid: str, name: str) -> Path | None:
-    """A file of a finished run: the report, an export, or a figure (figures/<name>.png)."""
+    """A file of a finished run: the report, an export, or a figure (figures/<name>.png or .pdf, figures/summary_ua_minus_reference.csv)."""
     import re
     d = JOBS / jid
     if d.parent != JOBS or not re.fullmatch(r"[\w.-]+", jid):
@@ -323,7 +323,7 @@ def file(jid: str, name: str) -> Path | None:
         f = d / "export" / name
         if not f.exists() and name == "monthly.csv":
             f = d / name
-    elif re.fullmatch(r"figures/[\w-]+\.png", name):
+    elif re.fullmatch(r"figures/[\w-]+\.(png|pdf|csv)", name):
         f = d / "export" / name
     else:
         return None

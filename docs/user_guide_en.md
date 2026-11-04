@@ -60,7 +60,8 @@ The interface has two tabs; **User guide** opens this guide.
 
 ## 3. Simulation
 
-Tab **Simulation**. The left column is the form, the right column the selected run and the list of runs.
+Tab **Simulation**. The left column is the form, the right column the selected run and the list of runs. What every
+setting means and changes: [`settings_en.md`](settings_en.md).
 
 ![The form](img/guide/03_form_empty.png)
 
@@ -200,16 +201,28 @@ protection hours of each controller per month.
 **Reference check** (only with the reference data set; section 5): each run against the stored result, ✓ when
 within the tolerances.
 
-**Figures** (after every run, PNG, click to enlarge):
+**Figures** (after every run, in the style and layout of the article's figures, computed from this run; PNG and
+PDF, click to enlarge). The file names are those of the article's figure scripts:
 
-| Figure | What it shows |
-|---|---|
-| `cost.png` | net cost per controller and configuration |
-| `protection.png` | BMS protection hours per controller and configuration |
-| `energy.png` | grid import and curtailed renewable energy |
-| `monthly_cost.png` | net cost per month and controller (runs over several months) |
-| `re_gamma.png` | r_E and Γ per month and configuration |
-| `soc_<config>.png` | the state of charge over the whole run, per controller |
+| File | Article figure | What it shows | When |
+|---|---|---|---|
+| `fig02_load_profile` | Fig. 2 | load / mean: weekday and weekend median per hour, 10–90 % band | always |
+| `fig03_monthly_energy` | Fig. 3 | load, PV and wind energy per month (kWh) | always |
+| `fig05_net_cost` | Fig. 6 | net cost per configuration and controller, grid only dashed | quick |
+| `fig06_protection` | Fig. 7 | BMS protection hours by SoC edge: lower edge filled, upper edge hatched | quick |
+| `fig16_gamma` | Fig. 10 | DET-BO minus UA-MPC protection per month against Γ (A, B) | quick, with DET-BO and UA-MPC |
+| `fig10_monthly_saving` | Fig. 11 | saving against grid only per month (%), renewable share under each month | quick, several months |
+| `fig11_monthly_protection` | Fig. 12 | protection hours per month and controller (A, B) | quick, several months |
+| `fig15a_summary_cost` | Fig. 13 | UA-MPC minus each reference: net cost (%), 95 % paired daily bootstrap interval; filled dot: the interval excludes zero | quick |
+| `fig15b_summary_protection` | Fig. 14 | the same for protection (h) | quick |
+| `rE_gamma` | (a table in the article) | r_E and Γ per month and configuration | always (screening too) |
+| `soc_<config>` | – | state of charge over the whole run, per controller | quick |
+
+![Figures of a run](img/guide/07_figures.png)
+
+The numbers of Figs. 13–14 are in `figures/summary_ua_minus_reference.csv`. Two differences from the article: the
+net-cost axis does not start at zero (so that the differences show), and the daily bootstrap uses the days of this
+run, not the article's whole test period.
 
 **Downloads** (in your units: kW, kWh, €; SoC as a fraction of the capacity):
 

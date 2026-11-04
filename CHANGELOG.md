@@ -13,7 +13,7 @@ are unchanged. `CITATION.cff`: version 1.2.3 and the authors' departments.
 - The forecast is retrained before every month (walk-forward, `prep_bundle.py`, cached per month); quick mode runs
   DET, DET-BO, DET-BO re-sized monthly from r_E and UA-MPC with the reference weights, screening mode gives r_E and
   Γ. Report with costs and energies in the site's units, protection, r_E and Γ.
-- After every run: figures (cost, protection, energy, monthly cost, r_E and Γ, SoC) and downloads: the tables as
+- After every run: figures in the style and layout of the article's figures, computed from the run (load profile, monthly energy, net cost, protection by SoC edge, Γ against the protection difference, monthly saving and protection, UA-MPC minus each reference with a paired daily bootstrap interval, r_E and Γ, SoC; PNG and PDF) and downloads: the tables as
   CSV, every 15-min step (`steps.csv`) and every MPC solve with its forecast, limits, first planned step, planned SoC
   and solver result (`mpc_solves.csv`), all in one `results.zip` (`app/own/exports.py`, `app/own/figures.py`).
 - Runs wait in a queue and run one after another (`OWN_PARALLEL`, default 1); a queued run can be removed, a running
@@ -36,6 +36,7 @@ are unchanged. `CITATION.cff`: version 1.2.3 and the authors' departments.
 - `.github/workflows/reproduce.yml`: unit tests (`app/tests/`) and the check of the paper on every push, also in the
   Docker image, with what differs shown as annotations on the run page (`app/tools/ci_annotations.py`).
 - `docs/user_guide.md` (Hungarian) and `docs/user_guide_en.md` (English), with screenshots in `docs/img/guide/`;
+  `docs/settings.md` / `docs/settings_en.md`: what every simulation setting means and changes;
   `README.md`: sections "Reproducing the paper" and "Simulating any load profile".
 
 ## 1.1.0 (2026-10-31)

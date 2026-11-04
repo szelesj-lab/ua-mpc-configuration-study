@@ -1,0 +1,45 @@
+# Regenerates the paper's numbers, tables and figures from the shipped result files and compares them with the
+# values printed in the paper (python -m app.reproduce). Also builds the Docker image and runs the same check in it.
+name: reproduce
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-frozen.txt
+      - run: pip install -r requirements-frozen.txt pytest
+      - name: Unit tests of the interface
+        run: python -m pytest -q app/tests
+      - name: Reproduce and check
+        env:
+          MPLBACKEND: Agg
+        run: |
+          python -m app.reproduce
+          cat out/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reproduction-report
+          path: |
+            out/report.md
+            out/report.json
+            out/figures/
+            out/manuscript/
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t ua-mpc-repro .
+      - run: docker run --rm ua-mpc-repro python -m app.reproduce

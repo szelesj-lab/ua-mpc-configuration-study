@@ -7,6 +7,7 @@ counts ("28 of 33") exactly.
 from __future__ import annotations
 
 import glob
+import inspect
 import json
 import re
 from functools import cache
@@ -39,17 +40,6 @@ FIGURES = [
     ("GA", "Graphical abstract", "graphical_abstract"),
 ]
 
-# ---------------------------------------------------------------- tables written by the base step (out/manuscript/tables)
-TABLES = [
-    ("Table 1", "Data inventory", "i_inventory.tex"),
-    ("Table 2", "Periods", "i_periods.tex"),
-    ("Table 4", "Selected operating points", "i_weights.tex"),
-    ("Table 6", "Final test, BMS plant", "i_final.tex"),
-    ("Table 7", "Paired bootstrap, final test", "i_boot.tex"),
-    ("Table 12", "Walk-forward winter test", "i_winter.tex"),
-]
-
-
 # ---------------------------------------------------------------- helpers reading the result files
 @cache
 def macros() -> dict[str, float]:
@@ -66,7 +56,9 @@ def macros() -> dict[str, float]:
 
 
 def m(name: str):
-    return lambda: macros()[name]
+    f = lambda: macros()[name]  # noqa: E731
+    f.macros = [name]
+    return f
 
 
 def csv(rel: str) -> pd.DataFrame:
@@ -264,12 +256,230 @@ CLAIMS = [
 ]
 
 
+# ---------------------------------------------------------------- further values of the text, found by going through it number by number
+SUMMER = RESULTS / "summer"
+
+
+def final_metric(X, v, key):
+    return lambda: jload(SUMMER / X / f"final_test/steps/bms_{v}.json")["metrics"][key]
+
+
+def solver_detail():
+    st = pd.read_csv(SUMMER / "B/final_test/steps/bms_ua.csv"); st.index = pd.to_datetime(st.t, utc=True)
+    sv = pd.read_csv(SUMMER / "B/final_test/steps/bms_ua_solves.csv"); sv.index = pd.to_datetime(sv.t, utc=True)
+    ok = sv.success.reindex(st.index, method="ffill").fillna(True).astype(bool)
+    prot = (st.cut_discharge_w > 1e-3) | (st.cut_charge_w > 1e-3)
+    at_top = (~sv.success) & (st.soc.reindex(sv.index) >= 0.9 - 1e-6)
+    return {"prot": int(prot.sum()), "prot_failed": int((prot & ~ok).sum()), "failed": int((~sv.success).sum()), "failed_top": int(at_top.sum())}
+
+
+def winter_solver_min():
+    """Share of converged solves per controller over the six winter months (as in Table 12), the lowest of them."""
+    v = []
+    for X in "BC":
+        for c in ("det", "det_bo", "ua"):
+            ms = [jload(f)["metrics"] for f in glob.glob(str(RESULTS / f"winter/{X}/{c}_m*.json"))]
+            if ms:
+                v.append(sum(x["solver_success_pct"] * x["solves"] for x in ms) / sum(x["solves"] for x in ms))
+    return min(v)
+
+
+def strict_solver():
+    d = csv("sensitivity/sens.csv"); b = d[d.scenario == "base"].set_index(["config", "ctrl"]); s = d[d.scenario == "solver"].set_index(["config", "ctrl"])
+    return (abs(s.prot - b.prot).max(), (100 * abs(s.cost / b.cost - 1)).max())
+
+
+def chan_effect():
+    d = csv("sensitivity/sens.csv"); u = d[d.ctrl == "ua"]
+    b = u[u.scenario == "base"].set_index("config"); c = u[u.scenario == "chan"].set_index("config")
+    return ((100 * abs(c.cost / b.cost.loc[c.index] - 1)).max(), abs(c.prot - b.prot.loc[c.index]).max())
+
+
+def calch(per, ch, col):
+    return lambda: pd.read_csv(RESULTS / "analysis/extended/calib_channels.csv").set_index(["period", "channel"]).loc[(per, ch), col]
+
+
+def calcond(per, ch, group, scale, col):
+    def f():
+        d = csv("calibration/calib_conditional.csv")
+        return d[(d.period == per) & (d.channel == ch) & (d.group == group) & (d.scale == scale)][col].iloc[0]
+    return f
+
+
+def kappa_ch(ch):
+    return lambda: jload(EXT / "calibration/kappa_channel.json")["kappa_channel"][ch]
+
+
+def rq_bounds(q):
+    """Largest r_E of a tie and smallest of a difference in B for quantile q (results/analysis/extended/rE_quantiles.csv)."""
+    def f():
+        d = pd.read_csv(RESULTS / "analysis/extended/rE_quantiles.csv"); d = d[d.config == "B"]
+        diff = (d.bo >= d.ua + 4) & (d.bo >= 2 * d.ua)
+        return d[~diff][q].max(), d[diff][q].min()
+    return f
+
+
+def map_A_rmax():
+    d = pd.read_csv(RESULTS / "analysis/extended/rE_quantiles.csv"); return d[d.config == "A"].q95.max()
+
+
+def fig16(set_prefix):
+    d = csv("preregistered/figs/fig16_data.csv"); return d[d.set.str.startswith(set_prefix)]
+
+
+def misses():
+    d = csv("preregistered/figs/fig16_data.csv"); d = d[d.set != "Decision map (development)"]
+    sweep = d.set.str.startswith("Back-off")
+    pred = pd.Series([("tie" if g <= 1 + 1e-9 else ("difference" if g >= 1.5 - 1e-9 else None)) if s else ("tie" if g < 1 else "difference")
+                      for g, s in zip(d.Gamma, sweep)], index=d.index)
+    return d[pred.notna() & (pred != d.label)]
+
+
+def corr_cell(phi, col):
+    def f():
+        d = csv("indicators/ind_corr.csv"); return d[(d.cap == 108) & (d.phi == phi)][col].iloc[0]
+    return f
+
+
+def sweep_stats(G):
+    def f():
+        reg = jload(EXT / "preregistered/preregistration_rE.json"); fewer, cost = [], []
+        for c in reg["b_sweep"]:
+            if abs(c["Gamma"] - G) > 1e-9:
+                continue
+            a = jload(EXT / f"preregistered/runs_rE/steps/bsw_det_bo_cap{c['cap']}_err{c['err']}_rp{c['rp']}_G{c['Gamma']}.json")["metrics"]
+            u = jload(SUMMER / f"B/decision_map_recovery/steps/ua_cap{c['cap']}_err{c['err']}_rp{c['rp']}.json")["metrics"]
+            fewer.append(u["protection_h"] - a["protection_h"]); cost.append(100 * (a["net_cost_eur"] / u["net_cost_eur"] - 1))
+        return fewer, cost
+    return f
+
+
+@cache
+def t1_boot():
+    """Paired block bootstrap of the daily costs, Nov–Mar: UA-MPC minus re-sized back-off and minus summer-tuned DET-BO."""
+    import os
+    import sys
+    os.environ.setdefault("KAIROS_ROOT", str(RESULTS.parent / "code"))
+    sys.path.insert(0, str(RESULTS.parent / "experiments/summer"))
+    import engine
+    def chain(fmt):
+        return pd.concat([engine.daily(fmt.format(m=m)) for m in range(2, 7)])
+    ua = chain(str(RESULTS / "winter/B/ua_m{m}.csv"))
+    t1 = chain(str(EXT / "preregistered/t1/det_bo_sized_m{m}.csv"))
+    bo = chain(str(RESULTS / "winter/B/det_bo_m{m}.csv"))
+    return engine.paired(ua, t1, ["cost"])[0], engine.paired(ua, bo, ["cost"])[0]
+
+
+def t1_monthly_extra_max():
+    out = []
+    for k in range(2, 7):
+        a = jload(EXT / f"preregistered/t1/det_bo_sized_m{k}.json")["metrics"]["net_cost_eur"]
+        u = jload(RESULTS / f"winter/B/ua_m{k}.json")["metrics"]["net_cost_eur"]; out.append(100 * (a / u - 1))
+    return max(out)
+
+
+def eg(period, col):
+    return lambda: csv("ratio/effective_gamma.csv").set_index("period").loc[period, col]
+
+
+def reselect(ctrl, key):
+    return lambda: jload(EXT / "seasonal/reselection.json")["selected"][ctrl][key]
+
+
+CLAIMS += [
+    ("5.2 Final test", "Solves of UA-MPC in B that converged (%) / solves", "97.1 / 654",
+     lambda: (final_metric("B", "ua", "solver_success_pct")(), final_metric("B", "ua", "solves")())),
+    ("5.2 Final test", "Converged solves of DET-BO in B (%)", "99.4", final_metric("B", "det_bo", "solver_success_pct")),
+    ("5.2 Final test", "Converged solves in winter, at least (%)", "99.8", winter_solver_min),
+    ("5.2 Final test", "UA-MPC protection steps under a non-converged plan", "37 of 38",
+     lambda: (solver_detail()["prot_failed"], solver_detail()["prot"])),
+    ("5.2 Final test", "Failed solves that started at the upper edge", "10 of 19", lambda: (solver_detail()["failed_top"], solver_detail()["failed"])),
+    ("5.2 Final test", "Stricter solver: protection within (h) / cost within (%)", "0.5 / 0.1", strict_solver),
+    ("5.2 Final test", "A and C, physical plant: largest band violation (pp·h)", "0.4",
+     lambda: max(macros()[k] for k in ("physADetViol", "physAUaViol", "physABoViol", "physCDetViol", "physCUaViol"))),
+    ("5.2 Final test", "Final test: load / renewable energy (kWh)", "6.82 / 2.11", lambda: (macros()["finDemandInd"], macros()["finRenewInd"])),
+    ("5.1 Calibration", "Solar ±1σ coverage, development / final test (%)", "94–77",
+     lambda: (calch("development", "solar", "cov1")(), calch("final_test", "solar", "cov1")())),
+    ("5.1 Calibration", "Wind ±2σ coverage on the largest-error quarter (%)", "80–83",
+     lambda: (calch("development", "wind", "cov2_largest_quarter")(), calch("final_test", "wind", "cov2_largest_quarter")())),
+    ("5.1 Calibration", "Scales per channel: solar / wind", "1.51 / 1.25", lambda: (kappa_ch("solar")(), kappa_ch("wind")())),
+    ("5.1 Calibration", "Final test, solar ±1σ with the channel scale (%)", "85",
+     calcond("final_test", "solar", "all", "channel", "cov1")),
+    ("5.1 Calibration", "Final test, wind ±2σ on the largest-error quarter with the channel scale (%)", "81",
+     calcond("final_test", "wind", "largest quarter", "channel", "cov2")),
+    ("5.1 Calibration", "Channel scales in closed loop: cost (%) / protection (h), at most", "0.1 / 0.25", chan_effect),
+    ("5.3 Decision map", "C: largest cost difference (%)", "0.03", m("mapCCostMax")),
+    ("5.3 Decision map", "C: cells where the configuration-blind ratio predicts a difference", "4", m("mapCOldPred")),
+    ("5.3 Decision map", "Surplus ratio: largest tie / smallest difference", "0.041 / 0.082",
+     lambda: (macros()["mapBUpLowThr"], macros()["mapBUpHighThr"])),
+    ("5.3 Decision map", "Bounds with Q0.90", "0.015 / 0.031", rq_bounds("q90")),
+    ("5.3 Decision map", "Bounds with Q0.99", "0.048 / 0.096", rq_bounds("q99")),
+    ("5.3 Decision map", "A: largest r_E", "0.094", map_A_rmax),
+    ("5.3 Decision map", "A: UA-MPC protection at most (h)", "1.0", m("mapAUaMax")),
+    ("5.3 Decision map", "A: DET-BO protection (h)", "0.75–12.00", lambda: (macros()["mapABoMin"], macros()["mapABoMax"])),
+    ("5.3 Decision map", "A: UA-MPC cheaper from 72 Wh up (%)", "1.8–6.0", lambda: (macros()["mapACostMin"], macros()["mapACostMax"])),
+    ("5.3 Decision map", "A: DET-BO protection at the upper edge (%)", "83", m("mapABoUpShare")),
+    ("5.3 Decision map", "B: DET-BO protection at the upper edge in difference cells (%)", "81", m("mapBHighUpShare")),
+    ("5.4 Pre-registered", "Γ of the five missed predictions", "0.99–1.64", lambda: (misses().Gamma.min(), misses().Gamma.max())),
+    ("5.4 Pre-registered", "Missed new cell (Γ = 0.99): DET-BO / UA-MPC (h)", "8.00 / 3.75",
+     lambda: tuple(misses()[misses().set.str.startswith("New")][["bo_h", "ua_h"]].iloc[0])),
+    ("5.4 Pre-registered", "Missed correlation cells: UA-MPC fewer hours", "5.25 / 6.50",
+     lambda: tuple(sorted(misses()[misses().set.str.startswith("Error")].diff_h))),
+    ("5.4 Pre-registered", "Correlation, 108 Wh: r_E at φ = 0.5 / 0.857", "0.029 / 0.050", lambda: (corr_cell(0.5, "r_E")(), corr_cell(0.857, "r_E")())),
+    ("5.4 Pre-registered", "Correlation, φ = 0.5: DET-BO / UA-MPC (h)", "0.75 / 0.00", lambda: (corr_cell(0.5, "bo")(), corr_cell(0.5, "ua")())),
+    ("5.4 Pre-registered", "Correlation, φ = 0.857: DET-BO / UA-MPC (h)", "6.25 / 1.00", lambda: (corr_cell(0.857, "bo")(), corr_cell(0.857, "ua")())),
+    ("5.4 Pre-registered", "Correlation, φ = 0.98: DET-BO / UA-MPC (h)", "17.75 / 11.25", lambda: (corr_cell(0.98, "bo")(), corr_cell(0.98, "ua")())),
+    ("5.4 Pre-registered", "24-h accumulated error at φ = 0.5 / 0.857", "0.15 / 0.27", lambda: (corr_cell(0.5, "S24")(), corr_cell(0.857, "S24")())),
+    ("5.4 Pre-registered", "Sweep, Γ = 0.5: fewer protection hours than UA-MPC", "0.5–1.0", lambda: (min(sweep_stats(0.5)()[0]), max(sweep_stats(0.5)()[0]))),
+    ("5.4 Pre-registered", "Sweep, Γ = 0.5: extra cost (%)", "0.5–1.6", lambda: (min(sweep_stats(0.5)()[1]), max(sweep_stats(0.5)()[1]))),
+    ("5.4 Pre-registered", "Sweep, Γ = 0.75: cost difference (%)", "-0.6–0.1", lambda: (min(sweep_stats(0.75)()[1]), max(sweep_stats(0.75)()[1]))),
+    ("5.4 Pre-registered", "r_E of the base cell: tuning / development / final test", "0.026 / 0.023 / 0.035",
+     lambda: (eg("tuning", "r_E")(), eg("development", "r_E")(), eg("final_test", "r_E")())),
+    ("5.4 Pre-registered", "r_E in winter: mean / times the tuning value", "0.064 / 2.4",
+     lambda: (csv("ratio/effective_gamma.csv").query("period.str.startswith('winter')").r_E.mean(),
+              csv("ratio/effective_gamma.csv").query("period.str.startswith('winter')").r_E.mean() / eg("tuning", "r_E")())),
+    ("5.4 Pre-registered", "T1 bootstrap, UA-MPC minus re-sized back-off (m€) and 95 % interval", "-32 / -45 / -21",
+     lambda: tuple(1000 * t1_boot()[0][k] for k in ("diff_total", "lo_total", "hi_total"))),
+    ("5.4 Pre-registered", "T1 bootstrap, UA-MPC minus summer-tuned DET-BO (%) and interval (m€)", "-0.08 / -10 / 2",
+     lambda: (t1_boot()[1]["diff_pct"], 1000 * t1_boot()[1]["lo_total"], 1000 * t1_boot()[1]["hi_total"])),
+    ("5.4 Pre-registered", "T1, summer final test: re-sized back-off / UA-MPC (h)", "10.00 / 9.50",
+     lambda: (jload(EXT / "preregistered/t1/steps/det_bo_sized_final.json")["metrics"]["protection_h"], final_metric("B", "ua", "protection_h")())),
+    ("5.4 Pre-registered", "T1, summer final test: extra cost (%)", "0.07",
+     lambda: 100 * (jload(EXT / "preregistered/t1/steps/det_bo_sized_final.json")["metrics"]["net_cost_eur"] / final_metric("B", "ua", "net_cost_eur")() - 1)),
+    ("5.4 Pre-registered", "T1: largest monthly extra cost vs UA-MPC (%)", "1.7", t1_monthly_extra_max),
+    ("5.5 Winter", "Winter coverage ±1σ / ±2σ (%)", "71–86", lambda: (macros()["winCovOneMin"], macros()["winCovOneMax"])),
+    ("5.5 Winter", "Winter coverage ±2σ (%)", "86–98", lambda: (macros()["winCovTwoMin"], macros()["winCovTwoMax"])),
+    ("5.5 Winter", "Winter RMSE (W per step)", "1.46–2.54", lambda: (macros()["winRmseMin"], macros()["winRmseMax"])),
+    ("5.5 Winter", "PIT lowest decile, five winter months (%)", "10–14",
+     lambda: tuple(sorted(csv("calibration/calib_diag.csv").query("period.str.startswith('winter')").pit_lowest_decile)[-5:][i] for i in (0, -1))),
+    ("5.5 Winter", "PIT lowest decile, summer periods (%)", "1–5",
+     lambda: (csv("calibration/calib_diag.csv").query("~period.str.startswith('winter')").pit_lowest_decile.min(),
+              csv("calibration/calib_diag.csv").query("~period.str.startswith('winter')").pit_lowest_decile.max())),
+    ("5.5 Winter", "Γ in December: UA-MPC / DET-BO", "1.84 / 1.77", lambda: (eg("winter m3", "Gamma_UA")(), eg("winter m3", "Gamma_BO")())),
+    ("5.5 Winter", "Γ in March: UA-MPC / DET-BO", "1.77 / 2.31", lambda: (eg("winter m6", "Gamma_UA")(), eg("winter m6", "Gamma_BO")())),
+    ("5.5 Winter", "Seasonal re-selection: threshold for November (h)", "6.8", lambda: jload(EXT / "seasonal/reselection.json")["threshold_h"]),
+    ("5.5 Winter", "Re-selected UA-MPC point in November (€ / h)", "0.908 / 3.75", lambda: (reselect("ua", "nov_cost")(), reselect("ua", "nov_prot_h")())),
+]
+
+# values that need the trained forecast models (level 2: Experiments, "Forecast calibration")
+MODEL_CLAIMS = [
+    ("5.1 Calibration", "Calibrated forecast, development: ±1σ / ±2σ coverage (%)", "80.1 / 96.6", "constant_all_cov1 / constant_all_cov2"),
+    ("5.1 Calibration", "Quarter of days with the largest errors: ±1σ / ±2σ (%)", "64.6 / 91.7", "constant_hard_days_cov1 / constant_hard_days_cov2"),
+    ("4.2 Calibration", "Calibration period: RMSE / RMS of the GP std (W)", "1.67 / 1.24", "rmse_w / rms_sigma_w"),
+    ("4.2 Calibration", "Raw GP coverage ±1σ / ±2σ (%)", "66.5 / 88.9", "coverage_1sigma_pct / coverage_2sigma_pct"),
+    ("4.2 Calibration", "Scale κ", "1.345", "sigma_scale"),
+    ("4.2 Calibration", "Lag-1 autocorrelation of the hourly errors / φ per step", "0.54 / 0.857", "error_autocorr_1h / error_autocorr_step"),
+]
+
+# numbers quoted from other studies (Section 5.7) are not results of this package and are not checked
+
+
 # ---------------------------------------------------------------- comparison
 def _parse(printed: str):
     """'0.783 / 0.809' -> [('0.783', 3), ...]; '7.2–38.2' -> range; '28 of 33' -> count."""
     if " of " in printed:
         a, b = printed.split(" of "); return "count", [(float(a), 0), (float(b), 0)]
-    parts = re.split(r"\s*/\s*|\s*–\s*", printed)
+    parts = re.split(r"\s*/\s*|(?<=\d)\s*–\s*", printed)
     vals = [(float(p), len(p.split(".")[1]) if "." in p else 0) for p in parts]
     return ("range" if "–" in printed else "list"), vals
 
@@ -282,12 +492,41 @@ def check(printed: str, computed) -> tuple[bool, str]:
     shown = []
     ok = True
     for (r, dec), g in zip(ref, got):
-        g = abs(float(g)) if r >= 0 and float(g) < 0 and kind != "count" else float(g)
+        g = abs(float(g)) if r > 0 and float(g) < 0 and kind != "count" else float(g)
         rounded = float(f"{g:.{dec}f}")  # same formatting as the scripts that printed the paper's numbers
         shown.append(f"{rounded:.{dec}f}")
         ok &= abs(rounded - r) < 0.5 * 10 ** (-dec) + 1e-12
     sep = " of " if kind == "count" else ("–" if kind == "range" else " / ")
     return ok, sep.join(shown)
+
+
+def source_of(fn, statement: str) -> str:
+    """Where a value comes from: the result file(s) or the macro of experiments/analysis/make_numbers.py."""
+    names = list(getattr(fn, "macros", []))
+    if not names:
+        try:
+            names = re.findall(r'macros\(\)\["(\w+)"\]', inspect.getsource(fn))
+        except (OSError, TypeError):
+            names = []
+    if names:
+        return "experiments/analysis/make_numbers.py (results/summer, results/winter, results/analysis): " + ", ".join("\\" + n for n in names)
+    try:
+        src = inspect.getsource(fn)
+    except (OSError, TypeError):
+        return ""
+    helpers = {n for n in re.findall(r"\b([a-z_0-9]+)\(", src) if n in globals() and callable(globals()[n])}
+    files = set(re.findall(r'"((?:[\w./{}-]+/)?[\w{}-]+\.(?:csv|json))"', src))
+    for h in helpers:
+        try:
+            files |= set(re.findall(r'"((?:[\w./{}-]+/)?[\w{}-]+\.(?:csv|json))"', inspect.getsource(globals()[h])))
+        except (OSError, TypeError):
+            pass
+    return "app/catalogue.py; " + ", ".join(sorted(files)) if files else "app/catalogue.py"
+
+
+def model_values() -> dict | None:
+    p = OUT / "rerun" / "calibration.json"
+    return json.loads(p.read_text()) if p.exists() else None
 
 
 def evaluate() -> list[dict]:
@@ -299,5 +538,23 @@ def evaluate() -> list[dict]:
             err = ""
         except Exception as e:  # missing file or column: reported, not hidden
             ok, got, err = False, "–", f"{type(e).__name__}: {e}"
-        rows.append({"section": sec, "statement": what, "paper": printed, "reproduced": got, "ok": ok, "error": err})
+        rows.append({"section": sec, "statement": what, "paper": printed, "reproduced": got, "ok": ok, "error": err,
+                     "source": source_of(fn, what), "status": "ok" if ok else "differs"})
+    mv = model_values()
+    for sec, what, printed, keys in MODEL_CLAIMS:
+        src = "code/src/calibrate_uncertainty.py with the summer GP models (Experiments: Forecast calibration)"
+        if mv is None:
+            rows.append({"section": sec, "statement": what, "paper": printed, "reproduced": "needs models", "ok": None,
+                         "error": "", "source": src, "status": "needs models"})
+            continue
+        try:
+            ok, got = check(printed, tuple(mv[k.strip()] for k in keys.split("/")))
+            err = ""
+        except Exception as e:
+            ok, got, err = False, "–", f"{type(e).__name__}: {e}"
+        rows.append({"section": sec, "statement": what, "paper": printed, "reproduced": got, "ok": ok, "error": err, "source": src,
+                     "status": "ok" if ok else "differs"})
+    order = {s: i for i, s in enumerate(["3.1 Cell", "3.2 Data", "3.2 Periods", "4.2 Calibration", "5.1 Calibration", "5.2 Final test",
+                                        "5.3 Decision map", "5.4 Pre-registered", "5.5 Winter", "S2 Sensitivity", "S2 Tariffs"])}
+    rows.sort(key=lambda r: order.get(r["section"], 99))
     return rows

@@ -56,7 +56,8 @@ A second load case (a synthetic production schedule, configuration A) is in `res
 | `results/analysis/` | data inventory, period and monthly energies, protection hours by SoC edge, decision-map table; `extended/`: solver convergence, quantile sensitivity of r_E, calibration per channel, stricter-solver re-run of B UA-MPC (`experiments/analysis/solver_sensitivity.py`) |
 | `results/production_schedule/` | second load case |
 | `experiments/extended/`, `results/extended/` | additional analyses (v1.1.0): sensitivity, tail diagnostics, pre-registered tests, T1/T2, tariffs, seasonal re-selection, indicator benchmark; see `experiments/extended/README.md` |
-| `docs/` | protocol and data description |
+| `app/` | reproduction of the paper (web interface and command line); `app/own/`: simulation of any load profile |
+| `docs/` | protocol, data description and the user guide of the web interface (`user_guide.md`) |
 
 ## Reproducing
 
@@ -95,7 +96,7 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub releases (v1.1.0 and later) of
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.2.1 of
 this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
@@ -113,9 +114,16 @@ company names); the raw company export is not included.
 
 ## Reproducing the paper
 
-The numbers, tables and figures of the paper are regenerated from the shipped result files in about 20 seconds;
-no controller is re-run. Each value printed in the paper is shown next to the recomputed value (69 values,
-rounded to the decimals printed in the paper), and every run is logged in `out/run_log.jsonl`.
+[![reproduce](https://github.com/szelesj-lab/ua-mpc-configuration-study/actions/workflows/reproduce.yml/badge.svg)](https://github.com/szelesj-lab/ua-mpc-configuration-study/actions/workflows/reproduce.yml)
+
+The paper can be checked against the shipped result files in under a minute, without re-running a controller:
+
+- every value of the text (121 values; `app/catalogue.py`, each with the file or script it comes from),
+- every numeric cell of the tables (813 cells of 17 tables; `app/tables.py`),
+- every figure, pixel by pixel against the figure printed in the paper (18 figures; `app/figcheck.py`).
+
+The GitHub workflow `.github/workflows/reproduce.yml` runs the same check on every push, also inside the Docker
+image; the badge above shows the result and each run keeps the report as an artifact.
 
 ```bash
 docker build -t ua-mpc-repro .
@@ -123,14 +131,82 @@ docker run --rm -p 8501:8501 ua-mpc-repro             # web interface: http://lo
 docker run --rm ua-mpc-repro python -m app.reproduce   # command line: report on stdout, exit code 0 if all match
 ```
 
-Without Docker (Python 3.13, `pip install -r requirements-frozen.txt`): `python -m app.server` or
-`python -m app.reproduce` from the package root. Outputs go to `out/` (`report.md`, `report.json`,
-`figures/`, `manuscript/`). The catalogue of checked values, with the file each one is computed from, is
-`app/catalogue.py`.
+Without Docker (Linux, macOS or WSL; Python 3.13, `pip install -r requirements-frozen.txt`): `python -m app.server`
+or `python -m app.reproduce` from the package root. Outputs go to `out/`: `report.md` and `report.json`, every
+earlier report in `reports/`, the run log `run_log.jsonl`, `figures/` and `manuscript/`.
+
+**Re-running experiments.** With the trained summer forecast models (`models_summer.zip`, attached to the GitHub
+release) the web interface also re-runs single experiments: the forecast calibration (the 6 values of Sections 4.2
+and 5.1 that need the models) and any stored replay of the final test or the decision map (122 runs, from a few
+minutes to about an hour each). It shows the progress and the SoC while the replay runs and compares the result
+with the stored one within stated tolerances (net cost 0.1 %, protection 0.5 h).
+
+```bash
+unzip models_summer.zip -d models_summer
+docker run --rm -p 8501:8501 -v "$PWD/models_summer:/pkg/models_summer" ua-mpc-repro
+```
+
+The first re-run builds the work copies of `experiments/make_work.sh` (about 1.2 GB). Numbers quoted from other
+studies (Section 5.7) are not results of this package and are not checked. The paper's tables and figures used as
+reference were taken from the manuscript with `app/tools/extract_reference.py` and `app/tools/make_reference_figures.py`.
+
+## Simulating any load profile
+
+Step-by-step instructions for the web interface, the file format and the results: **[`docs/user_guide.md`](docs/user_guide.md)**.
+
+The web interface (tab **Your data**) runs the controllers on any load profile with a battery, PV and wind sized
+by the user. The same tool chain also reproduces the reference results: run with the reference data set shipped in
+the package and the reference settings, it compares every run with the stored result of the same set-up.
+
+1. **Load data.** Upload a CSV with a timestamp and a load column, at 15-, 30- or 60-minute resolution, as average
+   power (kW or W) or energy per interval (kWh). A sample file in this format can be exported on the tab (length,
+   resolution, unit and mean load to choose). The file is checked (resolution, time
+   zone and daylight saving, duplicates, negative values, gaps, zeros, spikes; at least one full week). Gaps up to 2 h
+   are interpolated. Or press **Use the reference data set**: the measured plant load shipped in
+   `code/data/industrial_load_profile.csv` (described in `docs/data.md`).
+2. **System.** Battery capacity and power limit, PV peak power, wind turbine rated power, in the site's units. The
+   default keeps the ratios of the reference system to the mean load (battery 6.7 h of mean load, power 2.2×,
+   PV 2.8×, wind 1.9×).
+3. **Period and mode.** Configurations (A, B, C), controllers, months (October 2025 – September 2026) or the
+   September 2026 test period; days the load data do not cover are either filled from the profile or left out.
+
+How the simulation works:
+
+- The site is mapped onto the reference cell by one factor (cell mean load 10.788 W / site mean load); battery, PV
+  and wind scale with it, and costs and energies are scaled back to the site. When days are filled from the profile,
+  the load of a missing day is taken from the same weekday and quarter-hour of the nearest day of the year in the
+  data; public holidays are not treated separately.
+- Weather, day-ahead prices and renewable forecasts are those of the reference site. Before every simulated month the
+  Gaussian-process forecast is retrained on the weather before that month and its σ calibrated on its own held-out
+  tail (walk-forward: `experiments/winter/train_rewind.py`, `app/own/prep_bundle.py`). These monthly forecast
+  bundles do not depend on the load and are cached in `out/own/bundles/` (1–3 min per month).
+- **Quick mode:** DET, DET-BO with the reference back-off, DET-BO with a back-off re-sized every month from the r_E of
+  the month before (b = r_E (x_max − x_min) / 0.75), and UA-MPC, each with the reference weights tuned for that
+  configuration, plus grid-only as the baseline. The SoC carries over between months. About 15–60 min per
+  controller and month on one core (UA-MPC is the slowest); controllers run in parallel on the available cores.
+- **Screening:** only r_E and Γ per month and configuration, in the time of the forecast training.
+- **Reference check:** with the reference data set, the reference sizes, initial SoC 0.5, days outside the data left
+  out, and months from October 2025 (stored: October 2025 – March 2026 for B and C) or the September 2026 test
+  period (A, B, C), the report compares each run with the stored result within the tolerances of the re-run tab
+  (net cost 0.1 %, protection 0.5 h). Any other input runs the same way without this comparison.
+
+The report gives the cost, the saving against grid-only, protection hours, extra grid cost, curtailment and band
+violation per controller, the months, r_E and Γ, the back-off that Γ = 0.75 would need, the reference check where it
+applies, and downloads (`report.md`, `report.json`, `monthly.csv`). The weights are the reference weights, not
+re-tuned for the site; costs are energy at Hungarian day-ahead prices plus battery wear, without network charges or
+taxes. With Docker, mount `out/` so that runs and forecast bundles persist, and `models_summer/` for the September
+2026 test period:
+
+```bash
+docker run --rm -p 8501:8501 -v "$PWD/out:/pkg/out" -v "$PWD/models_summer:/pkg/models_summer" ua-mpc-repro
+```
+
+An interrupted run can be resumed from the tab; finished months are kept.
 
 ## Citation
 
-See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`.
+See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.1 the reproduction of the paper and the simulation of any
+load profile.
 
 ## Licence
 

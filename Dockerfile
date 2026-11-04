@@ -2,6 +2,7 @@
 #   docker build -t ua-mpc-repro .
 #   docker run --rm -p 8501:8501 ua-mpc-repro             # web interface on http://localhost:8501
 #   docker run --rm ua-mpc-repro python -m app.reproduce   # command line, prints the report
+# Own-data simulations (tab "Your data"): mount out/ to keep runs and forecast bundles, -v "$PWD/out:/pkg/out"
 FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 MPLBACKEND=Agg
 WORKDIR /pkg

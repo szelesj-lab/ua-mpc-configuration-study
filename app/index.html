@@ -5,118 +5,361 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UA-MPC reproduction</title>
 <style>
-:root{--bg:#f7f6f2;--panel:#fff;--ink:#16161a;--ink2:#5a5955;--line:#e2e0d9;--ok:#1a7f55;--okbg:#e6f4ec;--bad:#b42318;--badbg:#fdecea;--acc:#2a5bd7;--accbg:#e8eefb}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--ink2:#a3a29c;--line:#33322f;--ok:#4cc38a;--okbg:#16301f;--bad:#ff7b72;--badbg:#3a1a17;--acc:#7aa2ff;--accbg:#1c2640}}
+:root{--bg:#f7f6f2;--panel:#fff;--ink:#16161a;--ink2:#5a5955;--line:#e2e0d9;--ok:#1a7f55;--okbg:#e6f4ec;--bad:#b42318;--badbg:#fdecea;--acc:#2a5bd7;--accbg:#e8eefb;--warn:#8a5a00;--warnbg:#fbf1dc}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ecebe6;--ink2:#a3a29c;--line:#33322f;--ok:#4cc38a;--okbg:#16301f;--bad:#ff7b72;--badbg:#3a1a17;--acc:#7aa2ff;--accbg:#1c2640;--warn:#f0c060;--warnbg:#3a2e12}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
 header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
-h1{font-size:18px;margin:0 0 2px}
-.sub{color:var(--ink2);font-size:13px}
-.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
-button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer}
+h1{font-size:18px;margin:0 0 2px}h2{font-size:15px;margin:22px 0 8px}
+.sub,.note,.s{color:var(--ink2);font-size:13px}
+.note{margin:0 0 12px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button,.btn{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer;text-decoration:none}
+button.ghost,.btn.ghost{background:transparent;color:var(--acc)}
 button[disabled]{opacity:.5;cursor:default}
-.chip{border-radius:999px;padding:3px 10px;font-weight:600;font-size:13px}
-.chip.ok{background:var(--okbg);color:var(--ok)}.chip.bad{background:var(--badbg);color:var(--bad)}.chip.idle{background:var(--accbg);color:var(--acc)}
-.status{color:var(--ink2);font-size:13px}
+.chip{border-radius:999px;padding:3px 10px;font-weight:600;font-size:13px;white-space:nowrap}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.chip.ok{background:var(--okbg)}.chip.bad{background:var(--badbg)}.chip.idle{background:var(--accbg);color:var(--acc)}.chip.warn{background:var(--warnbg)}
 progress{width:180px;height:8px}
-nav{display:flex;gap:4px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line)}
-nav a{padding:10px 12px;color:var(--ink2);text-decoration:none;border-bottom:2px solid transparent;cursor:pointer}
+nav{display:flex;gap:2px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto}
+nav a{padding:10px 12px;color:var(--ink2);text-decoration:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
 nav a.on{color:var(--ink);border-color:var(--acc)}
-main{padding:20px 24px;max-width:1200px}
-table{border-collapse:collapse;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+main{padding:20px 24px;max-width:1240px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--panel);border:1px solid var(--line)}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-size:12px;color:var(--ink2);font-weight:600;background:var(--bg)}
 td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 tr.sec td{background:var(--bg);font-weight:600;font-size:12px;color:var(--ink2)}
-.mark{font-weight:700}.mark.ok{color:var(--ok)}.mark.bad{color:var(--bad)}
+td.src{font-size:11px;color:var(--ink2);max-width:320px;word-break:break-word}
+.mark{font-weight:700}
 .err{color:var(--bad);font-size:12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.cell{display:inline-block;margin:0 6px 2px 0;font-variant-numeric:tabular-nums}
+.cell.bad{background:var(--badbg);border-radius:4px;padding:0 4px}
+.tabhead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+details.tab{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:8px;padding:8px 12px}
+details.tab summary{cursor:pointer;font-weight:600;list-style:none}
+details.tab summary::-webkit-details-marker{display:none}
+details.tab summary .tabhead span:first-child::before{content:'▸ ';color:var(--ink2)}
+details.tab[open] summary .tabhead span:first-child::before{content:'▾ '}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
-.card img{width:100%;height:170px;object-fit:contain;background:#fff;border-radius:4px;cursor:zoom-in}
-.card .t{font-weight:600;margin-top:6px}.card .s{color:var(--ink2);font-size:12px}
-.missing{height:170px;display:flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--bg);border-radius:4px}
-.scroll{overflow-x:auto}
-pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:12px}
-details{margin-bottom:10px}summary{cursor:pointer;font-weight:600}
-.opts{margin-bottom:12px;color:var(--ink2);font-size:13px}
-#zoom{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:24px}
-#zoom img{max-width:100%;max-height:100%;background:#fff}
-.note{color:var(--ink2);font-size:13px;margin:0 0 14px}
-@media (max-width:640px){header,nav,main{padding-left:16px;padding-right:16px}}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pair figure{margin:0}.pair figcaption{font-size:11px;color:var(--ink2);text-align:center}
+.card img{width:100%;height:150px;object-fit:contain;background:#fff;border-radius:4px;cursor:zoom-in}
+.card .t{font-weight:600;margin-top:6px;display:flex;justify-content:space-between;gap:8px}
+.missing{height:150px;display:flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--bg);border-radius:4px;font-size:12px}
+.opts{margin-bottom:12px;color:var(--ink2);font-size:13px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+input[type=search],select{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:24px;gap:12px}
+#zoom img{max-width:49%;max-height:100%;background:#fff}
+.exp{display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:16px}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:8px;max-height:560px;overflow:auto}
+.list .g{padding:6px 10px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--bg);position:sticky;top:0}
+.list .i{padding:6px 10px;border-top:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.list .i:hover,.list .i.on{background:var(--accbg)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+svg.soc{width:100%;height:180px;background:var(--bg);border-radius:6px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;font-size:12px;max-height:220px}
+.own{display:grid;grid-template-columns:minmax(300px,1fr) 2fr;gap:16px}
+.own>*{min-width:0}.form input,.form select{max-width:100%}.form input[type=file]{width:100%}
+.form label{display:block;margin:6px 0 2px;font-size:13px;color:var(--ink2)}
+.form input[type=number],.form input[type=text]{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:100%}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form .checks{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:13px;margin:4px 0}
+.form .checks label{display:inline-flex;gap:5px;align-items:center;margin:0;color:var(--ink);font-size:13px}
+.form select{width:100%}.form fieldset{min-width:0}
+.form fieldset{border:1px solid var(--line);border-radius:8px;margin:10px 0;padding:8px 12px}
+.form legend{font-size:12px;font-weight:600;color:var(--ink2);padding:0 4px}
+.hint{font-size:12px;color:var(--ink2)}
+.bars{display:grid;grid-template-columns:max-content 1fr max-content;gap:4px 8px;align-items:center;font-size:13px}
+.bars .b{height:12px;background:var(--acc);border-radius:3px}
+.verdict{background:var(--accbg);border-radius:8px;padding:10px 12px;margin:8px 0}
+svg.ld{width:100%;height:120px;background:var(--bg);border-radius:6px}
+@media (max-width:760px){.own{grid-template-columns:1fr}.form .row{grid-template-columns:1fr}}
+@media (max-width:760px){header,nav,main{padding-left:16px;padding-right:16px}.exp{grid-template-columns:1fr}.pair{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
   <h1>Configuration-dependent value of uncertainty-aware MPC — reproduction</h1>
-  <div class="sub">Numbers, tables and figures of the paper, regenerated from the result files in <code>results/</code>. No controller is re-run.</div>
+  <div class="sub">Every value, table cell and figure of the paper, regenerated from the result files in <code>results/</code> and checked against the paper.</div>
   <div class="bar">
-    <button id="run">Regenerate everything</button>
-    <span id="summary" class="chip idle">not generated yet</span>
-    <progress id="prog" value="0" max="1" hidden></progress>
-    <span id="status" class="status"></span>
+    <button id="run">Regenerate and check</button>
+    <span id="chV" class="chip idle">values –</span><span id="chT" class="chip idle">table cells –</span><span id="chF" class="chip idle">figures –</span>
+    <progress id="prog" value="0" max="1" hidden></progress><span id="status" class="s"></span>
+    <a class="btn ghost" href="/report.md" id="dl" hidden>Download report</a>
+    <a class="btn ghost" href="https://github.com/szelesj-lab/ua-mpc-configuration-study/blob/main/docs/user_guide.md" target="_blank" rel="noopener">User guide</a>
   </div>
 </header>
 <nav>
-  <a data-tab="values" class="on">Values</a><a data-tab="figures">Figures</a><a data-tab="tables">Tables</a><a data-tab="log">Run log</a>
+  <a data-tab="values" class="on">Values</a><a data-tab="tables">Tables</a><a data-tab="figures">Figures</a><a data-tab="experiments">Re-run experiments</a><a data-tab="own">Your data</a><a data-tab="history">History</a>
 </nav>
 <main>
   <section id="values">
-    <p class="note">Each value as printed in the paper next to the value recomputed from the result files, rounded to the decimals printed in the paper.</p>
-    <div class="opts"><label><input type="checkbox" id="onlybad"> only values that differ</label></div>
-    <div id="vt"></div>
+    <p class="note">Each value as printed in the paper next to the value recomputed from the result files, rounded to the decimals printed in the paper. The source column names the file or script each value comes from. Values marked “needs models” are checked after the forecast calibration has been re-run (Re-run experiments). Numbers quoted from other studies (Section 5.7) are not checked.</p>
+    <div class="opts"><label><input type="checkbox" id="onlybad"> only values that differ</label><label><input type="checkbox" id="showsrc" checked> show sources</label><input type="search" id="q" placeholder="filter…"></div>
+    <div id="vt" class="scroll"></div>
   </section>
-  <section id="figures" hidden><div class="grid" id="fg"></div></section>
-  <section id="tables" hidden><p class="note">LaTeX tables as written by <code>experiments/analysis</code>; the paper's tables were set from these.</p><div id="tt"></div></section>
-  <section id="log" hidden><div id="lg"></div></section>
+  <section id="tables" hidden><p class="note">Every numeric cell of the paper's tables, recomputed from the result files (app/tables.py). Cells that differ are highlighted with the paper's value and the recomputed one.</p><div id="tt"></div></section>
+  <section id="figures" hidden><p class="note">Left: the figure in the paper; right: the figure regenerated now. A figure counts as identical when at most 1 % of its pixels differ (different platforms may render fonts slightly differently).</p><div class="grid" id="fg"></div></section>
+  <section id="experiments" hidden>
+    <p class="note">Re-runs a stored experiment with the controller code and compares it with the stored result. Needs the trained summer forecast models: unpack <code>models_summer.zip</code> from the GitHub release into <code>models_summer/</code> (with Docker: mount it, see README). Runs take minutes to an hour.</p>
+    <div id="prep" class="opts"></div>
+    <div class="exp"><div class="list" id="el"></div><div class="panel" id="ep"><p class="note">Select an experiment.</p></div></div>
+  </section>
+  <section id="own" hidden>
+    <p class="note">Runs the controllers on any load profile. Upload a CSV with a timestamp and a load column (15, 30 or 60 min; kW, W or kWh per interval). Weather, prices and renewable forecasts come from the reference site; the forecast models are retrained before every simulated month (walk-forward). Run with the reference data set and the reference settings, the results are compared with the stored results of the same set-up.</p>
+    <div class="own">
+      <div class="form panel">
+        <fieldset><legend>Sample CSV</legend>
+          <p class="hint" style="margin:0 0 6px">An example file in the accepted format, ready to upload or to fill with your own values.</p>
+          <div class="row"><div><label>Length</label><select id="xs"><option value="week">1 week</option><option value="month" selected>1 month</option><option value="year">1 year</option></select></div>
+          <div><label>Resolution</label><select id="xr"><option value="15">15 min</option><option value="30">30 min</option><option value="60" selected>60 min</option></select></div>
+          <div><label>Values</label><select id="xu"><option value="kw">average power, kW</option><option value="kwh">energy per interval, kWh</option></select></div>
+          <div><label>Mean load (kW)</label><input type="number" id="xm" value="250" min="0.001" step="any"></div></div>
+          <p><button class="ghost" id="xgo" type="button">Download sample CSV</button></p>
+        </fieldset>
+        <fieldset><legend>1 · Load data</legend>
+          <input type="file" id="of" accept=".csv,.txt">
+          <div class="row"><div><label>Values are</label><select id="ou"><option value="kw">average power, kW</option><option value="w">average power, W</option><option value="kwh">energy per interval, kWh</option></select></div>
+          <div><label>Timestamps (without offset) in</label><select id="otz"><option>Europe/Budapest</option><option>UTC</option><option>Europe/Vienna</option><option>Europe/Berlin</option><option>Europe/London</option></select></div></div>
+          <p><button id="oup" class="ghost">Check file</button> <button id="oref" class="ghost" type="button">Use the reference data set</button></p><div id="ochk"></div>
+        </fieldset>
+        <fieldset id="opar" disabled><legend>2 · System</legend>
+          <div class="row"><div><label>Battery capacity (kWh)</label><input type="number" id="s_battery_kwh" min="0" step="any"></div>
+          <div><label>Battery power limit (kW)</label><input type="number" id="s_power_kw" min="0" step="any"></div>
+          <div><label>PV (kWp)</label><input type="number" id="s_pv_kwp" min="0" step="any"></div>
+          <div><label>Wind turbine, rated (kW)</label><input type="number" id="s_wind_kw" min="0" step="any"></div></div>
+          <div class="hint" id="oratio"></div><p><button class="ghost" id="odef" type="button">Reference ratios</button></p>
+          <label>Configurations</label><div class="checks" id="ocfg"></div>
+          <label>Controllers</label><div class="checks" id="octl"></div>
+        </fieldset>
+        <fieldset id="oper" disabled><legend>3 · Period and mode</legend>
+          <div class="checks"><label><input type="radio" name="omode" value="quick" checked> quick (controllers with the reference weights)</label><label><input type="radio" name="omode" value="screen"> screening (r_E and Γ only)</label></div>
+          <div class="checks"><label><input type="radio" name="oprd" value="months" checked> months</label><label><input type="radio" name="oprd" value="final_test"> test period Sep 2026 (summer forecast models)</label></div>
+          <div class="checks"><span class="hint">Days the load data do not cover:</span><label><input type="radio" name="ofill" value="profile" checked> fill from the profile</label><label><input type="radio" name="ofill" value="data"> leave out</label></div>
+          <div class="row" id="omon"><div><label>From</label><select id="ofrom"></select></div><div><label>To</label><select id="oto"></select></div></div>
+          <div class="row"><div><label>Initial SoC</label><input type="number" id="osoc" value="0.5" min="0.1" max="0.9" step="0.05"></div><div><label>Name (optional)</label><input type="text" id="oname"></div></div>
+          <p class="hint" id="oest"></p>
+          <p><button id="ogo">Run simulation</button></p>
+        </fieldset>
+      </div>
+      <div>
+        <div class="panel" id="ojob"><p class="note">Upload a file to start, or open an earlier run below.</p></div>
+        <h2>Runs</h2><div id="ojobs" class="list" style="max-height:260px"></div>
+      </div>
+    </div>
+  </section>
+  <section id="history" hidden>
+    <h2>Reports</h2><div id="hr" class="scroll"></div>
+    <h2>Run log</h2><div id="lg" class="scroll"></div>
+  </section>
 </main>
-<div id="zoom"><img alt=""></div>
+<div id="zoom"></div>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const J=async u=>(await fetch(u)).json();
+let REP=null, EXPS=[], CUR=null, timer=null;
 document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{
   document.querySelectorAll('nav a').forEach(x=>x.classList.toggle('on',x===a));
   document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==a.dataset.tab);
-  if(a.dataset.tab==='log')loadLog();
+  if(a.dataset.tab==='history')loadHistory(); if(a.dataset.tab==='experiments')loadExperiments(); if(a.dataset.tab==='own')ownInit();
 });
-let values=[];
-async function loadValues(){
-  const r=await (await fetch('/api/values')).json();
-  values=r.values;
-  const s=$('#summary');
-  if(!r.generated){s.className='chip idle';s.textContent='not generated yet';$('#vt').innerHTML='<p class="note">Press “Regenerate everything”.</p>';return;}
-  const ok=values.filter(v=>v.ok).length;
-  s.className='chip '+(ok===values.length?'ok':'bad');s.textContent=`${ok} of ${values.length} values reproduced`;
-  renderValues();
+function chip(el,ok,n,label){el.className='chip '+(n===0?'idle':ok===n?'ok':'bad');el.textContent=`${label} ${ok} / ${n}`;}
+async function loadReport(){
+  const r=await J('/api/report'); REP=r.generated?r:null; $('#dl').hidden=!REP;
+  if(!REP){$('#vt').innerHTML='<p class="note">Press “Regenerate and check”.</p>';return;}
+  const s=REP.summary; chip($('#chV'),s.values_ok,s.values,'values'); chip($('#chT'),s.cells_ok,s.cells,'table cells'); chip($('#chF'),s.figures_ok,s.figures,'figures');
+  if(s.values_need_models){$('#chV').textContent+=` (+${s.values_need_models} need models)`;}
+  renderValues(); renderTables(); renderFigures();
 }
 function renderValues(){
-  const only=$('#onlybad').checked;let sec='',h='<table><tr><th>Statement</th><th>Paper</th><th>Reproduced</th><th></th></tr>';
-  for(const v of values){ if(only&&v.ok)continue;
-    if(v.section!==sec){sec=v.section;h+=`<tr class="sec"><td colspan="4">${esc(sec)}</td></tr>`;}
-    h+=`<tr><td>${esc(v.statement)}${v.error?`<div class="err">${esc(v.error)}</div>`:''}</td><td class="num">${esc(v.paper)}</td><td class="num">${esc(v.reproduced)}</td><td class="mark ${v.ok?'ok':'bad'}">${v.ok?'✓':'✗'}</td></tr>`;}
-  $('#vt').innerHTML='<div class="scroll">'+h+'</table></div>';
+  const only=$('#onlybad').checked, src=$('#showsrc').checked, q=$('#q').value.toLowerCase(); let sec='';
+  let h=`<table><tr><th>Statement</th><th>Paper</th><th>Reproduced</th><th></th>${src?'<th>Source</th>':''}</tr>`;
+  for(const v of REP.values){
+    if(only&&v.ok!==false)continue; if(q&&!(v.statement+v.section+v.source).toLowerCase().includes(q))continue;
+    if(v.section!==sec){sec=v.section;h+=`<tr class="sec"><td colspan="${src?5:4}">${esc(sec)}</td></tr>`;}
+    const m=v.ok===null?'<span class="mark warn">needs models</span>':`<span class="mark ${v.ok?'ok':'bad'}">${v.ok?'✓':'✗'}</span>`;
+    h+=`<tr><td>${esc(v.statement)}${v.error?`<div class="err">${esc(v.error)}</div>`:''}</td><td class="num">${esc(v.paper)}</td><td class="num">${esc(v.reproduced)}</td><td>${m}</td>${src?`<td class="src">${esc(v.source)}</td>`:''}</tr>`;}
+  $('#vt').innerHTML=h+'</table>';
 }
-$('#onlybad').onchange=renderValues;
-async function loadFigures(){
-  const f=await (await fetch('/api/figures')).json(),t=Date.now();
-  $('#fg').innerHTML=f.map(x=>`<div class="card">${x.png?`<img src="/files/${x.file}.png?${t}" alt="${esc(x.title)}">`:'<div class="missing">not generated</div>'}
-   <div class="t">${esc(x.no)} · ${esc(x.title)}</div><div class="s">${x.pdf?`<a href="/files/${x.file}.pdf" target="_blank">${esc(x.file)}.pdf</a>`:esc(x.file)}</div></div>`).join('');
-  document.querySelectorAll('.card img').forEach(i=>i.onclick=()=>{$('#zoom img').src=i.src;$('#zoom').style.display='flex';});
+['onlybad','showsrc'].forEach(i=>$('#'+i).onchange=renderValues); $('#q').oninput=renderValues;
+function renderTables(){
+  $('#tt').innerHTML=REP.tables.map(t=>{const all=t.cells_ok===t.cells;
+    const rows=t.rows.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.cells.map(c=>c.ok?`<span class="cell">${esc(c.paper)}</span>`:`<span class="cell bad" title="reproduced ${esc(c.reproduced)}">${esc(c.paper)} → ${esc(c.reproduced)}</span>`).join('')}</td></tr>`).join('');
+    return `<details class="tab"${all?'':' open'}><summary><span class="tabhead"><span>${esc(t.no)} · ${esc(t.title)}</span><span class="chip ${all?'ok':'bad'}">${t.cells_ok} / ${t.cells}</span></span></summary>
+      <p class="s">${esc(t.caption)}</p>${t.error?`<p class="err">${esc(t.error)}</p>`:''}<div class="scroll"><table><tr><th>Row</th><th>Numeric cells as printed (highlighted: paper → reproduced)</th></tr>${rows}</table></div></details>`;}).join('');
+}
+function renderFigures(){
+  const t=Date.now();
+  $('#fg').innerHTML=REP.figures.map(f=>`<div class="card"><div class="pair">
+     <figure>${f.reference?`<img src="/files/reference/${f.file}.png" alt="paper">`:'<div class="missing">no reference</div>'}<figcaption>paper</figcaption></figure>
+     <figure>${f.generated?`<img src="/files/figures/${f.file}.png?${t}" alt="regenerated">`:'<div class="missing">not generated</div>'}<figcaption>regenerated</figcaption></figure></div>
+     <div class="t"><span>${esc(f.no)} · ${esc(f.title)}</span><span class="mark ${f.ok?'ok':'bad'}">${f.ok?'✓':'✗'}</span></div>
+     <div class="s">${f.differing_pct!==null?`${f.differing_pct} % of pixels differ`:esc(f.note)}${f.generated?` · <a href="/files/figures/${f.file}.pdf" target="_blank">PDF</a>`:''}</div></div>`).join('');
+  document.querySelectorAll('#fg .card').forEach(c=>c.querySelectorAll('img').forEach(i=>i.onclick=()=>{
+    $('#zoom').innerHTML=[...c.querySelectorAll('img')].map(x=>`<img src="${x.src}">`).join('');$('#zoom').style.display='flex';}));
 }
 $('#zoom').onclick=()=>$('#zoom').style.display='none';
-async function loadTables(){
-  const t=await (await fetch('/api/tables')).json();
-  $('#tt').innerHTML=t.map(x=>`<details><summary>${esc(x.no)} · ${esc(x.title)}</summary>${x.text?`<pre>${esc(x.text)}</pre>`:'<p class="note">not generated</p>'}</details>`).join('');
+async function loadHistory(){
+  const h=await J('/api/history');
+  $('#hr').innerHTML=h.length?'<table><tr><th>Time</th><th>Values</th><th>Table cells</th><th>Figures</th><th>Failed steps</th></tr>'+h.map((x,i)=>{const s=x.summary||{},p=(h[i+1]||{}).summary;
+    const d=(k,kk)=>p&&s[k]!==p[k]?` <span class="s">(was ${p[k]}/${p[kk]})</span>`:'';
+    return `<tr><td class="num">${esc(x.time)}</td><td class="num">${s.values_ok}/${s.values}${d('values_ok','values')}</td><td class="num">${s.cells_ok}/${s.cells}${d('cells_ok','cells')}</td><td class="num">${s.figures_ok}/${s.figures}${d('figures_ok','figures')}</td><td class="num">${x.failed_steps}</td></tr>`;}).join('')+'</table>':'<p class="note">No reports yet.</p>';
+  const l=await J('/api/log');
+  $('#lg').innerHTML=l.length?'<table><tr><th>Time</th><th>Step</th><th>Result</th><th>Seconds</th></tr>'+l.map(x=>`<tr><td class="num">${esc(x.time)}</td><td>${esc(x.title)}<details><summary class="s">output</summary><pre>${esc(x.tail)}</pre></details></td><td class="mark ${x.ok?'ok':'bad'}">${x.ok?'ok':'failed'}</td><td class="num">${esc(x.seconds)}</td></tr>`).join('')+'</table>':'<p class="note">No runs yet.</p>';
 }
-async function loadLog(){
-  const l=await (await fetch('/api/log')).json();
-  $('#lg').innerHTML=l.length?'<div class="scroll"><table><tr><th>Time</th><th>Step</th><th>Result</th><th>Seconds</th></tr>'+l.map(x=>`<tr><td class="num">${esc(x.time)}</td><td>${esc(x.title)}<details><summary class="s">output</summary><pre>${esc(x.tail)}</pre></details></td><td class="mark ${x.ok?'ok':'bad'}">${x.ok?'ok':'failed'}</td><td class="num">${esc(x.seconds)}</td></tr>`).join('')+'</table></div>':'<p class="note">No runs yet.</p>';
+async function loadExperiments(){
+  const r=await J('/api/experiments'); EXPS=r.experiments; const runs=Object.fromEntries(r.runs.map(x=>[x.id,x]));
+  const p=r.prepare;
+  $('#prep').innerHTML=r.models?`<span class="chip ${p.state==='ready'?'ok':p.state==='error'?'bad':'idle'}">${p.state==='ready'?'ready':p.state==='running'?'preparing…':p.state==='error'?'error':'models found'}</span><span>${esc(p.message||r.message)}</span>${p.state==='idle'?'<button class="ghost" id="prepb">Check models and prepare</button>':''}`
+    :`<span class="chip warn">models missing</span><span>${esc(r.message)}</span>`;
+  if($('#prepb'))$('#prepb').onclick=async()=>{await fetch('/api/experiments/prepare',{method:'POST'});setTimeout(loadExperiments,800);};
+  if(p.state==='running')setTimeout(loadExperiments,2000);
+  let g='',h='';
+  for(const e of EXPS){ if(e.group!==g){g=e.group;h+=`<div class="g">${esc(g)}</div>`;}
+    const st=runs[e.id]; const m=st?(st.state==='done'?(st.comparison&&st.comparison.length?(st.comparison.every(c=>c.ok)?'<span class="ok">✓</span>':'<span class="bad">✗</span>'):'<span class="ok">done</span>'):st.state==='running'?'<span class="warn">running</span>':'<span class="bad">failed</span>'):`<span class="s">~${e.minutes} min</span>`;
+    h+=`<div class="i${CUR===e.id?' on':''}" data-id="${e.id}"><span>${esc(e.title)}</span>${m}</div>`;}
+  $('#el').innerHTML=h; document.querySelectorAll('#el .i').forEach(i=>i.onclick=()=>{CUR=i.dataset.id;loadExperiments();showExp();});
+}
+function socSvg(pts){
+  if(!pts.length)return '<p class="s">No solves yet.</p>';
+  const W=600,H=180,xs=pts.map(p=>+p[0]),x0=Math.min(...xs),x1=Math.max(...xs)||x0+1;
+  const P=pts.map((p,i)=>`${(W*(xs[i]-x0)/((x1-x0)||1)).toFixed(1)},${(H-H*(p[1]??0)).toFixed(1)}`).join(' ');
+  return `<svg class="soc" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${H*0.1}" y2="${H*0.1}" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/><line x1="0" x2="${W}" y1="${H*0.9}" y2="${H*0.9}" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/><polyline points="${P}" fill="none" stroke="var(--acc)" stroke-width="1.5"/></svg><div class="s">SoC at each re-plan, from the first to the last MPC solve (dashed: band 10–90 %)</div>`;
+}
+async function showExp(){
+  clearTimeout(timer); if(!CUR)return; const e=EXPS.find(x=>x.id===CUR); const s=await J('/api/experiment?id='+encodeURIComponent(CUR));
+  let h=`<h2 style="margin-top:0">${esc(e.group)} · ${esc(e.title)}</h2><p class="s">Estimated ${e.minutes} min${e.stored?` · stored result: <code>${esc(e.stored.split('/results/')[1]||e.stored)}</code>`:''}</p>`;
+  h+=`<p><button id="go"${s.state==='running'?' disabled':''}>${s.state==='not run'?'Re-run':'Re-run again'}</button></p>`;
+  if(s.state!=='not run'){
+    const pct=s.expected_solves?Math.min(100,100*s.solves/s.expected_solves):null;
+    h+=`<p><span class="chip ${s.state==='done'?'ok':s.state==='running'?'idle':'bad'}">${esc(s.state)}</span> <span class="s">${Math.round(s.elapsed_s/60)} min elapsed · ${s.solves}${s.expected_solves?' of '+s.expected_solves:''} MPC solves${pct!==null?` (${pct.toFixed(0)} %)`:''}</span></p>`;
+    if(pct!==null&&s.state==='running')h+=`<progress value="${pct}" max="100" style="width:100%"></progress>`;
+    h+=socSvg(s.soc||[]);
+    if(s.comparison&&s.comparison.length)h+='<h2>Compared with the stored result</h2><table><tr><th>KPI</th><th>Stored</th><th>Re-run</th><th>Tolerance</th><th></th></tr>'+s.comparison.map(c=>`<tr><td>${esc(c.kpi)}</td><td class="num">${(+c.stored).toPrecision(6)}</td><td class="num">${(+c.rerun).toPrecision(6)}</td><td class="num">${esc(c.tolerance)}</td><td class="mark ${c.ok?'ok':'bad'}">${c.ok?'✓':'✗'}</td></tr>`).join('')+'</table>';
+    if(s.note)h+=`<p class="s">${esc(s.note)}</p>`;
+    if(s.log)h+=`<details><summary class="s">log</summary><pre>${esc(s.log)}</pre></details>`;
+  }
+  $('#ep').innerHTML=h;
+  $('#go').onclick=async()=>{const r=await (await fetch('/api/experiments/start?id='+encodeURIComponent(CUR),{method:'POST'})).json(); if(!r.started)alert(r.reason||'not started'); setTimeout(()=>{showExp();loadExperiments();},500);};
+  if(s.state==='running')timer=setTimeout(()=>{showExp();loadExperiments();},3000);
+  if(s.state==='done'&&e.kind==='calibration')loadReport();
+}
+
+// ---- own data ----
+let OWN={opt:null,up:null,job:null,timer:null};
+const CTL={det:'DET',det_bo:'DET-BO (reference back-off)',det_bo_sized:'DET-BO re-sized from r_E',ua:'UA-MPC',grid_only:'Grid only'};
+const CFG={A:'A · renewable buffer',B:'B · self-consumption',C:'C · set-point'};
+const ORD=['grid_only','det','det_bo','det_bo_sized','ua'];
+const mlab=m=>m==='final_test'?'Sep 2026 test period':m;
+const eur=v=>{if(v===null||v===undefined||Number.isNaN(+v))return '–';const a=Math.abs(+v);return f2(v,a>=1000?0:a>=10?2:4);};
+const f2=(v,n=2)=>v===null||v===undefined||Number.isNaN(+v)?'–':(+v).toLocaleString('en-US',{minimumFractionDigits:n,maximumFractionDigits:n});
+async function ownInit(){
+  if(!OWN.opt){OWN.opt=await J('/api/own/options');
+    const ms=OWN.opt.months; $('#ofrom').innerHTML=ms.map(m=>`<option>${m}</option>`).join(''); $('#oto').innerHTML=ms.map(m=>`<option>${m}</option>`).join('');
+    $('#ofrom').value='2025-11'; $('#oto').value='2025-11';
+    $('#ocfg').innerHTML=Object.keys(CFG).map(X=>`<label><input type="checkbox" value="${X}"${X==='B'?' checked':''}> ${CFG[X]}</label>`).join('');
+    $('#octl').innerHTML=OWN.opt.controllers.map(c=>`<label><input type="checkbox" value="${c}" checked> ${CTL[c]}</label>`).join('');
+    document.querySelectorAll('#opar input,#oper input,#oper select').forEach(e=>e.onchange=ownEst);
+    document.querySelectorAll('[name=oprd]').forEach(e=>e.onchange=()=>{$('#omon').hidden=ownPrd()==='final_test';ownEst();});
+  }
+  ownJobs();
+}
+const ownPrd=()=>document.querySelector('[name=oprd]:checked').value;
+function ownParams(){
+  const ms=OWN.opt.months, a=ms.indexOf($('#ofrom').value), b=ms.indexOf($('#oto').value);
+  const sizes={}; for(const k of ['battery_kwh','power_kw','pv_kwp','wind_kw'])sizes[k]=+$('#s_'+k).value;
+  return {mode:document.querySelector('[name=omode]:checked').value, period:ownPrd()==='final_test'?'final_test':ms.slice(Math.min(a,b),Math.max(a,b)+1),
+    configs:[...document.querySelectorAll('#ocfg input:checked')].map(e=>e.value), controllers:[...document.querySelectorAll('#octl input:checked')].map(e=>e.value),
+    sizes, initial_soc:+$('#osoc').value, fill:document.querySelector('[name=ofill]:checked').value, name:$('#oname').value};
+}
+function ownRatio(){ if(!OWN.up)return; const m=OWN.up.report.mean_kw;
+  $('#oratio').textContent=`Mean load ${f2(m,m<1?4:1)} kW: battery ${f2(+$('#s_battery_kwh').value/m,2)} h of mean load, power ${f2(+$('#s_power_kw').value/m,2)}×, PV ${f2(+$('#s_pv_kwp').value/m,2)}×, wind ${f2(+$('#s_wind_kw').value/m,2)}× mean load (reference system: 6.67 h, 2.22×, 2.78×, 1.86×).`;}
+async function ownEst(){ ownRatio(); if(!OWN.up)return; const p=ownParams();
+  const r=await (await fetch('/api/own/estimate',{method:'POST',body:JSON.stringify({params:p})})).json();
+  $('#oest').textContent=r.error?r.error:`About ${r.training_min?r.training_min+' min forecast training + ':''}${r.simulation_min} min simulation (${r.chains} controller runs on ${r.workers} core${r.workers>1?'s':''}).`;}
+function lineSvg(v,cls='ld'){ if(!v.length)return ''; const W=600,H=120,mx=Math.max(...v.filter(x=>x!==null))||1;
+  const P=v.map((y,i)=>y===null?null:`${(W*i/Math.max(v.length-1,1)).toFixed(1)},${(H-4-(H-8)*y/mx).toFixed(1)}`).filter(Boolean).join(' ');
+  return `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline points="${P}" fill="none" stroke="var(--acc)" stroke-width="1.5"/></svg>`;}
+function ownUploaded(r){
+  const rp=r.report; let h='';
+  for(const e of rp.errors||[])h+=`<p class="err">✗ ${esc(e)}</p>`; for(const w of rp.warnings||[])h+=`<p class="warn s">! ${esc(w)}</p>`;
+  if(r.ok){ OWN.up=r;
+    h=`<p><span class="chip ok">ok</span> <span class="s">${r.reference?'<b>reference data set</b> · ':''}${rp.rows} rows · ${rp.interval_min} min · ${esc(rp.start.slice(0,10))} – ${esc(rp.end.slice(0,10))} (${rp.days} days) · mean ${f2(rp.mean_kw,rp.mean_kw<1?4:1)} kW · peak ${f2(rp.max_kw,rp.max_kw<1?4:1)} kW · ${rp.gaps} gaps (${f2(rp.gap_hours,1)} h, up to 2 h interpolated)</span></p>`+h;
+    if(r.reference)h+=`<p class="hint">Reference sizes and “leave out” are set: with initial SoC 0.5 and months from 2025-10 (or the Sep 2026 test period) the results are checked against the stored results. Change anything and it runs as an ordinary simulation.</p>`;
+    h+=`<div class="s">Daily mean load</div>${lineSvg(r.preview.daily.map(x=>x[1]))}<div class="s">Typical week, Mon–Sun (mean per quarter-hour)</div>${lineSvg(r.preview.week)}`;
+    for(const [k,v] of Object.entries(r.defaults))$('#s_'+k).value=v;
+    document.querySelector(`[name=ofill][value=${r.reference?'data':'profile'}]`).checked=true;
+    if(r.reference){$('#ofrom').value='2025-10';$('#oto').value='2025-10';$('#osoc').value=0.5;}
+    $('#opar').disabled=false;$('#oper').disabled=false; ownEst();}
+  $('#ochk').innerHTML=h;
+}
+$('#oup').onclick=async()=>{
+  const f=$('#of').files[0]; if(!f){$('#ochk').innerHTML='<p class="err">Choose a file first.</p>';return;}
+  $('#ochk').innerHTML='<p class="s">checking…</p>';
+  ownUploaded(await (await fetch(`/api/own/upload?unit=${$('#ou').value}&tz=${encodeURIComponent($('#otz').value)}&name=${encodeURIComponent(f.name)}`,{method:'POST',body:await f.text()})).json());
+};
+$('#xgo').onclick=()=>{ location.href=`/files/own/sample.csv?span=${$('#xs').value}&res=${$('#xr').value}&unit=${$('#xu').value}&mean=${encodeURIComponent($('#xm').value||250)}`; };
+$('#oref').onclick=async()=>{ $('#ochk').innerHTML='<p class="s">loading the reference data set…</p>'; ownUploaded(await (await fetch('/api/own/reference',{method:'POST'})).json()); };
+$('#odef').onclick=()=>{ if(!OWN.up)return; for(const [k,v] of Object.entries(OWN.up.defaults))$('#s_'+k).value=v; ownEst();};
+$('#ogo').onclick=async()=>{
+  const r=await (await fetch('/api/own/start',{method:'POST',body:JSON.stringify({upload_id:OWN.up.id,params:ownParams()})})).json();
+  if(r.error){$('#oest').innerHTML=`<span class="err">${esc(r.error)}</span>`;return;}
+  OWN.job=r.id; ownJobs(); ownShow();
+};
+async function ownJobs(){ const js=await J('/api/own/jobs');
+  $('#ojobs').innerHTML=js.length?js.map(j=>`<div class="i${OWN.job===j.id?' on':''}" data-id="${j.id}"><span>${esc(j.name||j.id)} · ${j.configs.join(',')} · ${j.period==='final_test'?'Sep 2026 test period':esc(j.period[0]+(j.period.length>1?'…'+j.period[j.period.length-1]:''))}${j.mode==='screen'?' · screening':''}</span><span class="${j.stage==='done'?'ok':j.stage==='failed'?'bad':'warn'}">${esc(j.stage)}</span></div>`).join(''):'<p class="note" style="padding:8px">No runs yet.</p>';
+  document.querySelectorAll('#ojobs .i').forEach(i=>i.onclick=()=>{OWN.job=i.dataset.id;ownJobs();ownShow();});}
+function ownBars(rows){ const mx=Math.max(...rows.map(t=>Math.abs(t.net_cost_eur)))||1;
+  return '<div class="bars">'+rows.map(t=>`<span>${esc(CTL[t.controller]||t.controller)}</span><div class="b" style="width:${(100*Math.abs(t.net_cost_eur)/mx).toFixed(1)}%;${t.controller==='grid_only'?'background:var(--ink2)':''}"></div><span class="num">€ ${eur(t.net_cost_eur)}</span>`).join('')+'</div>';}
+async function ownShow(){
+  clearTimeout(OWN.timer); if(!OWN.job)return; const s=await J('/api/own/job?id='+encodeURIComponent(OWN.job)); const p=s.params;
+  let h=`<h2 style="margin-top:0">${esc(p.name||s.id)}</h2><p class="s">${p.mode==='screen'?'Screening':'Quick mode'} · ${p.period==='final_test'?'test period Sep 2026':esc(p.period.join(', '))} · configurations ${p.configs.join(', ')} · ${Math.round(s.elapsed_s/60)} min elapsed${p.estimate?` (estimated ${p.estimate.training_min+p.estimate.simulation_min} min)`:''}${s.eta_min!==null&&s.state==='running'?` · about ${s.eta_min} min left at the current speed`:''}</p>`;
+  h+=`<p><span class="chip ${s.state==='done'?'ok':s.state==='failed'?'bad':'idle'}">${esc(s.state)}</span> <span class="s">${esc(s.stage.stage)}${s.stage.month?' · '+esc(s.stage.month):''}${s.stage.detail?' · '+esc(s.stage.detail):''}</span></p>`;
+  if(s.state==='failed')h+=`<p><button id="ores">Resume (finished months are kept)</button></p>`;
+  if(s.state==='failed')h+=`<pre>${esc(s.stage.error||'')}\n${esc(s.stage.trace||s.log)}</pre>`;
+  if(s.chains.length&&s.state!=='done'){
+    h+='<table><tr><th>Run</th><th>Progress</th><th>SoC so far</th></tr>'+s.chains.filter(c=>c.controller!=='grid_only').map(c=>{const pc=c.expected?Math.min(100,100*c.solves/c.expected):0;
+      return `<tr><td>${c.config} · ${esc(CTL[c.controller])}${c.error?'<div class="err">failed</div>':''}</td><td><progress value="${pc}" max="100"></progress> <span class="s">${c.solves}/${c.expected}</span></td><td style="width:40%">${lineSvg(c.soc.map(x=>x??0),'ld" style="height:40px')}</td></tr>`;}).join('')+'</table>';}
+  const r=s.report;
+  if(r){
+    for(const X of p.configs){
+      h+=`<h2>${esc(CFG[X])}</h2><div class="verdict">${esc(r.verdict[X])}</div>`;
+      const t=r.totals.filter(x=>x.config===X);
+      if(t.length){ h+=ownBars(t);
+        h+='<div class="scroll"><table><tr><th>Controller</th><th>Net cost (€)</th><th>Saving vs grid</th><th>vs DET</th><th>Protection (h)</th><th>Extra grid (€)</th><th>Curtailed (%)</th><th>Band violation (pp·h)</th></tr>'+t.map(x=>`<tr><td>${esc(CTL[x.controller])}${x.complete?'':' <span class="warn s">(incomplete)</span>'}</td><td class="num">${eur(x.net_cost_eur)}</td><td class="num">${eur(x.saving_eur)} (${f2(x.saving_pct,1)} %)</td><td class="num">${x.controller==='grid_only'?'–':f2(x.vs_det_pct,1)+' %'}</td><td class="num">${f2(x.protection_h)}</td><td class="num">${f2(x.extra_grid_eur,3)}</td><td class="num">${f2(x.curtailed_pct,1)}</td><td class="num">${f2(x.violation_pp_h)}</td></tr>`).join('')+'</table></div>';}
+      const g=r.gamma.filter(x=>x.config===X);
+      h+='<div class="scroll"><table style="margin-top:8px"><tr><th>Month</th><th>r_E</th><th>r_E of the month before</th><th>Γ (reference b)</th><th>b re-sized</th><th>b for Γ = 0.75</th>'+(t.length?'<th>Net cost per controller (€) / protection (h)</th>':'')+'</tr>'+g.map(x=>{
+        const mm=r.monthly.filter(y=>y.config===X&&y.month===x.month).sort((a,b)=>ORD.indexOf(a.controller)-ORD.indexOf(b.controller)).map(y=>`${esc(CTL[y.controller])}: ${eur(y.net_cost_eur)} / ${f2(y.protection_h,1)}`).join('<br>');
+        const gc=x.Gamma_ref_b===null?'':x.Gamma_ref_b<0.75?'ok':x.Gamma_ref_b>1.25?'bad':'warn';
+        return `<tr><td>${esc(mlab(x.month))}</td><td class="num">${f2(x.r_E,3)}</td><td class="num">${f2(x.r_E_past,3)}</td><td class="num ${gc}">${f2(x.Gamma_ref_b)}</td><td class="num">${f2(x.b_sized,3)}</td><td class="num">${f2(x.b_recommended,3)}</td>${t.length?`<td class="s">${mm}</td>`:''}</tr>`;}).join('')+'</table></div>';
+    }
+    const rf=r.reference;
+    if(rf){ h+='<h2>Reference check</h2>';
+      if(!rf.applies)h+=`<p class="s">Reference load profile, but not the reference set-up (${esc(rf.reason)}): not compared with the stored results.</p>`;
+      else if(!rf.rows.length)h+=`<p class="s">${esc(rf.note)}</p>`;
+      else{ const n=rf.rows.filter(x=>x.ok).length;
+        h+=`<p><span class="chip ${rf.ok?'ok':'bad'}">${n} / ${rf.rows.length} match the stored results</span> <span class="s">tolerances: net cost 0.1 %, protection ±0.5 h, band violation ±0.05 pp·h, extra grid ±0.0005 €, curtailment ±0.2 % (cell units)</span></p>`;
+        h+='<div class="scroll"><table><tr><th>Config</th><th>Month</th><th>Controller</th><th>Net cost stored / now (€, cell)</th><th>Protection stored / now (h)</th><th></th></tr>'+rf.rows.map(x=>{const k=Object.fromEntries(x.kpis.map(c=>[c.kpi,c]));const nc=k['net cost (€)']||{},pr=k['protection (h)']||{};
+          return `<tr><td>${x.config}</td><td>${esc(mlab(x.month))}</td><td>${esc(CTL[x.controller])}</td><td class="num">${(+nc.stored).toFixed(6)} / ${(+nc.rerun).toFixed(6)}</td><td class="num">${f2(pr.stored)} / ${f2(pr.rerun)}</td><td class="mark ${x.ok?'ok':'bad'}">${x.ok?'✓':'✗'}</td></tr>`;}).join('')+'</table></div>';}
+    }
+    h+=`<p class="s">Costs in the site's units: energy at Hungarian day-ahead prices (no network charges or taxes) plus battery wear; reference weights of the controllers, not re-tuned for this site.</p>`;
+    h+=`<p><a class="btn ghost" href="/api/own/file?id=${s.id}&name=report.md">report.md</a> <a class="btn ghost" href="/api/own/file?id=${s.id}&name=monthly.csv">monthly.csv</a> <a class="btn ghost" href="/api/own/file?id=${s.id}&name=report.json">report.json</a></p>`;
+  }
+  if(s.log&&s.state!=='done')h+=`<details><summary class="s">log</summary><pre>${esc(s.log)}</pre></details>`;
+  $('#ojob').innerHTML=h;
+  if($('#ores'))$('#ores').onclick=async()=>{const r=await (await fetch('/api/own/resume?id='+encodeURIComponent(s.id),{method:'POST'})).json(); if(r.error)alert(r.error); setTimeout(ownShow,800);};
+  if(s.state==='running')OWN.timer=setTimeout(()=>{ownShow();ownJobs();},4000);
 }
 async function poll(){
-  const s=await (await fetch('/api/status')).json();
+  const s=await J('/api/status');
   $('#run').disabled=s.running;$('#prog').hidden=!s.running;
   if(s.running){$('#prog').max=Math.max(s.steps,1);$('#prog').value=s.step;$('#status').textContent=`${s.step}/${s.steps} · ${s.title}`;setTimeout(poll,700);}
-  else{ if(s.finished){const bad=s.records.filter(r=>!r.ok).length;$('#status').textContent=`last run ${s.finished}`+(bad?` · ${bad} step(s) failed, see Run log`:'');}
-        await Promise.all([loadValues(),loadFigures(),loadTables()]);}
+  else{ if(s.finished){const bad=s.records.filter(r=>!r.ok).length;$('#status').textContent=`last run ${s.finished}`+(bad?` · ${bad} step(s) failed, see History`:'');}
+        await loadReport();}
 }
 $('#run').onclick=async()=>{await fetch('/api/run',{method:'POST'});setTimeout(poll,200);};
 poll();

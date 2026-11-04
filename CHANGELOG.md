@@ -11,7 +11,8 @@ are unchanged. `CITATION.cff`: version 1.2.1 and the authors' departments.
   paper: 121 values of the text (each with its source), 813 table cells, 18 figures pixel by pixel; with the
   forecast models also the calibration values and single re-runs of stored replays, compared with the stored
   results. Web interface (`python -m app.server`) and command-line report (`python -m app.reproduce`).
-- `Dockerfile`, `.dockerignore`: the same in a container; `.github/workflows/reproduce.yml`: the check on every push.
+- `Dockerfile`, `.dockerignore`: the same in a container; `.github/workflows/reproduce.yml`: the check on every push,
+  with what differs shown as annotations on the run page (`app/tools/ci_annotations.py`).
 - `README.md`: section "Reproducing the paper".
 
 **Simulation of any load profile**
@@ -27,8 +28,8 @@ are unchanged. `CITATION.cff`: version 1.2.1 and the authors' departments.
 - Web interface: tab "Your data" (sample CSV export, upload or reference data set, preview, parameters, live progress with the remaining
   time, resume, report and downloads). `app/tests/`: unit tests of the upload and the mapping, run in the GitHub
   workflow.
-- `docs/user_guide.md`: user guide of the web interface (with screenshots in `docs/img/guide/`), linked from the
-  interface and the README; `README.md`: section "Simulating any load profile".
+- `docs/user_guide.md` (Hungarian) and `docs/user_guide_en.md` (English): user guide of the web interface, with
+  screenshots in `docs/img/guide/`, linked from the interface and the README; `README.md`: section "Simulating any load profile".
 
 ## 1.1.0 (2026-10-31)
 

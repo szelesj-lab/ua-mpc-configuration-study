@@ -25,8 +25,13 @@ jobs:
         env:
           MPLBACKEND: Agg
         run: |
+          set +e
           python -m app.reproduce
-          cat out/report.md >> "$GITHUB_STEP_SUMMARY"
+          code=$?
+          # what differs is shown on the run's public summary page, with or without sign-in
+          python -m app.tools.ci_annotations out/report.json
+          [ -f out/report.md ] && cat out/report.md >> "$GITHUB_STEP_SUMMARY"
+          exit $code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -42,4 +47,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t ua-mpc-repro .
-      - run: docker run --rm ua-mpc-repro python -m app.reproduce
+      - name: Reproduce and check in the container
+        run: |
+          set +e
+          mkdir -p out-docker && chmod 777 out-docker
+          docker run --rm -v "$PWD/out-docker:/pkg/out" ua-mpc-repro python -m app.reproduce
+          code=$?
+          python3 -m app.tools.ci_annotations out-docker/report.json
+          exit $code

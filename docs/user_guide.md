@@ -1,6 +1,6 @@
 # Felhasználói útmutató
 
-Ez az útmutató a csomag webes felületét és parancssorát írja le (1.2.3-es verzió). English version:
+Ez az útmutató a csomag webes felületét és parancssorát írja le (1.3.0-s verzió). English version:
 [`user_guide_en.md`](user_guide_en.md). A felület feliratai angolok; az útmutató a gombokat és mezőket a
 felületen látható angol nevükön említi.
 
@@ -33,7 +33,7 @@ Böngészőben: http://localhost:8501. A `-v "$PWD/out:/pkg/out"` rész megőrzi
 előrejelzéseket két indítás között; nélküle a konténer leállásakor elvesznek.
 
 A tárolt kísérletek újrafuttatásához és a 2026. szeptemberi tesztidőszakhoz a nyári előrejelző modellek is kellenek
-(`models_summer.zip`, a v1.2.3 GitHub-release melléklete):
+(`models_summer.zip`, a v1.3.0 GitHub-release melléklete):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -202,6 +202,14 @@ az állandó tartalék, amely Γ = 0,75-öt adna.
 **Havi táblázat**: r_E, az előző hónap r_E-je, Γ, az újraméretezett és a javasolt tartalék, valamint szabályozónként
 a nettó költség és a védelmi idő havonta.
 
+**Γ-ellenőrzés óránként** (ha DET-BO futott A-ban vagy B-ben): a tartalék (b) a SoC alsó határa fölött b·E energiát
+tart vissza. Egy óra, amely a tartalékon belülről indul, csak akkor érhet a határra, ha az órán belül az akkuhoz jutó
+előrejelzési hiány nagyobb a tartaléknál. A táblázat minden újratervezési órát besorol: belülről indult és a hiány
+belefért a tartalékba / belülről indult, de a hiány nagyobb volt / már felélt tartalékkal indult. Minden cellában az
+áll, hány órában kellett a BMS-nek leállítania a kisütést, az osztály összes órájából. Az első osztályban nem lehet
+ilyen óra (ellentmondana a korlátnak; a cikk téli tesztjében nem is volt). Ha az utolsó osztályban sok van, a tartalék
+több óra alatt fogyott el, amit az egyórás Γ nem lát: ilyenkor nagyobb b segít.
+
 **Reference check** (csak a referencia-adatkészlettel, 5. fejezet): minden futás a tárolt eredménnyel összevetve,
 ✓ ha a tűréseken belül van.
 
@@ -237,6 +245,7 @@ történik, nem a cikk teljes tesztidőszakán.
 | `totals.csv` | az összesítő táblázat (bekötés × szabályozó) |
 | `monthly.csv` | ugyanez havonta |
 | `gamma.csv` | r_E, Γ és a tartalékok havonta |
+| `gamma_windows.csv` | a Γ-ellenőrzés: a DET-BO minden újratervezési órája a kezdő SoC-val, az órán belüli hiánnyal és a tartalékkal (kWh), az osztállyal és a BMS-beavatkozással |
 | `steps.csv` | **minden 15 perces lépés** minden szabályozónál: SoC, terhelés, hálózat, töltés, kisütés, megújuló, levágott, ár, költség, a BMS által levágott töltés/kisütés |
 | `mpc_solves.csv` | **minden MPC-futás (újratervezés)**, óránként egy sor szabályozónként: kezdő SoC, a látott előrejelzés és szórás, terhelés, ár, a hatékony SoC-határok, a terv első lépése (hálózat, töltés, kisütés, levágás), a tervezett SoC az újratervezés végén és a horizont végén, a megbízhatósági súly, a solver ideje, iterációi, sikere és a célfüggvény tagjai (ez utóbbiak a solver saját egységeiben) |
 

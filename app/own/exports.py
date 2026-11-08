@@ -8,6 +8,8 @@ the cell with the run's factor); SoC as a fraction of the capacity.
                      step and the SoC it planned for, and the solver result; the objective and its terms are in the
                      solver's own units (cell)
     totals.csv, monthly.csv, gamma.csv   the tables of the report
+    gamma_windows.csv every re-planning hour of DET-BO: SoC at the re-plan, routed deficit and reserve (kWh), class
+                     of the Γ check (app/own/gammacheck.py), lower/upper-edge intervention
     figures/         the figures in the style of the article's figures, PNG and PDF (see app/own/figures.py),
                      and summary_ua_minus_reference.csv (the numbers of the UA-MPC minus reference figures)
     results.zip      all of the above with report.md and report.json
@@ -79,6 +81,13 @@ def write(d: Path, rep: dict) -> list[str]:
     for name, df in tables.items():
         if len(df):
             df.to_csv(e / name, index=False); written.append(name)
+    if (d / "gamma_windows.csv").exists():   # every re-planning hour of DET-BO, deficit and reserve in site kWh
+        gw = pd.read_csv(d / "gamma_windows.csv")
+        t = pd.to_datetime(gw.pop("t"), utc=True)
+        gw.insert(0, "time_local", t.dt.tz_convert(TZ).dt.strftime("%Y-%m-%d %H:%M%z"))
+        for c in ("deficit_wh", "reserve_wh"):
+            gw[c.replace("_wh", "_kwh")] = (gw.pop(c) / f / 1000).round(3)
+        gw.to_csv(e / "gamma_windows.csv", index=False); written.append("gamma_windows.csv")
     for name, fn in (("steps.csv", steps), ("mpc_solves.csv", solves)):
         df = fn(d, f)
         if len(df):

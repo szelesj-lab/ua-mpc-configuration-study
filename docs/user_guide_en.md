@@ -1,6 +1,6 @@
 # User guide
 
-This guide covers the web interface and command line of the package (version 1.2.3). Magyar változat:
+This guide covers the web interface and command line of the package (version 1.3.0). Magyar változat:
 [`user_guide.md`](user_guide.md).
 
 The main job of the tool is **simulation**: it runs the controllers (DET, DET-BO, UA-MPC) on any load profile you
@@ -31,7 +31,7 @@ Open http://localhost:8501. The `-v "$PWD/out:/pkg/out"` part keeps your runs an
 starts; without it they are lost when the container stops.
 
 For re-running stored experiments and for the September 2026 test period, also mount the summer forecast models
-(`models_summer.zip`, attached to the GitHub release v1.2.3):
+(`models_summer.zip`, attached to the GitHub release v1.3.0):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -198,6 +198,14 @@ and the constant back-off that would give Γ = 0.75.
 **Month table**: r_E, r_E of the month before, Γ, the re-sized and the recommended back-off, and net cost /
 protection hours of each controller per month.
 
+**Γ check, hour by hour** (when DET-BO ran in A or B): a back-off b holds b·E above the lower SoC limit. An hour
+that starts inside this reserve can end at the limit only if the forecast deficit reaching the battery within that
+hour is larger than the reserve. The table classifies every re-planning hour: started inside with the deficit within
+the reserve / started inside with a larger deficit / started with the reserve already used. Each cell gives the hours
+in which the BMS stopped the discharge, of all hours in the class. The first class should have none (it would
+contradict the bound; the winter test of the paper had none). Many in the last class mean the reserve was used up
+over several hours, which a one-hour Γ does not see: a larger b helps there.
+
 **Reference check** (only with the reference data set; section 5): each run against the stored result, ✓ when
 within the tolerances.
 
@@ -233,6 +241,7 @@ run, not the article's whole test period.
 | `totals.csv` | the summary table (configuration × controller) |
 | `monthly.csv` | the same per month |
 | `gamma.csv` | r_E, Γ and the back-offs per month |
+| `gamma_windows.csv` | the Γ check: every re-planning hour of DET-BO with its starting SoC, deficit and reserve within the hour (kWh), class and BMS intervention |
 | `steps.csv` | **every 15-min step** of every controller: SoC, load, grid, charge, discharge, renewable, curtailed, price, cost, charge/discharge cut by the BMS |
 | `mpc_solves.csv` | **every MPC solve (re-plan)**, one row per hour and controller: start SoC, the forecast and its spread it saw, load, price, the effective SoC limits, the first planned step (grid, charge, discharge, curtailment), the planned SoC at the end of the re-planning interval and of the horizon, the confidence weight, solver time, iterations, success and the terms of the objective (the latter in the solver's own units) |
 

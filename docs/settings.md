@@ -1,6 +1,6 @@
 # A szimuláció beállításai
 
-Mit jelent a **Simulation** fül minden beállítása, mit lehet megadni, és mit változtat az eredményen (1.2.3-as verzió).
+Mit jelent a **Simulation** fül minden beállítása, mit lehet megadni, és mit változtat az eredményen (1.3.0-s verzió).
 English version: [`settings_en.md`](settings_en.md). A felhasználói útmutató: [`user_guide.md`](user_guide.md).
 
 A szimuláció a megadott rendszert a referencia-cellára skálázza (átlagterhelés 10,788 W), azon futtatja a

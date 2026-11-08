@@ -64,6 +64,33 @@ def gamma_rows(p, months):
     return out
 
 
+ARCH = {"A": "renewable_buffer", "B": "self_consumption", "C": "set_point"}
+
+
+def gamma_windows(d: Path, cell: dict) -> tuple[list[dict], pd.DataFrame]:
+    """Window-by-window check of the Γ bound for the constant back-offs (app/own/gammacheck.py): every re-planning
+    hour of DET-BO, classified by where it started and how large the routed deficit was."""
+    from app.own.gammacheck import routed, summary, windows
+    rows, allw = [], []
+    for X in ("A", "B"):
+        for c in ("det_bo", "det_bo_sized"):
+            parts = sorted((d / "runs" / X).glob(f"{c}_*.json")) if (d / "runs" / X).exists() else []
+            ws = []
+            for j in parts:
+                r = json.loads(j.read_text()); f = j.with_suffix(".csv"); dp = d / "data" / f"{r['month']}.pkl"
+                if not f.exists() or not dp.exists() or not r.get("b"):
+                    continue
+                x = pd.read_pickle(dp)
+                err = routed(x.solar_mu + x.wind_mu, x.solar_real + x.wind_real, ARCH[X], cell["p_max_w"], cell["p_max_w"])
+                w = windows(pd.read_csv(f), err, float(r["b"]), cell["E_capacity"], r.get("soc0"))
+                w.insert(0, "month", r["month"]); w.insert(0, "controller", c); w.insert(0, "config", X); w.insert(3, "b", r["b"])
+                ws.append(w)
+            if ws:
+                w = pd.concat(ws, ignore_index=True); allw.append(w)
+                rows.append({"config": X, "controller": c, **summary(w)})
+    return rows, (pd.concat(allw, ignore_index=True) if allw else pd.DataFrame())
+
+
 def _rng(lo, hi, n):
     return f"{lo:.{n}f}" if f"{lo:.{n}f}" == f"{hi:.{n}f}" else f"{lo:.{n}f}–{hi:.{n}f}"
 
@@ -126,6 +153,12 @@ def write(d: Path) -> dict:
            "cell": cell, "months": months, "gamma": g, "totals": totals,
            "monthly": df.to_dict("records") if len(df) else [],
            "verdict": {X: verdict(X, g) for X in p["configs"]}}
+    try:
+        rep["gamma_windows"], gw = gamma_windows(d, cell)
+        if len(gw):
+            gw.to_csv(d / "gamma_windows.csv", index=False)
+    except Exception as e:  # noqa: BLE001  (a diagnostic must not stop the report)
+        rep["gamma_windows"], rep["gamma_windows_error"] = [], f"{type(e).__name__}: {e}"
     from app.own.reference import check
     rep["reference"] = check(d)
     rep = _clean(json.loads(json.dumps(rep, default=float)))
@@ -202,6 +235,22 @@ def markdown(r: dict) -> str:
                          f"{_eur(t.get('saving_eur'))} | {_f(t.get('saving_pct'), 1)} | {_f(t.get('vs_det_pct'), 1)} | {_f(t.get('protection_h'))} | "
                          f"{_f(t.get('extra_grid_eur'), 3)} | {_f(t.get('curtailed_pct'), 1)} | {_f(t.get('violation_pp_h'))} |")
             L.append("")
+    gw = r.get("gamma_windows") or []
+    if gw:
+        L += ["## Γ check, hour by hour (DET-BO)", "",
+              "A back-off b holds b·E above the lower SoC limit. An hour that starts inside the tightened band can only end "
+              "at the lower limit if the forecast deficit reaching the battery within that hour is larger than this reserve. "
+              "Every re-planning hour of the DET-BO runs is classified accordingly; the last three columns count the hours in "
+              "which the BMS stopped the discharge.", "",
+              "| Config | Controller | Hours | Lower-edge hours | Started inside, deficit within reserve | Started inside, deficit above reserve | "
+              "Started with the reserve used |", "|---|---|---|---|---|---|---|"]
+        for x in gw:
+            L.append(f"| {x['config']} | {LABEL.get(x['controller'], x['controller'])} | {x['hours']} | {x['lower_edge_hours']} | "
+                     f"{x['inside_within_lower_edge']} of {x['inside_within']} | {x['inside_above_lower_edge']} of {x['inside_above']} | "
+                     f"{x['reserve_used_lower_edge']} of {x['reserve_used']} |")
+        L += ["", "Reading: interventions in the first class would contradict the bound (in the reference winter test there were "
+              "none). Interventions in the last class mean the reserve was used up over several hours, which a one-hour Γ "
+              "does not see; a larger b or a higher Γ target margin helps there.", ""]
     ref = r.get("reference")
     if ref is not None:
         L += ["## Reference check", ""]

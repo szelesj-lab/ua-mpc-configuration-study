@@ -157,6 +157,25 @@ def sens(config: str, ctrl: str, scen: str, col: str):
     return f
 
 
+def gcheck(*keys):
+    """experiments/extended/ratio/gamma_windows.py: persistence of r_E, Γ against protection, window-by-window check."""
+    def f():
+        d = jload(EXT / "ratio/gamma_check.json")
+        for k in keys[:-1]:
+            d = d[k]
+        return d[keys[-1]] if not isinstance(keys[-1], tuple) else tuple(d[x] for x in keys[-1])
+    return f
+
+
+def scen(*cols):
+    """experiments/extended/ratio/scenario_robust.py: min and max over the summer periods and the T1 winter months."""
+    def f():
+        d = csv("ratio/scenario_robust.csv")
+        v = pd.concat([d[c] for c in cols])
+        return v.min(), v.max()
+    return f
+
+
 def seasonal_ua():
     c = p = 0.0
     for k in range(3, 7):
@@ -447,6 +466,22 @@ CLAIMS += [
     ("5.4 Pre-registered", "T1, summer final test: extra cost (%)", "0.07",
      lambda: 100 * (jload(EXT / "preregistered/t1/steps/det_bo_sized_final.json")["metrics"]["net_cost_eur"] / final_metric("B", "ua", "net_cost_eur")() - 1)),
     ("5.4 Pre-registered", "T1: largest monthly extra cost vs UA-MPC (%)", "1.7", t1_monthly_extra_max),
+    ("5.4 Pre-registered", "Month-to-month change of r_E in winter (factor)", "0.79–1.37", gcheck(("rE_ratio_min", "rE_ratio_max"))),
+    ("5.4 Pre-registered", "Spearman ρ, protection of DET-BO against the realised Γ (11 winter month-runs)", "0.94", gcheck("spearman_rho")),
+    ("5.4 Pre-registered", "Realised Γ of the two DET-BO months without protection", "0.6 / 0.6", gcheck("zero_protection_gamma")),
+    ("5.4 Pre-registered", "Windows inside the tightened band, deficit within the reserve, with a lower-edge intervention (summer-tuned)",
+     "0 of 3022", gcheck("windows", "det_bo", ("inside_within_lower_edge", "inside_within"))),
+    ("5.4 Pre-registered", "The same, re-sized back-off", "0 of 3228", gcheck("windows", "det_bo_sized", ("inside_within_lower_edge", "inside_within"))),
+    ("5.4 Pre-registered", "Lower-edge interventions in windows that started with the reserve used (summer-tuned)", "60 of 63",
+     gcheck("windows", "det_bo", ("reserve_used_lower_edge", "lower_edge_hours"))),
+    ("5.4 Pre-registered", "The same, re-sized back-off", "16 of 16", gcheck("windows", "det_bo_sized", ("reserve_used_lower_edge", "lower_edge_hours"))),
+    ("5.4 Pre-registered", "Scenario margin: Γ", "0.15–0.62", scen("Gamma_scenario")),
+    ("5.4 Pre-registered", "Robust (tube) margin: Γ", "0.09–0.59", scen("Gamma_robust")),
+    ("5.4 Pre-registered", "Usable band held back, scenario margin (%)", "14–35", scen("band_locked_pct_scenario")),
+    ("5.4 Pre-registered", "Usable band held back, robust margin (%)", "23–53", scen("band_locked_pct_robust")),
+    ("5.4 Pre-registered", "Usable band held back, re-sized back-off (%)", "7–18", scen("band_locked_pct_backoff_resized")),
+    ("5.4 Pre-registered", "Γ of the re-sized back-off, summer periods and T1 months", "0.52–1.03", scen("Gamma_backoff_resized")),
+    ("6 Discussion", "Usable band held back, scenario and robust margins (%)", "14–53", scen("band_locked_pct_scenario", "band_locked_pct_robust")),
     ("5.5 Winter", "Winter coverage ±1σ / ±2σ (%)", "71–86", lambda: (macros()["winCovOneMin"], macros()["winCovOneMax"])),
     ("5.5 Winter", "Winter coverage ±2σ (%)", "86–98", lambda: (macros()["winCovTwoMin"], macros()["winCovTwoMax"])),
     ("5.5 Winter", "Winter RMSE (W per step)", "1.46–2.54", lambda: (macros()["winRmseMin"], macros()["winRmseMax"])),
@@ -555,6 +590,6 @@ def evaluate() -> list[dict]:
         rows.append({"section": sec, "statement": what, "paper": printed, "reproduced": got, "ok": ok, "error": err, "source": src,
                      "status": "ok" if ok else "differs"})
     order = {s: i for i, s in enumerate(["3.1 Cell", "3.2 Data", "3.2 Periods", "4.2 Calibration", "5.1 Calibration", "5.2 Final test",
-                                        "5.3 Decision map", "5.4 Pre-registered", "5.5 Winter", "S2 Sensitivity", "S2 Tariffs"])}
+                                        "5.3 Decision map", "5.4 Pre-registered", "5.5 Winter", "6 Discussion", "S2 Sensitivity", "S2 Tariffs"])}
     rows.sort(key=lambda r: order.get(r["section"], 99))
     return rows

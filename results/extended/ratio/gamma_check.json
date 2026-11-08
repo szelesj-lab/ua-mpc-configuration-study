@@ -1,0 +1,103 @@
+{
+ "rE_ratio_min": 0.7929143465576097,
+ "rE_ratio_max": 1.3711445888632692,
+ "spearman_rho": 0.9360828182033074,
+ "spearman_p": 2.2514702736297798e-05,
+ "n_month_runs": 11,
+ "zero_protection_gamma": [
+  0.5946857599182069,
+  0.6023426671460568
+ ],
+ "points": [
+  {
+   "run": "det_bo",
+   "month": 1,
+   "gamma": 1.6420965649633215,
+   "protection_h": 6.5
+  },
+  {
+   "run": "det_bo",
+   "month": 2,
+   "gamma": 1.3020419247923876,
+   "protection_h": 3.25
+  },
+  {
+   "run": "det_bo_sized",
+   "month": 2,
+   "gamma": 0.5946857599182069,
+   "protection_h": 0.0
+  },
+  {
+   "run": "det_bo",
+   "month": 3,
+   "gamma": 1.7691716555056674,
+   "protection_h": 8.75
+  },
+  {
+   "run": "det_bo_sized",
+   "month": 3,
+   "gamma": 1.0190752819582376,
+   "protection_h": 3.0
+  },
+  {
+   "run": "det_bo",
+   "month": 4,
+   "gamma": 1.420863431488653,
+   "protection_h": 2.75
+  },
+  {
+   "run": "det_bo_sized",
+   "month": 4,
+   "gamma": 0.6023426671460568,
+   "protection_h": 0.0
+  },
+  {
+   "run": "det_bo",
+   "month": 5,
+   "gamma": 1.6822071241037129,
+   "protection_h": 4.25
+  },
+  {
+   "run": "det_bo_sized",
+   "month": 5,
+   "gamma": 0.8879497600666191,
+   "protection_h": 2.25
+  },
+  {
+   "run": "det_bo",
+   "month": 6,
+   "gamma": 2.306549195562048,
+   "protection_h": 13.25
+  },
+  {
+   "run": "det_bo_sized",
+   "month": 6,
+   "gamma": 1.0283584416474516,
+   "protection_h": 2.25
+  }
+ ],
+ "windows": {
+  "det_bo": {
+   "hours": 3623,
+   "lower_edge_hours": 63,
+   "upper_edge_hours": 7,
+   "inside_within": 3022,
+   "inside_within_lower_edge": 0,
+   "inside_above": 340,
+   "inside_above_lower_edge": 3,
+   "reserve_used": 261,
+   "reserve_used_lower_edge": 60
+  },
+  "det_bo_sized": {
+   "hours": 3623,
+   "lower_edge_hours": 16,
+   "upper_edge_hours": 5,
+   "inside_within": 3228,
+   "inside_within_lower_edge": 0,
+   "inside_above": 106,
+   "inside_above_lower_edge": 0,
+   "reserve_used": 289,
+   "reserve_used_lower_edge": 16
+  }
+ }
+}

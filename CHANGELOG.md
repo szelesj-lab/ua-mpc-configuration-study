@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.3.0 (2026-11-08)
+
+The Γ reading of a constant back-off checked hour by hour, in the study and in every simulation, and scenario and
+robust tightening placed on the same scale; the code and results of 1.2.3 are unchanged.
+
+**Study** (Sec. 5.4 of the paper, after T1)
+
+- `experiments/extended/ratio/gamma_windows.py` → `results/extended/ratio/gamma_windows.csv`, `gamma_check.json`:
+  the month-to-month change of r_E in winter (0.79–1.37), the protection of DET-BO against the realised Γ over the
+  eleven winter month-runs (Spearman ρ = 0.94), and every re-planning hour of DET-BO from November to March
+  classified as started inside the tightened band with the routed deficit within the reserve (no lower-edge
+  intervention in 3022 and 3228 hours), above it, or started with the reserve already used (60 of 63 and 16 of 16
+  lower-edge interventions).
+- `experiments/extended/ratio/scenario_robust.py` → `results/extended/ratio/scenario_robust.csv`: scenario and robust
+  (tube) tightening placed on the Γ scale from the same forecast archive as T1, without closed-loop runs: the margin
+  each rule chooses before the period, the share of the usable band it holds back and its Γ (scenario 0.15–0.62,
+  robust 0.09–0.59, against 0.52–1.03 for the re-sized back-off).
+- The paper check covers these values too: 135 values of the text.
+
+**Simulation** (`app/own/gammacheck.py`, the same code as the study)
+
+- After every run with DET-BO in A or B, the report shows the Γ check hour by hour: how many hours started inside the
+  reserve with a deficit within or above it, how many started with the reserve already used, and in which of them
+  the BMS stopped the discharge. Download: `gamma_windows.csv` (every re-planning hour with its SoC at the re-plan,
+  deficit and reserve in kWh, class and interventions).
+
 ## 1.2.3 (2026-11-04)
 
 Simulation of any load profile and reproduction of the paper, released together; the code and results of 1.1.0

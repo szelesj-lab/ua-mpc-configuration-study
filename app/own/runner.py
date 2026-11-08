@@ -308,7 +308,7 @@ def jobs() -> list[dict]:
     return out
 
 
-EXPORTS = ("totals.csv", "monthly.csv", "gamma.csv", "steps.csv", "mpc_solves.csv", "results.zip")
+EXPORTS = ("totals.csv", "monthly.csv", "gamma.csv", "gamma_windows.csv", "steps.csv", "mpc_solves.csv", "results.zip")
 
 
 def file(jid: str, name: str) -> Path | None:

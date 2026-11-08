@@ -1,0 +1,434 @@
+{
+ "written_utc": "2026-11-08T16:33:37.565592+00:00",
+ "record": "R0, replication with south-facing PV (Open-Meteo azimuth 0, tilt 35)",
+ "reason": "the first study used azimuth 180 (north-facing) by a configuration error; its results are archived",
+ "replays_of_the_replication_so_far": 0,
+ "data_sha256": {
+  "Past_Forecast_Values.csv": "d201c26865740fd103fe60c00c7c6b07f0748cae17e2b13f9417808975285ec9",
+  "Past_Real_Values.csv": "7fbb120a0559cf13b18098c6f8b8519a2dcc09741055bd2bc7b7a5474c2be16c",
+  "Past_Forecast_Values_day1.csv": "7a32518ab4bc058ea0c3c971beb919aca6a602bae98529fb1dcf0bb47af79963",
+  "ENTSOE_HU_Dataset_2025.csv": "fd5ad51d9d02d6ab9d08847748ae893d0598041b38f221deca3415d3531be8a7",
+  "industrial_load_profile.csv": "effba5b146992d7e2c3e72d3c0d9440e93e260dec3a439a1e92fa465f91cca7f"
+ },
+ "calibration": {
+  "sigma_scale": 1.051,
+  "error_autocorr": 0.822,
+  "sigma_model": "constant"
+ },
+ "protocol": "as stated in the manuscript: ParEGO tuning 30 trials x 4 two-day episodes per controller, selection rule 5 h (secondary 10 h) on the development period, BMS plant, label rule (difference if DET-BO needs >= 4 h more protection than UA-MPC and at least twice as many), decision map on the development period, one-shot final test, walk-forward winter test, the pre-registered tests and T1-T3 with the same rules",
+ "rules": {
+  "bounds": "tie if r_E <= 0.035, difference if r_E >= 0.047 (the bounds of the manuscript, P2)",
+  "configuration": "set-point (C): r_E = 0, DET and UA-MPC tie by the label rule in every test"
+ },
+ "periods": [
+  {
+   "config": "A",
+   "period": "tuning",
+   "r_E_gen": 0.027600067571096593,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.39688611551604275,
+   "architecture": "renewable_buffer"
+  },
+  {
+   "config": "A",
+   "period": "development",
+   "r_E_gen": 0.026758960385606906,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.4088572410394389,
+   "architecture": "renewable_buffer"
+  },
+  {
+   "config": "A",
+   "period": "final_test",
+   "r_E_gen": 0.0294743981103126,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.7668106234766107,
+   "architecture": "renewable_buffer"
+  },
+  {
+   "config": "B",
+   "period": "tuning",
+   "r_E_gen": 0.027240086065934217,
+   "r_E_gen_up": 0.08494423359563252,
+   "tau_E": 0.06881705953499172,
+   "architecture": "self_consumption"
+  },
+  {
+   "config": "B",
+   "period": "development",
+   "r_E_gen": 0.02524525727535821,
+   "r_E_gen_up": 0.07364469323808828,
+   "tau_E": 0.06377749206406286,
+   "architecture": "self_consumption"
+  },
+  {
+   "config": "B",
+   "period": "final_test",
+   "r_E_gen": 0.02871372954742012,
+   "r_E_gen_up": 0.055038277727394204,
+   "tau_E": 0.07253994833032452,
+   "architecture": "self_consumption"
+  },
+  {
+   "config": "C",
+   "period": "tuning",
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint"
+  },
+  {
+   "config": "C",
+   "period": "development",
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint"
+  },
+  {
+   "config": "C",
+   "period": "final_test",
+   "r_E_gen": -0.0,
+   "r_E_gen_up": -0.0,
+   "tau_E": -0.0,
+   "architecture": "setpoint"
+  }
+ ],
+ "map_cells": [
+  {
+   "config": "A",
+   "cap_wh": 36,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.02675896038560691,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.2032077695835297,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 36,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.05351792077121381,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.4088572410394389,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 36,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.10703584154242762,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.5648227219227102,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 72,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.013379480192803455,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.2032077695835297,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.026758960385606906,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.4088572410394389,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 72,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.05351792077121381,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.5648227219227102,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 144,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.006689740096401727,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.2032077695835297,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 144,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.013379480192803453,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.4088572410394389,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 144,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.026758960385606906,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.5648227219227102,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "A",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 16,
+   "r_E_gen": 0.09948383457829019,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.38000996252811947,
+   "architecture": "renewable_buffer",
+   "prediction": null
+  },
+  {
+   "config": "B",
+   "cap_wh": 36,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.0252452572753582,
+   "r_E_gen_up": 0.0736446932380883,
+   "tau_E": 0.031888746032031415,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 36,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.05049051455071642,
+   "r_E_gen_up": 0.14728938647617656,
+   "tau_E": 0.06377749206406286,
+   "architecture": "self_consumption",
+   "prediction": "difference"
+  },
+  {
+   "config": "B",
+   "cap_wh": 36,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.10098102910143285,
+   "r_E_gen_up": 0.29457877295235313,
+   "tau_E": 0.12755498412812574,
+   "architecture": "self_consumption",
+   "prediction": "difference"
+  },
+  {
+   "config": "B",
+   "cap_wh": 72,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.0126226286376791,
+   "r_E_gen_up": 0.03682234661904415,
+   "tau_E": 0.031888746032031415,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.02524525727535821,
+   "r_E_gen_up": 0.07364469323808828,
+   "tau_E": 0.06377749206406286,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 72,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.050490514550716424,
+   "r_E_gen_up": 0.14728938647617656,
+   "tau_E": 0.12755498412812574,
+   "architecture": "self_consumption",
+   "prediction": "difference"
+  },
+  {
+   "config": "B",
+   "cap_wh": 144,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.00631131431883955,
+   "r_E_gen_up": 0.018411173309522074,
+   "tau_E": 0.031888746032031415,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 144,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.012622628637679104,
+   "r_E_gen_up": 0.03682234661904414,
+   "tau_E": 0.06377749206406286,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 144,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.025245257275358212,
+   "r_E_gen_up": 0.07364469323808828,
+   "tau_E": 0.12755498412812574,
+   "architecture": "self_consumption",
+   "prediction": "tie"
+  },
+  {
+   "config": "B",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 16,
+   "r_E_gen": 0.06921223787081678,
+   "r_E_gen_up": 0.24352015140835204,
+   "tau_E": 0.04371299233946323,
+   "architecture": "self_consumption",
+   "prediction": "difference"
+  },
+  {
+   "config": "C",
+   "cap_wh": 36,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 36,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 36,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 72,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 72,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 144,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 144,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 144,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  },
+  {
+   "config": "C",
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 16,
+   "r_E_gen": 0.0,
+   "r_E_gen_up": 0.0,
+   "tau_E": 0.0,
+   "architecture": "setpoint",
+   "prediction": "tie"
+  }
+ ],
+ "predictions": {
+  "Q1": "C: DET and UA-MPC tie by the label rule in every map cell, in the final test and in every winter month",
+  "Q2": "B decision map: the label of each cell follows the bounds (column prediction; none between the bounds)",
+  "Q3": "B final test: label by the bounds from its r_E (0.0287)"
+ }
+}

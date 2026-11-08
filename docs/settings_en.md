@@ -1,6 +1,6 @@
 # Settings of the simulation
 
-What every setting of the **Simulation** tab means, what can be set and what it changes (version 1.3.1).
+What every setting of the **Simulation** tab means, what can be set and what it changes (version 1.3.2).
 Magyar változat: [`settings.md`](settings.md). User guide: [`user_guide_en.md`](user_guide_en.md).
 
 The simulation scales your system onto the reference cell (mean load 10.788 W), runs the controllers there and

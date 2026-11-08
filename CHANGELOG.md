@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2 (2026-11-08)
+
+- Fig. 15 of the paper, the decision guide: `experiments/extended/figures/fig17_decision_guide.py` (numbers read from the
+  result files), a step of the reproduction pipeline (`app/pipeline.py`), and its reference image; the paper check
+  now compares 19 figures.
+
 ## 1.3.1 (2026-11-08)
 
 Test T3, pre-registered in 1.3.0, run and evaluated; its back-offs added to the simulation.

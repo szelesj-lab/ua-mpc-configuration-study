@@ -34,6 +34,7 @@ FIGURES = [
     ("Fig. 12", "Winter test: monthly protection, B", "fig11_winter_protection"),
     ("Fig. 13", "UA-MPC minus reference: net cost", "fig15a_summary_cost"),
     ("Fig. 14", "UA-MPC minus reference: protection", "fig15b_summary_protection"),
+    ("Fig. 15", "Decision guide", "fig17_decision_guide"),
     ("Fig. S1", "Second load case: decision map", "fig12_case2_map"),
     ("Fig. S2", "Second load case: variability experiment", "fig13_case2_variability"),
     ("Fig. S3", "Second load case: capacity", "fig14_case2_capacity"),

@@ -1,6 +1,6 @@
 # Felhasználói útmutató
 
-Ez az útmutató a csomag webes felületét és parancssorát írja le (1.3.1-es verzió). English version:
+Ez az útmutató a csomag webes felületét és parancssorát írja le (1.3.2-es verzió). English version:
 [`user_guide_en.md`](user_guide_en.md). A felület feliratai angolok; az útmutató a gombokat és mezőket a
 felületen látható angol nevükön említi.
 
@@ -33,7 +33,7 @@ Böngészőben: http://localhost:8501. A `-v "$PWD/out:/pkg/out"` rész megőrzi
 előrejelzéseket két indítás között; nélküle a konténer leállásakor elvesznek.
 
 A tárolt kísérletek újrafuttatásához és a 2026. szeptemberi tesztidőszakhoz a nyári előrejelző modellek is kellenek
-(`models_summer.zip`, a v1.3.1 GitHub-release melléklete):
+(`models_summer.zip`, a v1.3.2 GitHub-release melléklete):
 
 ```bash
 unzip models_summer.zip -d models_summer

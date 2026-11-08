@@ -36,7 +36,7 @@ controllers need the work copies, the summer GP models and, for the winter month
 | `tariffs/` | `expost.py` (re-pricing), `run_glim.py` (import limit in the MPC) | `tariffs/expost.csv`, `glim_B/`, `glim_C/` | Sec. 5.6, tariff table (App. B) | ~2 h |
 | `seasonal/` | `run_season.py select <ctrl>`, `run_season.py test` | `seasonal/reselection.json`, `select/`, `test/` (`REUSED.txt`: unchanged chains copied from the winter test) | Sec. 5.5 (seasonal re-selection) | ~9 h |
 | `indicators/` | `lit_indicators.py industrial|second`, `lit_indicators_corr.py`, `grouped_cv.py` | `indicators/`: r_E against storage-sizing indicators, AUC, leave-one-out, leave-one-family-out | Sec. 5.3, indicator table (App. B) | minutes |
-| `figures/` | `graphical_abstract.py`, `fig_architecture.py`, `fig01_coverage.py`, `fig15_split.py`, `fig16_col.py` | written to the manuscript's `figs/` | graphical abstract, Figs. 1 and 5, the summary figures (cost and protection) and the column-width Γ figure; the last two read the data files written by `preregistered/figures_ratio_tests.py` | seconds |
+| `figures/` | `graphical_abstract.py`, `fig_architecture.py`, `fig01_coverage.py`, `fig15_split.py`, `fig16_col.py`, `fig17_decision_guide.py` (Fig. 15, decision guide; reads the result files) | written to the manuscript's `figs/` | graphical abstract, Figs. 1 and 5, the summary figures (cost and protection) and the column-width Γ figure; the last two read the data files written by `preregistered/figures_ratio_tests.py` | seconds |
 
 The time stamps of the two preregistration records (`written_utc`) precede the first run of the tests they
 cover; the run logs are next to the results.

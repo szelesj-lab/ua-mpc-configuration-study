@@ -1,6 +1,6 @@
 # User guide
 
-This guide covers the web interface and command line of the package (version 1.3.1). Magyar változat:
+This guide covers the web interface and command line of the package (version 1.3.2). Magyar változat:
 [`user_guide.md`](user_guide.md).
 
 The main job of the tool is **simulation**: it runs the controllers (DET, DET-BO, UA-MPC) on any load profile you
@@ -31,7 +31,7 @@ Open http://localhost:8501. The `-v "$PWD/out:/pkg/out"` part keeps your runs an
 starts; without it they are lost when the container stops.
 
 For re-running stored experiments and for the September 2026 test period, also mount the summer forecast models
-(`models_summer.zip`, attached to the GitHub release v1.3.1):
+(`models_summer.zip`, attached to the GitHub release v1.3.2):
 
 ```bash
 unzip models_summer.zip -d models_summer

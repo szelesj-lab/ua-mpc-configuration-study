@@ -66,6 +66,7 @@ def steps() -> list[dict]:
         {"id": "fig_gamma", "title": "Fig. 10 (Γ test)", "cmd": [py, f"{ext}/figures/fig16_col.py"], "env": w, "needs_work": True},
         {"id": "fig_cov", "title": "Fig. 1 (data coverage)", "cmd": [py, f"{ext}/figures/fig01_coverage.py"], "env": w, "needs_work": True},
         {"id": "fig_arch", "title": "Fig. 5 (architecture)", "cmd": [py, f"{ext}/figures/fig_architecture.py"], "env": w, "needs_work": True},
+        {"id": "fig_guide", "title": "Fig. 15 (decision guide)", "cmd": [py, f"{ext}/figures/fig17_decision_guide.py"], "env": w, "needs_work": True},
         {"id": "fig_ga", "title": "Graphical abstract", "cmd": [py, f"{ext}/figures/graphical_abstract.py"], "env": w, "needs_work": True},
     ]
 

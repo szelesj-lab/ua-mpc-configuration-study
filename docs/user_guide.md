@@ -1,6 +1,6 @@
 # Felhasználói útmutató
 
-Ez az útmutató a csomag webes felületét és parancssorát írja le (1.3.0-s verzió). English version:
+Ez az útmutató a csomag webes felületét és parancssorát írja le (1.3.1-es verzió). English version:
 [`user_guide_en.md`](user_guide_en.md). A felület feliratai angolok; az útmutató a gombokat és mezőket a
 felületen látható angol nevükön említi.
 
@@ -33,7 +33,7 @@ Böngészőben: http://localhost:8501. A `-v "$PWD/out:/pkg/out"` rész megőrzi
 előrejelzéseket két indítás között; nélküle a konténer leállásakor elvesznek.
 
 A tárolt kísérletek újrafuttatásához és a 2026. szeptemberi tesztidőszakhoz a nyári előrejelző modellek is kellenek
-(`models_summer.zip`, a v1.3.0 GitHub-release melléklete):
+(`models_summer.zip`, a v1.3.1 GitHub-release melléklete):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -123,7 +123,9 @@ lehet 0 is.
 |---|---|
 | DET | determinisztikus MPC az előrejelzés várható értékével |
 | DET-BO (reference back-off) | DET állandó SoC-tartalékkal (b) a sáv mindkét szélén, a referencia-vizsgálatban hangolt értékkel (A és B) |
-| DET-BO re-sized from r_E | DET-BO, amelynek b-jét minden hónapban az előző hónap r_E-jéből számolja: b = r_E (x_max − x_min) / 0,75 (A és B) |
+| DET-BO re-sized from r_E | DET-BO, amelynek b-jét minden hónapban az előző hónap r_E-jéből számolja: b = r_E (x_max − x_min) / Γ-cél, alapból 0,75 (A és B); a Γ-cél a „Γ target” mezőben állítható |
+| DET-BO scenario back-off | DET-BO, b = az előző hónap legnagyobb órás hiánya (scenario-szabály; alapból nincs bejelölve) |
+| DET-BO robust back-off | DET-BO, b = az előző hónap legnagyobb negyedórás hiánya egy órán át (robusztus/tube-szabály; alapból nincs bejelölve) |
 | UA-MPC | bizonytalanság-tudatos MPC: a tartalék a kalibrált előrejelzési bizonytalanságot követi |
 
 Alapesetként mindig fut a „csak hálózat” (akku nélküli) változat is. Minden szabályozó a referencia-cellára hangolt
@@ -199,7 +201,7 @@ az állandó tartalék, amely Γ = 0,75-öt adna.
 | Curtailed (%) – levágott megújuló | a megújuló energia fel nem használt része |
 | Band violation (pp·h) – sávsértés | a tervezett SoC-sávon kívüli kitérések mélysége × időtartama |
 
-**Havi táblázat**: r_E, az előző hónap r_E-je, Γ, az újraméretezett és a javasolt tartalék, valamint szabályozónként
+**Havi táblázat**: r_E, az előző hónap r_E-je, Γ, az újraméretezett, a javasolt, a scenario- és a robusztus tartalék, valamint szabályozónként
 a nettó költség és a védelmi idő havonta.
 
 **Γ-ellenőrzés óránként** (ha DET-BO futott A-ban vagy B-ben): a tartalék (b) a SoC alsó határa fölött b·E energiát

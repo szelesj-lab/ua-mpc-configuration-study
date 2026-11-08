@@ -30,6 +30,23 @@ def routed(mu: pd.Series, real: pd.Series, arch: str, p_ch: float, p_dis: float)
     return e * 0.0
 
 
+def archive_rules(err_w: pd.Series, e_cap: float, gamma_target: float = 0.75, band: float = 0.8,
+                  replan: int = 4, dt_h: float = 0.25) -> dict:
+    """Back-offs (share of the capacity) chosen before a period from an archive of routed forecast errors (W):
+
+    resized    the 95 % quantile of the routed 1-h window deficits sized to the Γ target (T1: Γ = 0.75)
+    scenario   the largest routed 1-h window deficit of the archive (scenario program with one decision variable)
+    robust     replan dt times the largest routed per-step deficit (worst case: every step of the window at the bound)
+    """
+    d = (err_w.rolling(replan).sum() * dt_h).clip(lower=0).dropna()
+    if not len(d):
+        return {"resized": float("nan"), "scenario": float("nan"), "robust": float("nan"), "windows": 0}
+    return {"resized": float(d.quantile(0.95)) / (e_cap * band) * band / gamma_target,
+            "scenario": float(d.max()) / e_cap,
+            "robust": replan * dt_h * float(err_w.clip(lower=0).max()) / e_cap,
+            "windows": int(len(d))}
+
+
 def windows(steps: pd.DataFrame, err_w: pd.Series, b: float, e_cap: float, soc0: float | None,
             soc_min: float = 0.1, eta: float = 0.95, replan: int = 4, dt_h: float = 0.25) -> pd.DataFrame:
     """One row per re-planning window of a run.

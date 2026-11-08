@@ -23,10 +23,14 @@ import json
 import os
 from pathlib import Path
 
+import sys
+
 import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from app.own.gammacheck import archive_rules  # noqa: E402
 EXT = ROOT / "results" / "extended"
 E_CAP, LIM, BAND, W, DT = 72.0, 48.0, 0.8, 4, 0.25
 B_TUNED = 0.030298875705271892
@@ -50,11 +54,9 @@ def deficits(e: pd.Series) -> pd.Series:
 
 
 def rules(look: pd.Series) -> dict:
-    d = deficits(look)
-    return {"backoff_resized": float(d.quantile(0.95)) / (E_CAP * 0.75),
-            "scenario": float(d.max()) / E_CAP,
-            "robust": W * DT * float(look.clip(lower=0).max()) / E_CAP,
-            "lookback_windows": int(len(d))}
+    """The three ex-ante rules of app/own/gammacheck.archive_rules (the same code as the simulator)."""
+    r = archive_rules(look, E_CAP)
+    return {"backoff_resized": r["resized"], "scenario": r["scenario"], "robust": r["robust"], "lookback_windows": r["windows"]}
 
 
 def winter(k: int) -> pd.Series:

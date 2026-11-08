@@ -1,0 +1,63 @@
+{
+ "written_utc": "2026-11-08T13:18:18.750015+00:00",
+ "T3": {
+  "design": "configuration B, BMS plant: DET-BO with the summer-selected weights (as T1) and a back-off chosen before each period by the scenario rule (largest routed 1-h deficit of the archive) or the robust rule (W dt times the largest routed per-step deficit); walk-forward winter months Nov 2025 - Mar 2026, SoC carried over from the DET-BO chain at the end of October; summer final test, archive the 30 days before it. No tuning: the weights are those of T1.",
+  "months": [
+   {
+    "month": 2,
+    "b_scenario": 0.10867601932356408,
+    "b_robust": 0.11904088640902641,
+    "archive_windows": 2954
+   },
+   {
+    "month": 3,
+    "b_scenario": 0.0871226900328698,
+    "b_robust": 0.09165507960116659,
+    "archive_windows": 2878
+   },
+   {
+    "month": 4,
+    "b_scenario": 0.1380827314005142,
+    "b_robust": 0.15451264092251793,
+    "archive_windows": 2974
+   },
+   {
+    "month": 5,
+    "b_scenario": 0.1376102195963415,
+    "b_robust": 0.15592056501073273,
+    "archive_windows": 2974
+   },
+   {
+    "month": 6,
+    "b_scenario": 0.12207370900282438,
+    "b_robust": 0.14156858019227897,
+    "archive_windows": 2686
+   }
+  ],
+  "summer_final_test": {
+   "b_scenario": 0.05440963384451955,
+   "b_robust": 0.09852327791675856,
+   "archive_windows": 2877
+  },
+  "reference_Nov_Mar": {
+   "resized_backoff_T1": {
+    "net_cost_eur": 4.814814973344974,
+    "protection_h": 7.5
+   },
+   "ua": {
+    "net_cost_eur": 4.782136746560155,
+    "protection_h": 39.5
+   },
+   "summer_final_test": {
+    "resized_backoff_T1": 0.7830939615905105
+   }
+  },
+  "predictions": {
+   "P12": "Nov-Mar protection hours with the scenario back-off <= those of the re-sized back-off of T1 (7.50 h)",
+   "P13": "Nov-Mar protection hours with the robust back-off <= those of the re-sized back-off of T1 (7.50 h)",
+   "P14": "Nov-Mar net cost: robust >= scenario >= re-sized back-off of T1 (the back-off is larger in every month)",
+   "P15": "Nov-Mar net cost of both above that of UA-MPC",
+   "P16": "summer final test: both tie UA-MPC by the label rule of the decision map (protection) and cost more than the re-sized back-off of T1"
+  }
+ }
+}

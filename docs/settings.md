@@ -1,6 +1,6 @@
 # A szimuláció beállításai
 
-Mit jelent a **Simulation** fül minden beállítása, mit lehet megadni, és mit változtat az eredményen (1.3.0-s verzió).
+Mit jelent a **Simulation** fül minden beállítása, mit lehet megadni, és mit változtat az eredményen (1.3.1-es verzió).
 English version: [`settings_en.md`](settings_en.md). A felhasználói útmutató: [`user_guide.md`](user_guide.md).
 
 A szimuláció a megadott rendszert a referencia-cellára skálázza (átlagterhelés 10,788 W), azon futtatja a
@@ -50,6 +50,8 @@ Mindegyik óránként újratervez 24 órás horizonttal, a referencia-cellára h
 | **DET** | Sehogy: csak az előrejelzés várható értékével tervez. | Ha az előrejelzés téved, a SoC könnyebben eléri a sáv szélét. A B-re hangolt változat ezt erős SoC-középre húzással ellensúlyozza, ami kevesebb arbitrázst, így több költséget jelent. |
 | **DET-BO (reference back-off)** | Állandó tartalék (b) a SoC-sáv mindkét szélén, a referencia-hangolás értékével: A-ban b = 0,045, B-ben b = 0,030. | Ha a te r_E-d nagyobb, mint amire b-t méretezték (Γ > 1), több védelmi óra; ha kisebb, fölöslegesen óvatos. |
 | **DET-BO re-sized from r_E** | Ugyanez, de b-t minden hónap elején az előző hónap r_E-jéből számolja: b = r_E · 0,8 / 0,75 (Γ = 0,75 cél). Az első hónapban a hónap előtti időszak r_E-jét használja. | Követi az évszakos változást; a cikk téli tesztjében kevesebb védelmi órát kért, mint az UA-MPC, kb. 0,7 %-kal drágábban. |
+| **DET-BO scenario back-off** (alapból nincs bejelölve) | Állandó tartalék, amelyet minden hónap elején az előző hónap előrejelzési archívumából számol: az akkuhoz jutó legnagyobb órás hiány (a scenario-módszer egyetlen döntési változóval). | Szinte mindig elég (a cikkben Γ = 0,15–0,62), de a használható sáv 14–35 %-át leköti, ezért drágább. A cikk T3 tesztje. |
+| **DET-BO robust back-off** (alapból nincs bejelölve) | Ugyanígy, de a legrosszabb esetre: az előző hónap legnagyobb negyedórás hiánya egy teljes órán át (tube-szűkítés). | A legóvatosabb (Γ = 0,09–0,59), a sáv 23–53 %-át leköti. A cikk T3 tesztje. |
 | **UA-MPC** | A tartalékot a kalibrált előrejelzési szórásból számolja minden lépésre (esélykorlát); a szórást minden hónapban újrakalibrálja. | Nem kell méretezni; a cikkben B-ben 2,9–3,3 %-kal olcsóbb volt a DET-nél. Ha az előrejelzési hibák farka vastagabb a Gauss-feltevésnél (például télen), a tartaléka kevés lehet. |
 
 ## 3. Időszak és mód (Period and mode)
@@ -62,6 +64,7 @@ Mindegyik óránként újratervez 24 órás horizonttal, a referencia-cellára h
 | **test period Sep 2026** | 2026. szeptember 2–29., a nyári előrejelző modellekkel (a cikk végső tesztje). | A `models_summer` mappa kell hozzá. Referencia-adattal a cikk végső tesztjének tárolt eredményeivel vethető össze (A, B, C). |
 | **Days the load data do not cover: fill from the profile** | Ha a fájl nem fedi a szimulált napot, a terhelést az adatban szereplő, az évben legközelebbi nap ugyanazon hétköznapjáról és negyedórájáról veszi. | Egy rövid (akár egyhetes) fájl is meghajthat egész évet; a szezonális változást csak annyira tükrözi, amennyire a fájl tartalmazza. Munkaszüneti napokat nem kezel külön. |
 | **leave out** | A szimulált időszakot az adat első és utolsó napjára szűkíti. | Csak a valódi adaton számol. Ha a kiválasztott hónapok egyikét sem fedi a fájl, a futás hibával leáll. |
+| **Γ target of the re-sized back-off** | Az újraméretezett DET-BO Γ-célja: b = az előző hónap r_E-je × 0,8 / Γ-cél. Alapérték 0,75 (a cikk T1-szabálya). | Kisebb érték: nagyobb tartalék, kevesebb BMS-beavatkozás, magasabb költség; nagyobb érték: fordítva. 1 fölött a tartalék a rossz órák hiányát sem fedi. |
 | **Initial SoC** | Az akku töltöttsége az első hónap elején (0,1–0,9). | Az első napok költségét befolyásolja; hosszabb futásnál elhanyagolható. A referencia-összevetéshez 0,5 kell. |
 | **Name** | A futás neve a listában. | Csak a megjelenítést. |
 | **Add to queue** | A futást a sor végére teszi. | Ha semmi sem fut, azonnal indul; különben megvárja az előtte lévőket. |

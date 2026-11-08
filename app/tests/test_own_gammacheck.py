@@ -25,3 +25,14 @@ def test_classes():
     s = summary(w)
     assert s["inside_within_lower_edge"] == 0 and s["reserve_used_lower_edge"] == 1 and s["lower_edge_hours"] == 1
     assert pd.isna(windows(steps, err, 0.03, 72.0, None)["class"].iloc[0])   # unknown start SoC: not classified
+
+
+def test_archive_rules():
+    from app.own.gammacheck import archive_rules
+    t = pd.date_range("2025-11-01", periods=8, freq="15min", tz="UTC")
+    err = pd.Series([4.0, 4.0, 4.0, 4.0, -8.0, 0.0, 12.0, 0.0], index=t)        # W
+    r = archive_rules(err, 72.0)
+    # 1-h windows (Wh): 4, 1, 0, 2, 1 -> max 4 Wh; largest step deficit 12 W -> 12 Wh over one hour
+    assert abs(r["scenario"] - 4.0 / 72) < 1e-12 and abs(r["robust"] - 12.0 / 72) < 1e-12 and r["windows"] == 5
+    q = float(pd.Series([4.0, 1.0, 0.0, 2.0, 1.0]).quantile(0.95))
+    assert abs(r["resized"] - q / (72 * 0.75)) < 1e-12

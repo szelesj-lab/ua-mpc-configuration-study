@@ -9,7 +9,9 @@ from pathlib import Path
 import pandas as pd
 
 LABEL = {"grid_only": "Grid only", "det": "DET", "det_bo": "DET-BO (reference back-off)",
-         "det_bo_sized": "DET-BO (back-off re-sized monthly from r_E)", "ua": "UA-MPC"}
+         "det_bo_sized": "DET-BO (back-off re-sized monthly from r_E)",
+         "det_bo_scenario": "DET-BO (scenario back-off: largest 1-h deficit of the month before)",
+         "det_bo_robust": "DET-BO (robust back-off: worst-case step deficit of the month before × 1 h)", "ua": "UA-MPC"}
 CONFIG = {"A": "A – renewable buffer (renewables only charge the battery)",
           "B": "B – self-consumption (the battery takes the forecast deviation)",
           "C": "C – set-point (the grid takes the forecast deviation)"}
@@ -60,7 +62,11 @@ def gamma_rows(p, months):
                         "b_ref": b, "Gamma_ref_b": (rE * BAND / b) if b else None,
                         "b_sized": r["b_sized"][X] if X != "C" else None,
                         "Gamma_sized": (rE * BAND / r["b_sized"][X]) if X != "C" and r["b_sized"][X] > 0 else None,
-                        "b_recommended": rE * BAND / GAMMA_LO if X != "C" else None})
+                        "b_recommended": rE * BAND / GAMMA_LO if X != "C" else None,
+                        "b_scenario": r.get("b_scenario", {}).get(X) if X != "C" else None,
+                        "Gamma_scenario": (rE * BAND / r["b_scenario"][X]) if X != "C" and r.get("b_scenario", {}).get(X) else None,
+                        "b_robust": r.get("b_robust", {}).get(X) if X != "C" else None,
+                        "Gamma_robust": (rE * BAND / r["b_robust"][X]) if X != "C" and r.get("b_robust", {}).get(X) else None})
     return out
 
 
@@ -73,12 +79,12 @@ def gamma_windows(d: Path, cell: dict) -> tuple[list[dict], pd.DataFrame]:
     from app.own.gammacheck import routed, summary, windows
     rows, allw = [], []
     for X in ("A", "B"):
-        for c in ("det_bo", "det_bo_sized"):
+        for c in ("det_bo", "det_bo_sized", "det_bo_scenario", "det_bo_robust"):
             parts = sorted((d / "runs" / X).glob(f"{c}_*.json")) if (d / "runs" / X).exists() else []
             ws = []
             for j in parts:
                 r = json.loads(j.read_text()); f = j.with_suffix(".csv"); dp = d / "data" / f"{r['month']}.pkl"
-                if not f.exists() or not dp.exists() or not r.get("b"):
+                if r.get("controller") != c or not f.exists() or not dp.exists() or not r.get("b"):
                     continue
                 x = pd.read_pickle(dp)
                 err = routed(x.solar_mu + x.wind_mu, x.solar_real + x.wind_real, ARCH[X], cell["p_max_w"], cell["p_max_w"])
@@ -145,7 +151,7 @@ def write(d: Path) -> dict:
             if len(det):
                 sel = tot.config == X
                 tot.loc[sel, "vs_det_pct"] = 100 * (tot.loc[sel, "net_cost_eur"] / float(det.net_cost_eur.iloc[0]) - 1)
-        order = {c: i for i, c in enumerate(["grid_only", "det", "det_bo", "det_bo_sized", "ua"])}
+        order = {c: i for i, c in enumerate(["grid_only", "det", "det_bo", "det_bo_sized", "det_bo_scenario", "det_bo_robust", "ua"])}
         tot = tot.sort_values(["config", "controller"], key=lambda c: c.map(order) if c.name == "controller" else c)
         totals = tot.to_dict("records")
         df.to_csv(d / "monthly.csv", index=False)
@@ -219,10 +225,11 @@ def markdown(r: dict) -> str:
         for m in r["months"]:
             L.append(f"| {_mlab(m['month'])} | {m['steps']} | {_f(m['sigma_scale'], 3)} | {_f(m['load_direct_pct'], 0)} | {_f(m['price_mean_eur_mwh'], 1)} |")
         L.append("")
-    L += ["## r_E and Γ", "", "| Config | Month | r_E | r_E past | Γ (reference b) | b re-sized | b for Γ=0.75 |", "|---|---|---|---|---|---|---|"]
+    L += ["## r_E and Γ", "", "| Config | Month | r_E | r_E past | Γ (reference b) | b re-sized | b for Γ=0.75 | b scenario / robust |",
+          "|---|---|---|---|---|---|---|---|"]
     for x in r["gamma"]:
         L.append(f"| {x['config']} | {_mlab(x['month'])} | {_f(x['r_E'], 3)} | {_f(x['r_E_past'], 3)} | {_f(x['Gamma_ref_b'])} | "
-                 f"{_f(x['b_sized'], 3)} | {_f(x['b_recommended'], 3)} |")
+                 f"{_f(x['b_sized'], 3)} | {_f(x['b_recommended'], 3)} | {_f(x.get('b_scenario'), 3)} / {_f(x.get('b_robust'), 3)} |")
     L.append("")
     for X in p["configs"]:
         L += [f"### {CONFIG[X]}", "", r["verdict"][X], ""]

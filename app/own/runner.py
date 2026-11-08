@@ -22,7 +22,8 @@ from app.pipeline import OUT, PKG
 
 OWN = OUT / "own"
 UPLOADS, JOBS = OWN / "uploads", OWN / "jobs"
-CONTROLLERS = ["det", "det_bo", "det_bo_sized", "ua"]
+CONTROLLERS = ["det", "det_bo", "det_bo_sized", "det_bo_scenario", "det_bo_robust", "ua"]
+DEFAULT_CONTROLLERS = ["det", "det_bo", "det_bo_sized", "ua"]   # scenario and robust back-off: on request
 # rough minutes per controller and month on one core (about 720 solves of 0.5-5 s; machine-dependent)
 MIN_PER_CHAIN_MONTH = 30
 # runs started from the interface wait in a queue and run one after another (OWN_PARALLEL at a time)
@@ -76,7 +77,7 @@ def reference_upload() -> dict:
 def options() -> dict:
     return {"months": bundles.months_available(), "bundles": bundles.status(),
             "configs": {X: {"architecture": ARCH[X], "det_bo": has_det_bo(X)} for X in "ABC"},
-            "controllers": CONTROLLERS, "cpus": os.cpu_count() or 1, "min_per_chain_month": MIN_PER_CHAIN_MONTH}
+            "controllers": CONTROLLERS, "default_controllers": DEFAULT_CONTROLLERS, "gamma_target": 0.75, "cpus": os.cpu_count() or 1, "min_per_chain_month": MIN_PER_CHAIN_MONTH}
 
 
 def estimate(p: dict) -> dict:
@@ -102,6 +103,8 @@ def _check(p: dict):
         raise ValueError("choose at least one configuration of A, B, C")
     if any(c not in CONTROLLERS for c in p["controllers"]):
         raise ValueError("unknown controller")
+    if not 0.25 <= float(p.get("gamma_target", 0.75)) <= 2.0:
+        raise ValueError("the Γ target of the re-sized back-off must lie between 0.25 and 2")
     for k in ("battery_kwh", "power_kw", "pv_kwp", "wind_kw"):
         if float(p["sizes"].get(k, -1)) < 0:
             raise ValueError(f"{k} must be zero or positive")
@@ -114,7 +117,7 @@ def start(upload_id: str, p: dict) -> dict:
     if not (src / "load.pkl").exists():
         raise ValueError("unknown upload")
     p = {"mode": p.get("mode", "quick"), "period": p.get("period") or "final_test", "configs": p.get("configs") or ["B"],
-         "controllers": p.get("controllers") or CONTROLLERS, "sizes": {k: float(v) for k, v in p["sizes"].items()},
+         "controllers": p.get("controllers") or DEFAULT_CONTROLLERS, "gamma_target": float(p.get("gamma_target") or 0.75), "sizes": {k: float(v) for k, v in p["sizes"].items()},
          "initial_soc": p.get("initial_soc", 0.5), "fill": p.get("fill", "profile"), "workers": p.get("workers") or os.cpu_count() or 1,
          "upload_id": upload_id, "name": p.get("name", "")}
     _check(p)

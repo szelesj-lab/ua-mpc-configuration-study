@@ -176,6 +176,15 @@ def scen(*cols):
     return f
 
 
+def t3(rule: str, key: str = "protection_h"):
+    """T3 (results/extended/preregistered/t3): Nov–Mar total of the scenario or robust back-off."""
+    return lambda: sum(jload(EXT / f"preregistered/t3/det_bo_{rule}_m{k}.json")["metrics"][key] for k in range(2, 7))
+
+
+def t3_final(rule: str, key: str = "protection_h"):
+    return lambda: jload(EXT / f"preregistered/t3/steps/det_bo_{rule}_final.json")["metrics"][key]
+
+
 def seasonal_ua():
     c = p = 0.0
     for k in range(3, 7):
@@ -482,6 +491,15 @@ CLAIMS += [
     ("5.4 Pre-registered", "Usable band held back, re-sized back-off (%)", "7–18", scen("band_locked_pct_backoff_resized")),
     ("5.4 Pre-registered", "Γ of the re-sized back-off, summer periods and T1 months", "0.52–1.03", scen("Gamma_backoff_resized")),
     ("6 Discussion", "Usable band held back, scenario and robust margins (%)", "14–53", scen("band_locked_pct_scenario", "band_locked_pct_robust")),
+    ("5.4 Pre-registered", "T3, Nov–Mar protection: scenario / robust back-off (h)", "2.75 / 3.00", lambda: (t3("scenario")(), t3("robust")())),
+    ("5.4 Pre-registered", "T3, Nov–Mar extra net cost vs UA-MPC: scenario / robust (%)", "1.6 / 1.9",
+     lambda: tuple(100 * (t3(r, "net_cost_eur")() / winter_ref("ua")[0] - 1) for r in ("scenario", "robust"))),
+    ("5.4 Pre-registered", "T3, summer final test protection: scenario / robust (h)", "8.25 / 3.50", lambda: (t3_final("scenario")(), t3_final("robust")())),
+    ("5.4 Pre-registered", "T3, summer final test extra cost vs re-sized back-off: scenario / robust (%)", "1.1 / 3.2",
+     lambda: tuple(100 * (t3_final(r, "net_cost_eur")() / jload(EXT / "preregistered/t1/steps/det_bo_sized_final.json")["metrics"]["net_cost_eur"] - 1)
+                   for r in ("scenario", "robust"))),
+    ("6 Discussion", "T3, extra winter cost vs UA-MPC (%)", "1.6–1.9",
+     lambda: tuple(100 * (t3(r, "net_cost_eur")() / winter_ref("ua")[0] - 1) for r in ("scenario", "robust"))),
     ("5.5 Winter", "Winter coverage ±1σ / ±2σ (%)", "71–86", lambda: (macros()["winCovOneMin"], macros()["winCovOneMax"])),
     ("5.5 Winter", "Winter coverage ±2σ (%)", "86–98", lambda: (macros()["winCovTwoMin"], macros()["winCovTwoMax"])),
     ("5.5 Winter", "Winter RMSE (W per step)", "1.46–2.54", lambda: (macros()["winRmseMin"], macros()["winRmseMax"])),

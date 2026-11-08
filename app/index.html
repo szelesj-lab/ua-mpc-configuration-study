@@ -122,6 +122,7 @@ svg.ld{width:100%;height:120px;background:var(--bg);border-radius:6px}
           <div class="hint" id="oratio"></div><p><button class="ghost" id="odef" type="button">Reference ratios</button></p>
           <label>Configurations</label><div class="checks" id="ocfg"></div>
           <label>Controllers</label><div class="checks" id="octl"></div>
+          <div class="row"><div><label>Γ target of the re-sized back-off</label><input type="number" id="ogam" value="0.75" min="0.25" max="2" step="0.05"></div><div class="s" style="align-self:end">b = r_E of the month before × 0.8 / Γ target; 0.75 is the rule of the study (T1). Lower: safer, more expensive.</div></div>
         </fieldset>
         <fieldset id="oper" disabled><legend>3 · Period and mode</legend>
           <div class="checks"><label><input type="radio" name="omode" value="quick" checked> quick (controllers with the reference weights)</label><label><input type="radio" name="omode" value="screen"> screening (r_E and Γ only)</label></div>
@@ -268,14 +269,14 @@ async function showExp(){
 
 // ---- own data ----
 let OWN={opt:null,up:null,job:null,timer:null};
-const CTL={det:'DET',det_bo:'DET-BO (reference back-off)',det_bo_sized:'DET-BO re-sized from r_E',ua:'UA-MPC',grid_only:'Grid only'};
+const CTL={det:'DET',det_bo:'DET-BO (reference back-off)',det_bo_sized:'DET-BO re-sized from r_E',det_bo_scenario:'DET-BO scenario back-off',det_bo_robust:'DET-BO robust back-off',ua:'UA-MPC',grid_only:'Grid only'};
 const CFG={A:'A · renewable buffer',B:'B · self-consumption',C:'C · set-point'};
 const OFIG={fig02_load_profile:['Fig. 2','Load profile: median per hour, 10–90 % band'],fig03_monthly_energy:['Fig. 3','Monthly energy: load, PV, wind'],
   fig05_net_cost:['Fig. 6','Net cost per configuration, grid only dashed'],fig06_protection:['Fig. 7','BMS protection by SoC edge'],
   fig10_monthly_saving:['Fig. 11','Monthly saving against grid only'],fig11_monthly_protection:['Fig. 12','Monthly BMS protection'],
   fig15a_summary_cost:['Fig. 13','UA-MPC minus reference: net cost'],fig15b_summary_protection:['Fig. 14','UA-MPC minus reference: protection'],
   fig16_gamma:['Fig. 10','Protection difference against Γ'],rE_gamma:['','r_E and Γ per month']};
-const ORD=['grid_only','det','det_bo','det_bo_sized','ua'];
+const ORD=['grid_only','det','det_bo','det_bo_sized','det_bo_scenario','det_bo_robust','ua'];
 const mlab=m=>m==='final_test'?'Sep 2026 test period':m;
 const eur=v=>{if(v===null||v===undefined||Number.isNaN(+v))return '–';const a=Math.abs(+v);return f2(v,a>=1000?0:a>=10?2:4);};
 const f2=(v,n=2)=>v===null||v===undefined||Number.isNaN(+v)?'–':(+v).toLocaleString('en-US',{minimumFractionDigits:n,maximumFractionDigits:n});
@@ -284,7 +285,8 @@ async function ownInit(){
     const ms=OWN.opt.months; $('#ofrom').innerHTML=ms.map(m=>`<option>${m}</option>`).join(''); $('#oto').innerHTML=ms.map(m=>`<option>${m}</option>`).join('');
     $('#ofrom').value='2025-11'; $('#oto').value='2025-11';
     $('#ocfg').innerHTML=Object.keys(CFG).map(X=>`<label><input type="checkbox" value="${X}"${X==='B'?' checked':''}> ${CFG[X]}</label>`).join('');
-    $('#octl').innerHTML=OWN.opt.controllers.map(c=>`<label><input type="checkbox" value="${c}" checked> ${CTL[c]}</label>`).join('');
+    const dc=OWN.opt.default_controllers||OWN.opt.controllers;
+    $('#octl').innerHTML=OWN.opt.controllers.map(c=>`<label><input type="checkbox" value="${c}"${dc.includes(c)?' checked':''}> ${CTL[c]}</label>`).join('');
     document.querySelectorAll('#opar input,#oper input,#oper select').forEach(e=>e.onchange=ownEst);
     document.querySelectorAll('[name=oprd]').forEach(e=>e.onchange=()=>{$('#omon').hidden=ownPrd()==='final_test';ownEst();});
   }
@@ -296,7 +298,7 @@ function ownParams(){
   const sizes={}; for(const k of ['battery_kwh','power_kw','pv_kwp','wind_kw'])sizes[k]=+$('#s_'+k).value;
   return {mode:document.querySelector('[name=omode]:checked').value, period:ownPrd()==='final_test'?'final_test':ms.slice(Math.min(a,b),Math.max(a,b)+1),
     configs:[...document.querySelectorAll('#ocfg input:checked')].map(e=>e.value), controllers:[...document.querySelectorAll('#octl input:checked')].map(e=>e.value),
-    sizes, initial_soc:+$('#osoc').value, fill:document.querySelector('[name=ofill]:checked').value, name:$('#oname').value};
+    sizes, gamma_target:+$('#ogam').value, initial_soc:+$('#osoc').value, fill:document.querySelector('[name=ofill]:checked').value, name:$('#oname').value};
 }
 function ownRatio(){ if(!OWN.up)return; const m=OWN.up.report.mean_kw;
   $('#oratio').textContent=`Mean load ${f2(m,m<1?4:1)} kW: battery ${f2(+$('#s_battery_kwh').value/m,2)} h of mean load, power ${f2(+$('#s_power_kw').value/m,2)}×, PV ${f2(+$('#s_pv_kwp').value/m,2)}×, wind ${f2(+$('#s_wind_kw').value/m,2)}× mean load (reference system: 6.67 h, 2.22×, 2.78×, 1.86×).`;}
@@ -345,7 +347,7 @@ async function ownUseSettings(p){
   document.querySelector(`[name=ofill][value=${p.fill||'profile'}]`).checked=true;
   if(p.period==='final_test'){document.querySelector('[name=oprd][value=final_test]').checked=true;$('#omon').hidden=true;}
   else{document.querySelector('[name=oprd][value=months]').checked=true;$('#omon').hidden=false;$('#ofrom').value=p.period[0];$('#oto').value=p.period[p.period.length-1];}
-  $('#osoc').value=typeof p.initial_soc==='number'?p.initial_soc:0.5; $('#oname').value=p.name?p.name+' (2)':'';
+  $('#osoc').value=typeof p.initial_soc==='number'?p.initial_soc:0.5; $('#ogam').value=p.gamma_target||0.75; $('#oname').value=p.name?p.name+' (2)':'';
   ownEst(); window.scrollTo({top:0,behavior:'smooth'});
 }
 const STATE_CLS={done:'ok',failed:'bad',stopped:'bad',cancelled:'s',running:'warn',queued:'warn'};
@@ -380,10 +382,10 @@ async function ownShow(){
       if(t.length){ h+=ownBars(t);
         h+='<div class="scroll"><table><tr><th>Controller</th><th>Net cost (€)</th><th>Saving vs grid</th><th>vs DET</th><th>Protection (h)</th><th>Extra grid (€)</th><th>Curtailed (%)</th><th>Band violation (pp·h)</th></tr>'+t.map(x=>`<tr><td>${esc(CTL[x.controller])}${x.complete?'':' <span class="warn s">(incomplete)</span>'}</td><td class="num">${eur(x.net_cost_eur)}</td><td class="num">${eur(x.saving_eur)} (${f2(x.saving_pct,1)} %)</td><td class="num">${x.controller==='grid_only'?'–':f2(x.vs_det_pct,1)+' %'}</td><td class="num">${f2(x.protection_h)}</td><td class="num">${f2(x.extra_grid_eur,3)}</td><td class="num">${f2(x.curtailed_pct,1)}</td><td class="num">${f2(x.violation_pp_h)}</td></tr>`).join('')+'</table></div>';}
       const g=r.gamma.filter(x=>x.config===X);
-      h+='<div class="scroll"><table style="margin-top:8px"><tr><th>Month</th><th>r_E</th><th>r_E of the month before</th><th>Γ (reference b)</th><th>b re-sized</th><th>b for Γ = 0.75</th>'+(t.length?'<th>Net cost per controller (€) / protection (h)</th>':'')+'</tr>'+g.map(x=>{
+      h+='<div class="scroll"><table style="margin-top:8px"><tr><th>Month</th><th>r_E</th><th>r_E of the month before</th><th>Γ (reference b)</th><th>b re-sized</th><th>b for Γ = 0.75</th>'+(g.some(x=>x.b_scenario)?'<th>b scenario / robust</th>':'')+(t.length?'<th>Net cost per controller (€) / protection (h)</th>':'')+'</tr>'+g.map(x=>{
         const mm=r.monthly.filter(y=>y.config===X&&y.month===x.month).sort((a,b)=>ORD.indexOf(a.controller)-ORD.indexOf(b.controller)).map(y=>`${esc(CTL[y.controller])}: ${eur(y.net_cost_eur)} / ${f2(y.protection_h,1)}`).join('<br>');
         const gc=x.Gamma_ref_b===null?'':x.Gamma_ref_b<0.75?'ok':x.Gamma_ref_b>1.25?'bad':'warn';
-        return `<tr><td>${esc(mlab(x.month))}</td><td class="num">${f2(x.r_E,3)}</td><td class="num">${f2(x.r_E_past,3)}</td><td class="num ${gc}">${f2(x.Gamma_ref_b)}</td><td class="num">${f2(x.b_sized,3)}</td><td class="num">${f2(x.b_recommended,3)}</td>${t.length?`<td class="s">${mm}</td>`:''}</tr>`;}).join('')+'</table></div>';
+        return `<tr><td>${esc(mlab(x.month))}</td><td class="num">${f2(x.r_E,3)}</td><td class="num">${f2(x.r_E_past,3)}</td><td class="num ${gc}">${f2(x.Gamma_ref_b)}</td><td class="num">${f2(x.b_sized,3)}</td><td class="num">${f2(x.b_recommended,3)}</td>${g.some(y=>y.b_scenario)?`<td class="num">${f2(x.b_scenario,3)} / ${f2(x.b_robust,3)}</td>`:''}${t.length?`<td class="s">${mm}</td>`:''}</tr>`;}).join('')+'</table></div>';
       const gw=(r.gamma_windows||[]).filter(x=>x.config===X);
       if(gw.length){ h+=`<h3>Γ check, hour by hour (DET-BO)</h3><p class="s">A back-off b keeps b·E above the lower SoC limit. An hour that starts inside this reserve can end at the limit only if the forecast deficit within the hour is larger than the reserve. Each cell: hours in which the BMS stopped the discharge, of all hours in the class.</p>`+
         '<div class="scroll"><table><tr><th>Controller</th><th>Hours</th><th>Lower-edge hours</th><th>Started inside, deficit within reserve</th><th>Started inside, deficit above reserve</th><th>Started with the reserve used</th></tr>'+gw.map(x=>`<tr><td>${esc(CTL[x.controller])}</td><td class="num">${x.hours}</td><td class="num">${x.lower_edge_hours}</td><td class="num ${x.inside_within_lower_edge?'bad':'ok'}">${x.inside_within_lower_edge} of ${x.inside_within}</td><td class="num">${x.inside_above_lower_edge} of ${x.inside_above}</td><td class="num">${x.reserve_used_lower_edge} of ${x.reserve_used}</td></tr>`).join('')+'</table></div>'+

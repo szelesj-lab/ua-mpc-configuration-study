@@ -1,6 +1,6 @@
 # User guide
 
-This guide covers the web interface and command line of the package (version 1.3.0). Magyar változat:
+This guide covers the web interface and command line of the package (version 1.3.1). Magyar változat:
 [`user_guide.md`](user_guide.md).
 
 The main job of the tool is **simulation**: it runs the controllers (DET, DET-BO, UA-MPC) on any load profile you
@@ -31,7 +31,7 @@ Open http://localhost:8501. The `-v "$PWD/out:/pkg/out"` part keeps your runs an
 starts; without it they are lost when the container stops.
 
 For re-running stored experiments and for the September 2026 test period, also mount the summer forecast models
-(`models_summer.zip`, attached to the GitHub release v1.3.0):
+(`models_summer.zip`, attached to the GitHub release v1.3.1):
 
 ```bash
 unzip models_summer.zip -d models_summer
@@ -118,7 +118,9 @@ them. PV or wind can be set to 0.
 |---|---|
 | DET | deterministic MPC on the forecast mean |
 | DET-BO (reference back-off) | DET with a constant SoC reserve b at both edges of the band, as tuned in the reference study (A and B) |
-| DET-BO re-sized from r_E | DET-BO whose b is set each month from the r_E of the month before: b = r_E (x_max − x_min) / 0.75 (A and B) |
+| DET-BO re-sized from r_E | DET-BO whose b is set each month from the r_E of the month before: b = r_E (x_max − x_min) / Γ target, 0.75 by default (A and B); the target is set in the "Γ target" field |
+| DET-BO scenario back-off | DET-BO with b = the largest 1-h deficit of the month before (scenario rule; unchecked by default) |
+| DET-BO robust back-off | DET-BO with b = the largest 15-min deficit of the month before held for an hour (robust/tube rule; unchecked by default) |
 | UA-MPC | uncertainty-aware MPC: the reserve follows the calibrated forecast uncertainty |
 
 Grid only (no battery) always runs as the baseline. All controllers use the weights tuned for the reference cell.
@@ -195,7 +197,7 @@ and the constant back-off that would give Γ = 0.75.
 | Curtailed (%) | share of the renewable energy that could not be used |
 | Band violation (pp·h) | depth × duration of SoC excursions outside the planned band |
 
-**Month table**: r_E, r_E of the month before, Γ, the re-sized and the recommended back-off, and net cost /
+**Month table**: r_E, r_E of the month before, Γ, the re-sized, the recommended, the scenario and the robust back-off, and net cost /
 protection hours of each controller per month.
 
 **Γ check, hour by hour** (when DET-BO ran in A or B): a back-off b holds b·E above the lower SoC limit. An hour

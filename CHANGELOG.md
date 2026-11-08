@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.3.1 (2026-11-08)
+
+Test T3, pre-registered in 1.3.0, run and evaluated; its back-offs added to the simulation.
+
+**Study**
+
+- `experiments/extended/preregistered/run_t3.py` → `results/extended/preregistered/t3/`, `log_t3.txt`, `RESULTS.md`:
+  DET-BO with the scenario and the robust back-off (weights and code path of T1), winter B November–March and the
+  summer final test. All five predictions held (P12–P16): November–March 2.75 h and 3.00 h of protection against
+  7.50 h for the re-sized back-off and 39.50 h for UA-MPC, at 1.6 % and 1.9 % more net cost than UA-MPC; in the
+  summer final test both tied with UA-MPC at 1.1 % and 3.2 % more cost than the re-sized back-off.
+- The paper check covers these values too: 140 values of the text.
+
+**Simulation**
+
+- Two more controllers, unchecked by default: DET-BO with the scenario back-off and DET-BO with the robust back-off,
+  chosen at the start of every month from the forecast archive of the month before with the same code as the study
+  (`app/own/gammacheck.archive_rules`; `experiments/extended/ratio/scenario_robust.py` now uses it too). On the reference
+  data their back-offs equal those of the T3 record.
+- The Γ target of the re-sized DET-BO can be set (default 0.75, the rule of T1).
+- The month table shows the scenario and robust back-offs; the hour-by-hour Γ check covers every DET-BO variant
+  (a DET-BO run is no longer counted twice when the re-sized one runs too).
+
 ## 1.3.0 (2026-11-08)
 
 The Γ reading of a constant back-off checked hour by hour, in the study and in every simulation, and scenario and
@@ -17,6 +40,9 @@ robust tightening placed on the same scale; the code and results of 1.2.3 are un
   (tube) tightening placed on the Γ scale from the same forecast archive as T1, without closed-loop runs: the margin
   each rule chooses before the period, the share of the usable band it holds back and its Γ (scenario 0.15–0.62,
   robust 0.09–0.59, against 0.52–1.03 for the re-sized back-off).
+- T3 pre-registered before its runs (`experiments/extended/preregistered/prereg3.py` →
+  `results/extended/preregistered/preregistration_T3.json`): the scenario and the robust back-off in closed loop, with
+  the weights and code path of T1 (`run_t3.py`); predictions P12–P16. The results follow in the next release.
 - The paper check covers these values too: 135 values of the text.
 
 **Simulation** (`app/own/gammacheck.py`, the same code as the study)

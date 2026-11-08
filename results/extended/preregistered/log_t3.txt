@@ -1,0 +1,13 @@
+[14:31] scenario winter m2 b=0.1087 net 0.9162 prot 0.00 782s
+[14:31] robust winter m2 b=0.1190 net 0.9174 prot 0.00 789s
+[14:44] scenario winter m3 b=0.0871 net 0.9801 prot 2.50 776s
+[14:44] robust winter m3 b=0.0917 net 0.9804 prot 2.75 778s
+[14:57] scenario winter m4 b=0.1381 net 1.3892 prot 0.00 779s
+[14:58] robust winter m4 b=0.1545 net 1.3942 prot 0.00 847s
+[15:09] scenario winter m5 b=0.1376 net 0.9352 prot 0.00 733s
+[15:11] robust winter m5 b=0.1559 net 0.9364 prot 0.00 728s
+[15:24] scenario winter m6 b=0.1221 net 0.6393 prot 0.25 882s
+[15:25] robust winter m6 b=0.1416 net 0.6466 prot 0.25 858s
+scenario summer final net 0.7918 prot 8.25 838
+robust summer final net 0.8078 prot 3.5 880
+T3 DONE

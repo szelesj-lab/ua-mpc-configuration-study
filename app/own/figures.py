@@ -32,13 +32,15 @@ import pandas as pd
 
 TZ = "Europe/Budapest"
 WHITE, INK, INK2, GRID = "#ffffff", "#111111", "#4a4a4a", "#dddddd"
-COL = {"det": "#7f7f7f", "det_bo": "#e0662b", "det_bo_sized": "#8a6bd1", "ua": "#1a9e6e", "grid_only": "#2a6fdb"}
-MK = {"det": "s", "det_bo": "^", "det_bo_sized": "v", "ua": "o"}
-LAB = {"det": "DET", "det_bo": "DET-BO", "det_bo_sized": "DET-BO re-sized", "ua": "UA-MPC", "grid_only": "Grid only"}
+COL = {"det": "#7f7f7f", "det_bo": "#e0662b", "det_bo_sized": "#8a6bd1", "det_bo_scenario": "#c4a000", "det_bo_robust": "#8c564b",
+       "ua": "#1a9e6e", "grid_only": "#2a6fdb"}
+MK = {"det": "s", "det_bo": "^", "det_bo_sized": "v", "det_bo_scenario": "D", "det_bo_robust": "P", "ua": "o"}
+LAB = {"det": "DET", "det_bo": "DET-BO", "det_bo_sized": "DET-BO re-sized", "det_bo_scenario": "DET-BO scenario",
+       "det_bo_robust": "DET-BO robust", "ua": "UA-MPC", "grid_only": "Grid only"}
 PV, WIND, LOAD = "#e0662b", "#2a6fdb", "#4a4a4a"
 CONFN = {"A": "A\nrenewable buffer", "B": "B\nself-consumption", "C": "C\nset-point"}
 COLW, WIDE = 3.5, 7.2
-ORDER = ["det", "det_bo", "det_bo_sized", "ua"]
+ORDER = ["det", "det_bo", "det_bo_sized", "det_bo_scenario", "det_bo_robust", "ua"]
 
 # the article's figures: (file, article figure, title)
 CAPTIONS = {
@@ -263,7 +265,7 @@ def draw(d: Path, rep: dict, out: Path) -> list[Path]:
         if (X, "ua") not in stp:
             continue
         du = _daily(stp[(X, "ua")], f)
-        for c in ("det", "det_bo", "det_bo_sized"):
+        for c in ("det", "det_bo", "det_bo_sized", "det_bo_scenario", "det_bo_robust"):
             if (X, c) not in stp:
                 continue
             dr = _daily(stp[(X, c)], f)

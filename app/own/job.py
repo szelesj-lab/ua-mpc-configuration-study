@@ -10,8 +10,10 @@
 Quick mode: every month with the GP trained before it (walk-forward) and sigma calibrated on its held-out tail;
 the controllers with the reference weights tuned for each configuration (results/summer/<X>); DET-BO with
 the reference tuned back-off and, in A and B, a DET-BO whose back-off is re-sized at the start of every month from
-the r_E of the month before, b = r_E_past (x_max - x_min) / 0.75 (the rule of test T1). The SoC carries over
-from month to month. Screen mode: only r_E and Gamma per month and configuration, no controller runs.
+the r_E of the month before, b = r_E_past (x_max - x_min) / Γ_target (the rule of test T1, Γ_target = 0.75 unless set
+in params.json as gamma_target); optionally DET-BO with the scenario back-off (the largest routed 1-h deficit of the
+month before) and with the robust back-off (one hour times its largest routed per-step deficit), the rules of test T3
+(app/own/gammacheck.archive_rules). The SoC carries over from month to month. Screen mode: only r_E and Gamma per month and configuration, no controller runs.
 
 Writes status.json (stage), progress/<X>_<controller>.jsonl (one line per MPC solve), runs/<X>/<ctrl>_<m>.json
 and .csv, months.json, and at the end report.json / report.md (app/own/report.py).
@@ -36,6 +38,8 @@ SUMMER = PKG / "results" / "summer"
 ARCH = {"A": "renewable_buffer", "B": "self_consumption", "C": "setpoint"}
 GAMMA_TARGET = 0.75
 REPLAN = 4
+# DET-BO variants whose back-off is chosen at the start of every month from the archive of the month before
+RULES = {"det_bo_sized": "resized", "det_bo_scenario": "scenario", "det_bo_robust": "robust"}
 SOLAR = ("solar_mu", "solar_sd", "solar_real", "solar_base")
 WIND = ("wind_mu", "wind_sd", "wind_real", "wind_base")
 
@@ -89,6 +93,16 @@ def r_E(d: pd.DataFrame, cfg) -> float:
         return 0.0
     deficit = (x.rolling(REPLAN).sum() * 0.25).clip(lower=0)
     return float(deficit.quantile(0.95)) / usable if usable > 0 else float("nan")
+
+
+def routed_err(d: pd.DataFrame, cfg) -> pd.Series:
+    """Forecast error per step that reaches the battery (W, cell), routed as in r_E (app/own/gammacheck.routed)."""
+    _code()
+    from MPC_costfunction import _mpc_params
+
+    from app.own.gammacheck import routed
+    p = _mpc_params(cfg)
+    return routed(d.solar_mu + d.wind_mu, d.solar_real + d.wind_real, p["architecture"], p["p_ch_max"], p["p_dis_max"])
 
 
 def band(cfg) -> float:
@@ -149,20 +163,33 @@ class Job:
                    "load_direct_pct": 100 * share, "price_mean_eur_mwh": float(test.price_eur_mwh.mean()),
                    "renewable_kwh_cell": float((test.solar_real + test.wind_real).sum() * 0.25 / 1000),
                    "demand_kwh_cell": float(test.demand_w.sum() * 0.25 / 1000), "rE": {}, "rE_past_window": {}}
+            rec["_err"], rec["_err_past"] = {}, {}
             for X in self.p["configs"]:
                 cfg = cfg_for(X, self.cell, cal)
                 rec["rE"][X] = r_E(test, cfg)
                 rec["rE_past_window"][X] = r_E(past, cfg)
+                rec["_err"][X], rec["_err_past"][X] = routed_err(test, cfg), routed_err(past, cfg)
             info.append(rec)
         if not info:
             raise ValueError("the load data cover none of the chosen months")
-        # the back-off of the re-sized DET-BO: r_E of the month before (the first month: the window before it)
+        # back-offs chosen before each month from the month before (the first month: the window before it):
+        # re-sized (T1 rule, Γ target), scenario and robust (T3 rules); app/own/gammacheck.archive_rules
+        from app.own.gammacheck import archive_rules
+        g = float(self.p.get("gamma_target") or GAMMA_TARGET)
         for k, rec in enumerate(info):
-            rec["rE_past"], rec["b_sized"] = {}, {}
+            rec["rE_past"], rec["b_sized"], rec["b_scenario"], rec["b_robust"] = {}, {}, {}, {}
+            rec["gamma_target"] = g
             for X in self.p["configs"]:
                 rp = info[k - 1]["rE"][X] if k > 0 else rec["rE_past_window"][X]
                 rec["rE_past"][X] = rp
-                rec["b_sized"][X] = rp * 0.8 / GAMMA_TARGET if ARCH[X] != "setpoint" else 0.0
+                arch = info[k - 1]["_err"][X] if k > 0 else rec["_err_past"][X]
+                r = archive_rules(arch, self.cell["E_capacity"])
+                setpoint = ARCH[X] == "setpoint"
+                rec["b_sized"][X] = 0.0 if setpoint else rp * 0.8 / g
+                rec["b_scenario"][X] = 0.0 if setpoint else r["scenario"]
+                rec["b_robust"][X] = 0.0 if setpoint else r["robust"]
+        for rec in info:
+            rec.pop("_err"); rec.pop("_err_past")
         (self.d / "months.json").write_text(json.dumps(info, indent=1, default=float))
         return info
 
@@ -171,10 +198,10 @@ class Job:
         for X in self.p["configs"]:
             out.append((X, "grid_only"))
             for c in self.p["controllers"]:
-                if c in ("det_bo", "det_bo_sized") and not has_det_bo(X):
+                if c.startswith("det_bo") and not has_det_bo(X):
                     continue
                 out.append((X, c))
-        return sorted(out, key=lambda t: (t[1] == "grid_only", t[1] not in ("ua", "det_bo_sized")))
+        return sorted(out, key=lambda t: (t[1] == "grid_only", t[1] not in ("ua", *RULES)))
 
     def run(self):
         self.status("starting")
@@ -272,15 +299,15 @@ def run_chain(a):
             cfg = cfg_for(X, cell, cal)
             b = None
             if ctrl != "grid_only":
-                ov = point(X, "det_bo" if ctrl == "det_bo_sized" else ctrl)
-                if ctrl == "det_bo_sized":
-                    b = rec["b_sized"][X]
+                ov = point(X, "det_bo" if ctrl in RULES else ctrl)
+                if ctrl in RULES:
+                    b = rec["b_sized" if ctrl == "det_bo_sized" else f"b_{RULES[ctrl]}"][X]
                     ov = {**ov, "mpc": {**ov.get("mpc", {}), "soc_backoff": b}}
                 cfg = with_overrides(cfg, ov)
                 if ctrl == "det_bo":
                     b = float(ov["mpc"]["soc_backoff"])
             t = time.perf_counter()
-            df, st = simulate(data, cfg, "det_bo" if ctrl == "det_bo_sized" else ctrl,
+            df, st = simulate(data, cfg, "det_bo" if ctrl in RULES else ctrl,
                               pd.Timestamp(rec["test_start"]), pd.Timestamp(rec["test_end"]), soc0=soc)
             mt = metrics(df, st, cfg)
             soc = float(df["soc"].iloc[-1])

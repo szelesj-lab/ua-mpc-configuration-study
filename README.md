@@ -96,7 +96,7 @@ To run the analysis on re-run results, point `RESULTS` to a folder with the same
 
 The GP model files are too large for GitHub (about 380 MB for the summer models, 60–250 MB per winter month).
 The winter models are re-trained by `run_winter.sh`. The summer models were trained with
-`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.3.0 of
+`code/src/scicomp_training.py` on the weather data before 16 June 2026 and are attached to the GitHub release v1.3.1 of
 this package as `models_summer.zip`; unpack them to `models_summer/` before `make_work.sh` and check them against `docs/models_summer.sha256`. GP fitting uses
 random restarts, so models re-trained from scratch give slightly different forecasts.
 
@@ -118,7 +118,7 @@ company names); the raw company export is not included.
 
 The paper can be checked against the shipped result files in under a minute, without re-running a controller:
 
-- every value of the text (135 values; `app/catalogue.py`, each with the file or script it comes from),
+- every value of the text (140 values; `app/catalogue.py`, each with the file or script it comes from),
 - every numeric cell of the tables (813 cells of 17 tables; `app/tables.py`),
 - every figure, pixel by pixel against the figure printed in the paper (18 figures; `app/figcheck.py`).
 
@@ -211,7 +211,8 @@ of the queue run at the same time (default 1).
 ## Citation
 
 See `CITATION.cff`. Version 1.1.0 adds the analyses listed in `CHANGELOG.md`, 1.2.3 the reproduction of the paper and the simulation of any
-load profile, 1.3.0 the hour-by-hour check of Γ in the study and in every simulation.
+load profile, 1.3.0 the hour-by-hour check of Γ in the study and in every simulation, 1.3.1 test T3
+(scenario and robust back-off in closed loop) and these back-offs in the simulation.
 
 ## Licence
 

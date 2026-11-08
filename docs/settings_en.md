@@ -1,6 +1,6 @@
 # Settings of the simulation
 
-What every setting of the **Simulation** tab means, what can be set and what it changes (version 1.3.0).
+What every setting of the **Simulation** tab means, what can be set and what it changes (version 1.3.1).
 Magyar változat: [`settings.md`](settings.md). User guide: [`user_guide_en.md`](user_guide_en.md).
 
 The simulation scales your system onto the reference cell (mean load 10.788 W), runs the controllers there and
@@ -49,6 +49,8 @@ always runs; the saving is computed against it.
 | **DET** | Not at all: it plans with the forecast mean only. | When the forecast errs, the SoC reaches the band edge more easily. The version tuned for B counters this with a strong pull of the SoC to the middle, which means less arbitrage and a higher cost. |
 | **DET-BO (reference back-off)** | A constant reserve b at both edges of the SoC band, as tuned in the reference study: b = 0.045 in A, 0.030 in B. | If your r_E is larger than b was sized for (Γ > 1), more protection hours; if smaller, it is needlessly cautious. |
 | **DET-BO re-sized from r_E** | The same, but b is set at the start of every month from the r_E of the month before: b = r_E · 0.8 / 0.75 (aiming at Γ = 0.75). The first month uses the r_E of the period before it. | Follows seasonal change; in the paper's winter test it needed fewer protection hours than UA-MPC at about 0.7 % higher cost. |
+| **DET-BO scenario back-off** (unchecked by default) | A constant reserve chosen at the start of every month from the forecast archive of the month before: the largest 1-h deficit that reached the battery (the scenario method with one decision variable). | Almost always enough (Γ = 0.15–0.62 in the paper) but locks 14–35 % of the usable band, so it costs more. Test T3 of the paper. |
+| **DET-BO robust back-off** (unchecked by default) | The same for the worst case: the largest 15-min deficit of the month before, held for a whole hour (tube tightening). | The most cautious (Γ = 0.09–0.59); locks 23–53 % of the band. Test T3 of the paper. |
 | **UA-MPC** | Sets the reserve at every step from the calibrated forecast spread (chance constraint); the spread is re-calibrated every month. | Needs no sizing; in the paper it was 2.9–3.3 % cheaper than DET in B. If forecast errors have heavier tails than the Gaussian assumption (e.g. in winter), its reserve may be too small. |
 
 ## 3. Period and mode
@@ -61,6 +63,7 @@ always runs; the saving is computed against it.
 | **test period Sep 2026** | 2–29 September 2026 with the summer forecast models (the paper's final test). | Needs the `models_summer` folder. With the reference data it is compared with the stored results of the paper's final test (A, B, C). |
 | **Days the load data do not cover: fill from the profile** | If the file does not cover a simulated day, the load is taken from the same weekday and quarter-hour of the nearest day of the year in the data. | A short file (even one week) can drive a whole year; seasonal change is only as present as in the file. Public holidays are not treated separately. |
 | **leave out** | Cuts the simulated period to the first and last day of the data. | Only real data are simulated. If the file covers none of the chosen months, the run stops with an error. |
+| **Γ target of the re-sized back-off** | The Γ the re-sized DET-BO aims at: b = r_E of the month before × 0.8 / Γ target. Default 0.75 (rule T1 of the paper). | Lower: a larger reserve, fewer BMS interventions, higher cost; higher: the reverse. Above 1 the reserve does not cover the deficit of the bad hours. |
 | **Initial SoC** | State of charge at the start of the first month (0.1–0.9). | Affects the cost of the first days; negligible in longer runs. 0.5 is needed for the reference comparison. |
 | **Name** | The run's name in the list. | Display only. |
 | **Add to queue** | Puts the run at the end of the queue. | Starts at once if nothing runs, otherwise waits for the runs before it. |

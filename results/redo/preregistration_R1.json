@@ -1,0 +1,645 @@
+{
+ "written_utc": "2026-11-09T06:45:21.957924+00:00",
+ "record": "R1, replication with south-facing PV; after the summer selection, before the decision map, the final test, the winter replay and T1/T3",
+ "R0_sha256": "73c305de0f138ead2bb021f7f047b5f4e15629678798dc383f9525e6aa860e32",
+ "selection_sha256": {
+  "B": "e049f0bb0d19da147971abac353a2b421658a443edd68650ebdf930dfad54142",
+  "C": "ae2d9dd1e17c45d76a28dac3ec70bfcc484cc2e6095dd0269a885d36a6d4a43e",
+  "A": "6681f9a39f7600481cc72af2000f0e944353b757226760be080d9af18a07d7d6"
+ },
+ "selected_primary": {
+  "B": {
+   "det": 14,
+   "det_bo": 26,
+   "ua": 25
+  },
+  "C": {
+   "det": 27,
+   "ua": 15
+  },
+  "A": {
+   "det": 20,
+   "det_bo": 12,
+   "ua": 25
+  }
+ },
+ "selection_met_threshold": {
+  "B": {
+   "det": true,
+   "det_bo": true,
+   "ua": false
+  },
+  "C": {
+   "det": true,
+   "ua": true
+  },
+  "A": {
+   "det": true,
+   "det_bo": true,
+   "ua": true
+  }
+ },
+ "b_tuned_B": 0.07629585176609414,
+ "gamma": "Gamma = r_E (x_max - x_min) / b, r_E the generalised 1-h deficit ratio of R0 (95 % quantile), x_max - x_min = 0.8, b = b_tuned_B unless stated",
+ "label_rule": "difference if DET-BO protection >= UA-MPC protection + 4 h and >= 2 x UA-MPC protection, else tie",
+ "B_periods": [
+  {
+   "period": "tuning",
+   "r_E": 0.027240086065934217,
+   "Gamma": 0.2856258675708469,
+   "P1": "tie"
+  },
+  {
+   "period": "development",
+   "r_E": 0.02524525727535821,
+   "Gamma": 0.2647090943057242,
+   "P1": "tie"
+  },
+  {
+   "period": "final_test",
+   "r_E": 0.02871372954742012,
+   "Gamma": 0.30107775332740166,
+   "P1": "tie"
+  }
+ ],
+ "B_map_cells": [
+  {
+   "cap_wh": 36,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.0252452572753582,
+   "Gamma": 0.2647090943057241,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 36,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 0.5294181886114484,
+   "P1": "tie",
+   "R0_bounds": "difference"
+  },
+  {
+   "cap_wh": 36,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 1.0588363772228968,
+   "P1": "difference",
+   "R0_bounds": "difference"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.0126226286376791,
+   "Gamma": 0.13235454715286205,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.02524525727535821,
+   "Gamma": 0.2647090943057242,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 0.5294181886114484,
+   "P1": "tie",
+   "R0_bounds": "difference"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.00631131431883955,
+   "Gamma": 0.06617727357643102,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.012622628637679104,
+   "Gamma": 0.1323545471528621,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.025245257275358212,
+   "Gamma": 0.2647090943057242,
+   "P1": "tie",
+   "R0_bounds": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 0.7257247807705811,
+   "P1": "tie",
+   "R0_bounds": "difference"
+  }
+ ],
+ "new_cells": [
+  {
+   "experiment": "grid",
+   "cap": 60,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.03029430873042985,
+   "Gamma": 0.317650913166869,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.03786788591303731,
+   "Gamma": 0.3970636414585862,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 72,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.03786788591303732,
+   "Gamma": 0.3970636414585864,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 90,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.04039241164057314,
+   "Gamma": 0.4235345508891588,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 72,
+   "err": 1.75,
+   "rp": 4,
+   "r_E": 0.04417920023187687,
+   "Gamma": 0.4632409150350173,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 60,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.045441463095644785,
+   "Gamma": 0.47647636975030366,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.25,
+   "rp": 4,
+   "r_E": 0.04733485739129664,
+   "Gamma": 0.49632955182323285,
+   "P1": "tie"
+  },
+  {
+   "experiment": "grid",
+   "cap": 48,
+   "err": 1.5,
+   "rp": 4,
+   "r_E": 0.056801828869555974,
+   "Gamma": 0.5955954621878795,
+   "P1": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.5,
+   "seed": 7,
+   "r_E": 0.05459701829936527,
+   "Gamma": 0.5724769253956025,
+   "P1": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.857,
+   "seed": 7,
+   "r_E": 0.08260578506981257,
+   "Gamma": 0.8661627929451606,
+   "P1": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 108,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.98,
+   "seed": 7,
+   "r_E": 0.10225171336357122,
+   "Gamma": 1.072160134493832,
+   "P1": "difference"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 144,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.5,
+   "seed": 7,
+   "r_E": 0.04094776372452396,
+   "Gamma": 0.4293576940467018,
+   "P1": "tie"
+  },
+  {
+   "experiment": "correlation",
+   "cap": 144,
+   "err": 1.0,
+   "rp": 16,
+   "phi": 0.98,
+   "seed": 7,
+   "r_E": 0.07668878502267842,
+   "Gamma": 0.8041201008703742,
+   "P1": "tie"
+  }
+ ],
+ "b_sweep": [
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 0.5,
+   "b": 0.08078482328114628,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 0.75,
+   "b": 0.05385654885409752,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 1.0,
+   "b": 0.04039241164057314,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 1.25,
+   "b": 0.03231392931245851,
+   "P3": null
+  },
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 1.5,
+   "b": 0.02692827442704876,
+   "P3": "difference"
+  },
+  {
+   "cap": 36,
+   "err": 1.0,
+   "rp": 4,
+   "r_E": 0.05049051455071642,
+   "Gamma": 2.0,
+   "b": 0.02019620582028657,
+   "P3": "difference"
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 0.5,
+   "b": 0.08078482328114628,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 0.75,
+   "b": 0.05385654885409752,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 1.0,
+   "b": 0.04039241164057314,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 1.25,
+   "b": 0.03231392931245851,
+   "P3": null
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 1.5,
+   "b": 0.02692827442704876,
+   "P3": "difference"
+  },
+  {
+   "cap": 72,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.050490514550716424,
+   "Gamma": 2.0,
+   "b": 0.02019620582028657,
+   "P3": "difference"
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 0.5,
+   "b": 0.16156964656229256,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 0.75,
+   "b": 0.10771309770819504,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 1.0,
+   "b": 0.08078482328114628,
+   "P3": "tie"
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 1.25,
+   "b": 0.06462785862491702,
+   "P3": null
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 1.5,
+   "b": 0.05385654885409752,
+   "P3": "difference"
+  },
+  {
+   "cap": 36,
+   "err": 2.0,
+   "rp": 4,
+   "r_E": 0.10098102910143285,
+   "Gamma": 2.0,
+   "b": 0.04039241164057314,
+   "P3": "difference"
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 0.5,
+   "b": 0.11073958059330685,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 0.75,
+   "b": 0.07382638706220457,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 1.0,
+   "b": 0.055369790296653426,
+   "P3": "tie"
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 1.25,
+   "b": 0.04429583223732274,
+   "P3": null
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 1.5,
+   "b": 0.036913193531102284,
+   "P3": "difference"
+  },
+  {
+   "cap": 72,
+   "err": 1.0,
+   "rp": 16,
+   "r_E": 0.06921223787081678,
+   "Gamma": 2.0,
+   "b": 0.027684895148326713,
+   "P3": "difference"
+  }
+ ],
+ "winter_B": [
+  {
+   "month": 1,
+   "label": "2025-10",
+   "r_E": 0.03405309154304747,
+   "Gamma": 0.35706362277673037,
+   "P1": "tie"
+  },
+  {
+   "month": 2,
+   "label": "2025-11",
+   "r_E": 0.04142088807846126,
+   "Gamma": 0.43431863850683106,
+   "P1": "tie"
+  },
+  {
+   "month": 3,
+   "label": "2025-12",
+   "r_E": 0.07023654557872548,
+   "Gamma": 0.7364651571784518,
+   "P1": "tie"
+  },
+  {
+   "month": 4,
+   "label": "2026-01",
+   "r_E": 0.06275347214795139,
+   "Gamma": 0.6580014057942691,
+   "P1": "tie"
+  },
+  {
+   "month": 5,
+   "label": "2026-02",
+   "r_E": 0.04757732901602624,
+   "Gamma": 0.4988719875558906,
+   "P1": "tie"
+  },
+  {
+   "month": 6,
+   "label": "2026-03",
+   "r_E": 0.04001121409445712,
+   "Gamma": 0.41953750478725865,
+   "P1": "tie"
+  }
+ ],
+ "T1": {
+  "months": [
+   {
+    "month": 2,
+    "r_E_past": 0.03405309154304747,
+    "b": 0.0363232976459173,
+    "Gamma_realised": 0.912271533983191
+   },
+   {
+    "month": 3,
+    "r_E_past": 0.04142088807846126,
+    "b": 0.044182280617025345,
+    "Gamma_realised": 1.2717595307049008
+   },
+   {
+    "month": 4,
+    "r_E_past": 0.07023654557872548,
+    "b": 0.07491898195064052,
+    "Gamma_realised": 0.6700942326129928
+   },
+   {
+    "month": 5,
+    "r_E_past": 0.06275347214795139,
+    "b": 0.06693703695781482,
+    "Gamma_realised": 0.5686218712789515
+   },
+   {
+    "month": 6,
+    "r_E_past": 0.04757732901602624,
+    "b": 0.050749150950427986,
+    "Gamma_realised": 0.6307291979491876
+   }
+  ],
+  "summer_final_test": {
+   "r_E_tuning": 0.027240086065934217,
+   "b": 0.029056091803663166,
+   "Gamma_realised": 0.7905737562076429
+  },
+  "Gamma_target": 0.75
+ },
+ "T3": {
+  "months": [
+   {
+    "month": 2,
+    "b_scenario": 0.20746080826221172,
+    "b_robust": 0.2121940927137164,
+    "archive_windows": 2954
+   },
+   {
+    "month": 3,
+    "b_scenario": 0.14000066946147438,
+    "b_robust": 0.15287251801520274,
+    "archive_windows": 2878
+   },
+   {
+    "month": 4,
+    "b_scenario": 0.12896438222542062,
+    "b_robust": 0.1470493839330111,
+    "archive_windows": 2974
+   },
+   {
+    "month": 5,
+    "b_scenario": 0.1194316998880313,
+    "b_robust": 0.1280642518971227,
+    "archive_windows": 2974
+   },
+   {
+    "month": 6,
+    "b_scenario": 0.13998131495564778,
+    "b_robust": 0.16075148076016627,
+    "archive_windows": 2686
+   }
+  ],
+  "summer_final_test": {
+   "b_scenario": 0.11936331571410669,
+   "b_robust": 0.13419940536442193,
+   "archive_windows": 2877
+  }
+ },
+ "predictions": {
+  "P1": "B: every map cell, the final test, every winter month (Nov-Mar, months 2-6) and every grid and correlation cell: tie if Gamma < 1, difference if Gamma > 1, with b = b_tuned_B",
+  "P2": "the bounds of R0 (tie if r_E <= 0.035, difference if r_E >= 0.047)",
+  "P3": "b-sweep: DET-BO with b set for Gamma ties UA-MPC for Gamma <= 1 and differs for Gamma >= 1.5; none at 1.25",
+  "P4": "b-sweep: the net cost of DET-BO rises as b rises in each sweep cell",
+  "P5": "correlation cells: at the same error variance a higher error autocorrelation raises r_E",
+  "P6": "Nov-Mar protection hours of the re-sized DET-BO (T1) <= those of the summer-tuned DET-BO",
+  "P7": "Nov-Mar protection hours of the re-sized DET-BO <= those of UA-MPC",
+  "P8": "Nov-Mar net cost of the re-sized DET-BO <= 1.02 x that of UA-MPC",
+  "P9": "summer final test: the re-sized DET-BO ties UA-MPC by the label rule",
+  "P12": "Nov-Mar protection hours with the scenario back-off <= those of the re-sized back-off (T1)",
+  "P13": "Nov-Mar protection hours with the robust back-off <= those of the re-sized back-off (T1)",
+  "P14": "Nov-Mar net cost: robust >= scenario >= re-sized, where the back-offs are ordered so in every month",
+  "P15": "Nov-Mar net cost of the scenario and of the robust back-off above that of UA-MPC",
+  "P16": "summer final test: scenario and robust back-off tie UA-MPC by the label rule and cost more than the re-sized back-off",
+  "Q1-Q3": "as R0 (unchanged)"
+ },
+ "planned_checks_without_prediction": "day-ahead (day 1) forecast replay of the B winter test and the B summer final test; three-seed tuning of B; QP solver check of the B final test"
+}

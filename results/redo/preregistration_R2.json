@@ -1,0 +1,311 @@
+{
+ "written_utc": "2026-11-10T19:46:02.431179+00:00",
+ "record": "R2, replication with south-facing PV, second load case; after its selection, before its decision map, its final test and T2",
+ "R1_sha256": "1efd5c7ab4e67dd1afcd2a4b163dab8da3abb1041cf627195b99f93c97537e22",
+ "selection_sha256": "5231c68000d144c2a0c0401ccd49d0c34340f9df03d5b467868ffb6adce0eaed",
+ "selected_primary": {
+  "det": 4,
+  "det_bo": 21,
+  "ua": 12
+ },
+ "selection_met_threshold": {
+  "det": false,
+  "det_bo": true,
+  "ua": true
+ },
+ "b2": 0.08194539447240341,
+ "gamma": "Gamma = r_E (x_max - x_min) / b2, r_E the generalised 1-h deficit ratio (renewable-buffer routing, 95 % quantile) of the development period unless stated, x_max - x_min = 0.8",
+ "label_rule": "difference if DET-BO violation >= UA-MPC violation + 1 pp h and >= 2 x UA-MPC violation, else tie (physical plant)",
+ "periods": [
+  {
+   "period": "tuning",
+   "r_E": 0.027600067571096593,
+   "Gamma": 0.26944838326836207,
+   "P1": "tie"
+  },
+  {
+   "period": "development",
+   "r_E": 0.026758960385606906,
+   "Gamma": 0.2612369913686214,
+   "P1": "tie"
+  },
+  {
+   "period": "final_test",
+   "r_E": 0.0294743981103126,
+   "Gamma": 0.28774672011849195,
+   "P1": "tie"
+  }
+ ],
+ "map_cells": [
+  {
+   "cap_wh": 36,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.02675896038560691,
+   "Gamma": 0.26123699136862144,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 36,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.05351792077121381,
+   "Gamma": 0.5224739827372428,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 36,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.10703584154242762,
+   "Gamma": 1.0449479654744855,
+   "P1": "difference"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.013379480192803455,
+   "Gamma": 0.13061849568431072,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.026758960385606906,
+   "Gamma": 0.2612369913686214,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.05351792077121381,
+   "Gamma": 0.5224739827372428,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 0.5,
+   "replan_steps": 4,
+   "r_E": 0.006689740096401727,
+   "Gamma": 0.06530924784215536,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 1.0,
+   "replan_steps": 4,
+   "r_E": 0.013379480192803453,
+   "Gamma": 0.1306184956843107,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 144,
+   "error_scale": 2.0,
+   "replan_steps": 4,
+   "r_E": 0.026758960385606906,
+   "Gamma": 0.2612369913686214,
+   "P1": "tie"
+  },
+  {
+   "cap_wh": 72,
+   "error_scale": 1.0,
+   "replan_steps": 16,
+   "r_E": 0.09948383457829019,
+   "Gamma": 0.9712207522466016,
+   "P1": "tie"
+  }
+ ],
+ "T2": {
+  "design": "development period, physical plant: DET-BO of the selected point with b set for Gamma in {0.5, 0.75, 1, 1.5, 2} in the four cells of the first study's T2, against the UA-MPC run of the same cell of the decision map",
+  "cells": [
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 0.5,
+    "b": 0.0856286732339421,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 0.75,
+    "b": 0.057085782155961405,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 1.0,
+    "b": 0.04281433661697105,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 1.5,
+    "b": 0.028542891077980703,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 1.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 2.0,
+    "b": 0.021407168308485526,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 0.5,
+    "b": 0.0856286732339421,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 0.75,
+    "b": 0.057085782155961405,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 1.0,
+    "b": 0.04281433661697105,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 1.5,
+    "b": 0.028542891077980703,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.05351792077121381,
+    "Gamma": 2.0,
+    "b": 0.021407168308485526,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.10703584154242762,
+    "Gamma": 0.5,
+    "b": 0.1712573464678842,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.10703584154242762,
+    "Gamma": 0.75,
+    "b": 0.11417156431192281,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.10703584154242762,
+    "Gamma": 1.0,
+    "b": 0.0856286732339421,
+    "pred": "tie"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.10703584154242762,
+    "Gamma": 1.5,
+    "b": 0.057085782155961405,
+    "pred": "difference"
+   },
+   {
+    "cap": 36,
+    "err": 2.0,
+    "rp": 4,
+    "r_E": 0.10703584154242762,
+    "Gamma": 2.0,
+    "b": 0.04281433661697105,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.09948383457829019,
+    "Gamma": 0.5,
+    "b": 0.1591741353252643,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.09948383457829019,
+    "Gamma": 0.75,
+    "b": 0.10611609021684287,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.09948383457829019,
+    "Gamma": 1.0,
+    "b": 0.07958706766263215,
+    "pred": "tie"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.09948383457829019,
+    "Gamma": 1.5,
+    "b": 0.05305804510842144,
+    "pred": "difference"
+   },
+   {
+    "cap": 72,
+    "err": 1.0,
+    "rp": 16,
+    "r_E": 0.09948383457829019,
+    "Gamma": 2.0,
+    "b": 0.03979353383131608,
+    "pred": "difference"
+   }
+  ]
+ },
+ "predictions": {
+  "P1": "every map cell and the final test of this case: tie if Gamma < 1, difference if Gamma > 1, with b = b2",
+  "P10": "T2: tie for Gamma <= 1, difference for Gamma >= 1.5",
+  "P11": "T2: the net cost of DET-BO rises as b rises in each cell"
+ }
+}
